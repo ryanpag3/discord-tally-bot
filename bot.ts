@@ -31,6 +31,7 @@ bot.on('message', (message: Message) => {
  * COMMAND FUNCTIONS
  */
 import test from './commands/test';
+import create from './commands/create';
 
 /**
  * COMMANDS
@@ -38,6 +39,9 @@ import test from './commands/test';
 // test command functionality
 emitter.on(prefix + 'test', test);
 emitter.on(prefix + 't', test);
+
+// create new tally
+emitter.on(prefix + 'create', create);
 
 /**
  * INIT
