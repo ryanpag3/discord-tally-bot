@@ -1,0 +1,23 @@
+{
+  "name": "discord-tally-bot",
+  "version": "1.0.0",
+  "description": "A discord bot for tallying things.",
+  "main": "dist/bot.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "nodemon -e \".ts\" --exec \"tsc && node dist/bot.js || true\"",
+    "test": "nodemon --exec \"mocha -r ts-node/register **/*.test.ts || true\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "-"
+  },
+  "author": "Ryan Page",
+  "license": "ISC",
+  "dependencies": {
+    "bufferutil": "^3.0.5",
+    "discord.js": "^11.4.2",
+    "erlpack": "github:discordapp/erlpack",
+    "uws": "^9.148.0"
+  }
+}
