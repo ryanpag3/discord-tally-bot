@@ -1,2 +1,2 @@
-# Discord Bot - starter template written in typescript
-documentation forthcoming.
+# TallyBot 
+Small discord bot for keeping running tallies on random stuff.
