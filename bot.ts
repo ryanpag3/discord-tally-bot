@@ -18,6 +18,7 @@ function getCommand(message: Message) {
 
 bot.on('ready', () => {
     console.log('Bot has been started successfully!');
+    bot.user.setActivity(`Counting things for ${bot.guilds.size} server(s).`);
 });
 
 bot.on('message', (message: Message) => {

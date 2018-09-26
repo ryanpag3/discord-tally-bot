@@ -12,11 +12,11 @@ Cases where `[]` is shown should be replaced in its entirety with the value it r
 
 `!tb create [ID] [Description]` - Add a new tally with a **required** ID and _optional_ description.
 
-`!tb add [ID] [Description]`
+`!tb add [ID] [Description]` - Same as above.
 
 `!tb delete [ID]` - Delete a tally.
 
-`!tb rm [ID]`
+`!tb rm [ID]` - Same as above.
 
 `!tb bump [ID]` - Bump a tally's counter.
 
