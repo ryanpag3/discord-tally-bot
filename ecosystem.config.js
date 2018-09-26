@@ -6,7 +6,10 @@ module.exports = {
   apps : [
     {
       name      : 'tally-bot',
-      script    : 'tsc && ./dist/bot.js',
+      script    : {
+        script: 'ts-node',
+        args: 'bot.ts'
+      },
       env: {
         COMMON_VARIABLE: 'true'
       },
