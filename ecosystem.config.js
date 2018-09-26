@@ -29,7 +29,7 @@ module.exports = {
       ref  : 'origin/master',
       repo : 'https://github.com/ryanpage42/discord-tally-bot.git',
       path : '/var/opt/production/discord-tally-bot',
-      'post-deploy' : 'npm i && tsc && pm2 reload tally-bot',
+      'post-deploy' : 'npm i && tsc && pm2 reload ecosystem.config.js',
     }
   }
 }
