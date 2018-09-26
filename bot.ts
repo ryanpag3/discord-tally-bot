@@ -43,6 +43,7 @@ import del from './commands/delete';
 import bump from './commands/bump';
 import dump from './commands/dump';
 import empty from './commands/empty';
+import set from './commands/set';
 
 /**
  * COMMANDS
@@ -74,6 +75,9 @@ emitter.on(prefix + 'dump', dump)
 
 // set a tally to 0
 emitter.on(prefix + 'empty', empty);
+
+// set a tally to an amount
+emitter.on(prefix + 'set', set);
 
 /**
  * INIT
