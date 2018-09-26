@@ -12,6 +12,7 @@ export default (message: Message) => {
 
     Tally.insertOrUpdate({
         id: tallyId,
+        channelId: message.channel.id,
         description: tallyDescription,
         count: 0
     }).then((res) => {

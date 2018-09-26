@@ -13,7 +13,9 @@ export default (message: Message) => {
     let tallyId = cArr.shift();
 
     Tally.findAll({
-        where: {}
+        where: {
+            channelId: message.channel.id
+        }
     })
         .then((records: any) => {
             let tallies = records.length == 0 ? 'No tallies could be found!' : 'Here are the existing tallies.\n';

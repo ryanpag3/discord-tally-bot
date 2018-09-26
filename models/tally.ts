@@ -7,6 +7,7 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
             primaryKey: true,
             unique: true
         },
+        channelId: DataTypes.STRING,
         description: DataTypes.STRING,
         count: DataTypes.INTEGER
     });
