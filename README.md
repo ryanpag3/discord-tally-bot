@@ -22,4 +22,7 @@ Cases where `[]` is shown should be replaced in its entirety with the value it r
 
 `!tb empty [ID]` - Empty a tally, setting counter to 0.
 
+# Getting Started
+// todo
+
 
