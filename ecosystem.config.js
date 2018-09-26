@@ -30,7 +30,7 @@ module.exports = {
       ref  : 'origin/master',
       repo : 'https://github.com/ryanpage42/discord-tally-bot.git',
       path : '/var/opt/production/discord-tally-bot',
-      'post-deploy' : 'npm i && pm2 reload ecosystem.config.js --env production --node-args="--max-old-space-size=2048"',
+      'post-deploy' : 'npm i',
     }
   }
 }
