@@ -36,6 +36,7 @@ bot.on('message', (message: Message) => {
  */
 import test from './commands/test';
 import create from './commands/create';
+import bump from './commands/bump';
 
 /**
  * COMMANDS
@@ -47,6 +48,9 @@ emitter.on(prefix + 't', test);
 // create new tally
 emitter.on(prefix + 'create', create);
 emitter.on(prefix + 'add', create);
+
+// bump a tally's count up
+emitter.on(prefix + 'bump', bump);
 
 /**
  * INIT
