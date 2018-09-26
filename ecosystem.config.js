@@ -7,8 +7,7 @@ module.exports = {
     {
       name      : 'tally-bot',
       script    : {
-        script: '/usr/local/lib/node_modules/pm2/node_modules/.bin/ts-node',
-        args: 'bot.ts'
+        script: './dist/bot.js'
       },
       env: {
         COMMON_VARIABLE: 'true'
@@ -30,7 +29,7 @@ module.exports = {
       ref  : 'origin/master',
       repo : 'https://github.com/ryanpage42/discord-tally-bot.git',
       path : '/var/opt/production/discord-tally-bot',
-      'post-deploy' : 'npm i && tsc && node ./dist/bot.js',
+      'post-deploy' : 'npm i && tsc && pm2 reload',
     }
   }
 }
