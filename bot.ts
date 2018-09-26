@@ -35,6 +35,7 @@ bot.on('message', (message: Message) => {
  * COMMAND FUNCTIONS
  */
 import test from './commands/test';
+import help from './commands/help';
 import show from './commands/show';
 import create from './commands/create';
 import del from './commands/delete';
@@ -48,6 +49,10 @@ import empty from './commands/empty';
 // test command functionality
 emitter.on(prefix + 'test', test);
 emitter.on(prefix + 't', test);
+
+// give help
+emitter.on(prefix + 'help', help);
+emitter.on(prefix + 'h', help);
 
 // show existing tallies
 emitter.on(prefix + 'show', show);

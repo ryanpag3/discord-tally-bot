@@ -6,6 +6,8 @@ Cases where `[]` is shown should be replaced in its entirety with the value it r
 
 `!tb` - This is the prefix. All commands should lead with this followed by a space. For example: `!tb show`
 
+`!tb help` - Get a link to return to this README.
+
 `!tb show` - List all tallies created in this channel.
 
 `!tb create [ID] [Description]` - Add a new tally with a **required** ID and _optional_ description.
