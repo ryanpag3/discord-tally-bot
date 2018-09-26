@@ -6,7 +6,7 @@ module.exports = {
   apps : [
     {
       name      : 'tally-bot',
-      script    : './dist/bot.js',
+      script    : 'tsc && ./dist/bot.js',
       env: {
         COMMON_VARIABLE: 'true'
       },
