@@ -35,8 +35,12 @@ bot.on('message', (message: Message) => {
  * COMMAND FUNCTIONS
  */
 import test from './commands/test';
+import show from './commands/show';
 import create from './commands/create';
+import del from './commands/delete';
 import bump from './commands/bump';
+import dump from './commands/dump';
+import empty from './commands/empty';
 
 /**
  * COMMANDS
@@ -45,12 +49,25 @@ import bump from './commands/bump';
 emitter.on(prefix + 'test', test);
 emitter.on(prefix + 't', test);
 
+// show existing tallies
+emitter.on(prefix + 'show', show);
+
 // create new tally
 emitter.on(prefix + 'create', create);
 emitter.on(prefix + 'add', create);
 
+// delete a tally
+emitter.on(prefix + 'delete', del);
+emitter.on(prefix + 'rm', del);
+
 // bump a tally's count up
 emitter.on(prefix + 'bump', bump);
+
+// dump a tally's count down
+emitter.on(prefix + 'dump', dump)
+
+// set a tally to 0
+emitter.on(prefix + 'empty', empty);
 
 /**
  * INIT

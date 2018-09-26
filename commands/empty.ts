@@ -21,20 +21,16 @@ export default (message: Message) => {
         })
         .then((record: any) => {
             return Tally.update({
-                count: record.count + 1
-            }, {
-                returning: true,
-                where: {
-                    id: record.id
-                }
-            })
-            .then(() => {
-                record.count += 1;
-                return record;
-            });
+                    count: 0
+                }, {
+                    returning: true,
+                    where: {
+                        id: record.id
+                    }
+                })
+                .then(() => record);
         })
         .then((record) => {
-            // TODO add more phrases
-            message.channel.send('BUMP! **' + record.id +  '** is now at count: ' + record.count + '. Is that a lot? :fist:');
+            message.channel.send('You just emptied **' + record.id + '** and set it to 0. Sure hope that wasn\'t on accident! :thinking:');
         });
 }

@@ -8,7 +8,7 @@ export default (message: Message) => {
     let content = helper.removePrefixCommand(message.content, 2);
     let cArr = content.split(' ');
     let tallyId = cArr.shift();
-    let tallyDescription = cArr.shift();
+    let tallyDescription = cArr.join(' '); // remainder is description
 
     Tally.insertOrUpdate({
         id: tallyId,
@@ -16,8 +16,8 @@ export default (message: Message) => {
         count: 0
     }).then((res) => {
         if (res == true)
-            message.channel.send('Tally has been created with id ' + tallyId + ' and description ' + tallyDescription);
+            message.channel.send('Tally has been created with ID [' + tallyId + ']' + (tallyDescription ? ' and description: ' + tallyDescription : ''));
         else
-            message.channel.send('Tally already exists with id: ' + tallyId);
+            message.channel.send('Tally already exists with ID [' + tallyId + ']');
     })
 }

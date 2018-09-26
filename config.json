@@ -1,7 +1,7 @@
 {
-    "prefix" : "!bot ",
-    "database" : {
-        "name" : "tally_bot_db",
-        "dialect" : "mysql"
+    "prefix": "!tb ",
+    "database": {
+        "name": "tally_bot_db",
+        "dialect": "mysql"
     }
 }
