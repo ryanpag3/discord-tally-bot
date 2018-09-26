@@ -7,7 +7,7 @@ module.exports = {
     {
       name      : 'tally-bot',
       script    : {
-        script: 'ts-node',
+        script: '/usr/local/lib/node_modules/pm2/node_modules/.bin/ts-node',
         args: 'bot.ts'
       },
       env: {
