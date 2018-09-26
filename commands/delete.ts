@@ -11,6 +11,7 @@ export default (message: Message) => {
     let cArr = content.split(' ');
     let tallyId = cArr.shift();
 
+    console.log('Deleting tally [' + tallyId + ']');
     Tally.destroy({
         where: {
             id: tallyId

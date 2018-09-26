@@ -10,7 +10,8 @@ const Tally = DB.tally;
 export default (message: Message) => {
     let content = helper.removePrefixCommand(message.content, 2);
     let cArr = content.split(' ');
-    let tallyId = cArr.shift();
+
+    console.log('Showing tallies for channel [' + message.channel.id + ']');
 
     Tally.findAll({
         where: {

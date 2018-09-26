@@ -11,6 +11,8 @@ export default (message: Message) => {
     let cArr = content.split(' ');
     let tallyId = cArr.shift();
 
+    console.log('Deleting tally [' + tallyId + ']');
+
     Tally.findById(tallyId)
         .then((record: any) => {
             if (!record) {

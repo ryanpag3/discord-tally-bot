@@ -11,6 +11,8 @@ export default (message: Message) => {
     let cArr = content.split(' ');
     let tallyId = cArr.shift();
 
+    console.log('Bumping [' + tallyId + ']');
+
     Tally.findById(tallyId)
         .then((record: any) => {
             if (!record) {
@@ -35,6 +37,6 @@ export default (message: Message) => {
         })
         .then((record) => {
             // TODO add more phrases
-            message.channel.send('BUMP! **' + record.id +  '** is now at count: ' + record.count + '. Is that a lot? :fist:');
+            message.channel.send('BUMP! **' + record.id +  '** is now at count: ' + record.count);
         });
 }

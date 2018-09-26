@@ -9,7 +9,7 @@ export default (message: Message) => {
     let cArr = content.split(' ');
     let tallyId = cArr.shift();
     let tallyDescription = cArr.join(' '); // remainder is description
-
+    console.log('Adding tally [' + tallyId + ']');
     Tally.insertOrUpdate({
         id: tallyId,
         channelId: message.channel.id,

@@ -9,6 +9,6 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
         },
         channelId: DataTypes.STRING,
         description: DataTypes.STRING,
-        count: DataTypes.INTEGER
+        count: DataTypes.BIGINT
     });
 }
