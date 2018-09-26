@@ -2,9 +2,13 @@ import Discord, { Message } from 'discord.js';
 import { EventEmitter } from 'events';
 import { prefix } from './config.json';
 import { token } from './config-private.json';
+import db from './util/db';
 
 const bot = new Discord.Client();
 const emitter = new EventEmitter();
+
+// init db
+db.init();
 
 // TODO: fix implementation
 function getCommand(message: Message) {
@@ -42,6 +46,7 @@ emitter.on(prefix + 't', test);
 
 // create new tally
 emitter.on(prefix + 'create', create);
+emitter.on(prefix + 'add', create);
 
 /**
  * INIT

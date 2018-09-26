@@ -18,6 +18,12 @@
     "bufferutil": "^3.0.5",
     "discord.js": "^11.4.2",
     "erlpack": "github:discordapp/erlpack",
+    "mysql": "^2.16.0",
+    "mysql2": "^1.6.1",
+    "sequelize": "^4.39.0",
     "uws": "^9.148.0"
+  },
+  "devDependencies": {
+    "@types/sequelize": "^4.27.26"
   }
 }
