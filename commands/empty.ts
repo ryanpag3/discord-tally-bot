@@ -13,7 +13,7 @@ export default (message: Message) => {
 
     console.log('Deleting tally [' + tallyId + ']');
 
-    Tally.findById(tallyId)
+    Tally.findOne({ where: {name: tallyId, channelId: message.channel.id}})
         .then((record: any) => {
             if (!record) {
                 message.channel.send('Could not find Tally with ID: ' + tallyId);
@@ -27,12 +27,12 @@ export default (message: Message) => {
                 }, {
                     returning: true,
                     where: {
-                        id: record.id
+                        name: record.name
                     }
                 })
                 .then(() => record);
         })
         .then((record) => {
-            message.channel.send('You just emptied **' + record.id + '** and set it to 0. Sure hope that wasn\'t on accident! :thinking:');
+            message.channel.send('You just emptied **' + record.name + '** and set it to 0. Sure hope that wasn\'t on accident! :thinking:');
         });
 }

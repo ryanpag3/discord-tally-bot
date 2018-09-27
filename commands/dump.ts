@@ -13,11 +13,10 @@ export default (message: Message) => {
 
     console.log('Dumping tally [' + tallyId + ']');
     
-    Tally.findById(tallyId)
+    Tally.findOne({ where: {name: tallyId, channelId: message.channel.id}})
         .then((record: any) => {
             if (!record) {
-                message.channel.send('Could not find Tally with ID: ' + tallyId);
-                return;
+                throw 'I couldn\'t find it in my system. Hmm... :thinking:';
             }
             return record;
         })
@@ -27,12 +26,16 @@ export default (message: Message) => {
                 }, {
                     returning: true,
                     where: {
-                        id: record.id
+                        name: record.name,
+                        channel: message.channel.id
                     }
                 })
                 .then(() => record);
         })
         .then((record) => {
-            message.channel.send('Oh snap! You just took a big :poop: on **' + record.id + '** and set it to ' + (record.count-1));
+            message.channel.send('Oh snap! You just took a big :poop: on **' + record.name + '** and set it to ' + (record.count-1));
+        })
+        .catch((err) => {
+            message.channel.send('We couldn\'t bump that tally because ' + err);
         });
 }

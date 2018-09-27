@@ -9,16 +9,22 @@ export default (message: Message) => {
     let cArr = content.split(' ');
     let tallyId = cArr.shift();
     let tallyDescription = cArr.join(' '); // remainder is description
+
+    if (!tallyId) {
+        message.channel.send('Name is required to create Tally!');
+        return;
+    }
+
     console.log('Adding tally [' + tallyId + ']');
     Tally.insertOrUpdate({
-        id: tallyId,
+        name: tallyId,
         channelId: message.channel.id,
         description: tallyDescription,
         count: 0
     }).then((res) => {
         if (res == true)
-            message.channel.send('Tally has been created with ID [' + tallyId + ']' + (tallyDescription ? ' and description: ' + tallyDescription : ''));
+            message.channel.send('Tally has been created with name [' + tallyId + ']' + (tallyDescription ? ' and description: ' + tallyDescription : ''));
         else
-            message.channel.send('Tally already exists with ID [' + tallyId + ']');
+            message.channel.send('Tally already exists with name [' + tallyId + ']');
     })
 }

@@ -11,16 +11,22 @@ export default (message: Message) => {
     let cArr = content.split(' ');
     let tallyId = cArr.shift();
 
+    if (!tallyId) {
+        message.channel.send('Name is required to delete!')
+        return;
+    }
+
     console.log('Deleting tally [' + tallyId + ']');
     Tally.destroy({
         where: {
-            id: tallyId
+            name: tallyId,
+            channelId: message.channel.id
         }
     })
         .then((res) => {
             if (res == 1)
                 message.channel.send('Tally [' + tallyId + '] has been deleted. :cry:');
             else
-                message.channel.send('Tally [' + tallyId + '] does not exist.');
+                message.channel.send('Doesn\'t seem to exist on my system. Job done? I guess? :wink:');
         });
 }

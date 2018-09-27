@@ -21,7 +21,7 @@ export default (message: Message) => {
         .then((records: any) => {
             let tallies = records.length == 0 ? 'No tallies could be found!' : 'Here are the existing tallies.\n';
             for (let record of records) {
-                tallies += '- [' + record.count + '] **' + record.id + '** ' + (record.description ? ': ' + record.description : '') +  '\n';
+                tallies += '- [' + record.count + '] **' + record.name + '** ' + (record.description ? ': ' + record.description : '') +  '\n';
             }
             tallies += 'You can bump them by running ' + prefix + 'bump <ID>\n';
             message.channel.send(tallies);

@@ -13,11 +13,10 @@ export default (message: Message) => {
 
     console.log('Bumping [' + tallyId + ']');
 
-    Tally.findById(tallyId)
+    Tally.findOne({where: {name: tallyId, channelId: message.channel.id}})
         .then((record: any) => {
             if (!record) {
-                message.channel.send('Could not find Tally with ID: ' + tallyId);
-                return;
+                throw 'I couldn\'t find it. Check your spelling? :thinking:';
             }
             return record;
         })
@@ -27,7 +26,8 @@ export default (message: Message) => {
             }, {
                 returning: true,
                 where: {
-                    id: record.id
+                    name: record.name,
+                    channelId: message.channel.id
                 }
             })
             .then(() => {
@@ -37,6 +37,9 @@ export default (message: Message) => {
         })
         .then((record) => {
             // TODO add more phrases
-            message.channel.send('BUMP! **' + record.id +  '** is now at count: ' + record.count);
+            message.channel.send('BUMP! **' + record.name +  '** is now at count: ' + record.count);
+        })
+        .catch((err) => {
+            message.channel.send('We couldn\'t bump that tally because ' + err);
         });
 }

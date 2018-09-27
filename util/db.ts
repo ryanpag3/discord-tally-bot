@@ -30,7 +30,7 @@ export default {
                 if (err) throw err;
                 if (result.warningCount != 1)
                     console.log('Databse ' + config.database.name + ' has been created.');
-                this.tally.sync();
+                this.tally.sync({alter: true});
             });
         });
     }

@@ -22,6 +22,9 @@ bot.on('ready', () => {
 });
 
 bot.on('message', (message: Message) => {
+    if (Math.floor((Math.random() * 2)) == 1) // every other msg or so
+        bot.user.setActivity(`Counting things for ${bot.guilds.size} server(s).`);
+
     const isBot = message.author.bot;
     if (isBot) return;
 

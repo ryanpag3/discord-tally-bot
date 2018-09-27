@@ -12,11 +12,14 @@ export default (message: Message) => {
     let tallyId = cArr.shift();
     let amount = cArr.shift();
 
-    console.log(typeof amount);
+    if (!tallyId || !amount) {
+        message.channel.send('ID and/or amount required. Please try again using the correct syntax. :wink:');
+        return;
+    }
 
     console.log('Setting [' + tallyId + '] to ' + amount);
 
-    Tally.findById(tallyId)
+    Tally.findOne({ where: {name: tallyId, channelId: message.channel.id}})
         .then((record: any) => {
             if (!record) {
                 message.channel.send('Could not find Tally with ID: ' + tallyId);
@@ -25,12 +28,15 @@ export default (message: Message) => {
             return record;
         })
         .then((record: any) => {
+            if (!record) throw 'I couldnt find it in my system! I didnt lose it. It doesnt exist!';
+
             return Tally.update({
                 count: amount
             }, {
                 returning: true,
                 where: {
-                    id: record.id
+                    name: record.name,
+                    channelId: message.channel.id
                 }
             })
             .then(() => {
@@ -40,6 +46,9 @@ export default (message: Message) => {
         })
         .then((record) => {
             // TODO add more phrases
-            message.channel.send('Whoop Whoopy Whoop! **' + record.id +  '** is now at count: ' + amount);
+            message.channel.send('Whoop Whoopy Whoop! **' + record.name +  '** is now at count: ' + amount);
+        })
+        .catch((err) => {
+            message.channel.send('I couldn\'t bump that tally because ' + err);
         });
 }
