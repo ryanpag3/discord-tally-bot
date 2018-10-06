@@ -18,14 +18,14 @@ export default (message: Message) => {
             {
                 title: `Manage Tallies`,
                 value: `
-                        \`!tb create <name> <description>\`
+                        \`!tb create <name> <description>\` - create/add a tally
                         \`!tb add <name> <description>\`
-                        \`!tb delete <name>\`
+                        \`!tb delete <name>\` - delete/rm tally
                         \`!tb rm <name>\`
-                        \`!tb bump <name>\`
-                        \`!tb dump <name>\`
-                        \`!tb set <name> <value>\`
-                        \`!tb empty <name>\`
+                        \`!tb bump <name>\` - increase tally by one point
+                        \`!tb dump <name>\` - decrease tally by one point
+                        \`!tb set <name> <value>\` - set tally to amount
+                        \`!tb empty <name>\` - set tally to 0
                        `
             }
         ]

@@ -19,11 +19,19 @@ export default (message: Message) => {
         }
     })
         .then((records: any) => {
-            let tallies = records.length == 0 ? 'No tallies could be found!' : 'Here are the existing tallies.\n';
-            for (let record of records) {
-                tallies += '- [' + record.count + '] **' + record.name + '** ' + (record.description ? ': ' + record.description : '') +  '\n';
+            const msg = {
+                title: records.length == 0 ? 'No tallies could be found!' : 'Here are the existing tallies.\n',
+                description: '',
+                color: '#42f4e2',
+                fields: records.map((record) => {
+                    const description = record.description ? record.description : 'No description.';
+                    return {
+                        title: `${record.name} [${record.count}]`,
+                        value: `${description}`
+                    }
+                })
             }
-            tallies += 'You can bump them by running ' + prefix + 'bump <ID>\n';
-            message.channel.send(tallies);
+!
+            message.channel.send(helper.buildRichMsg(msg));
         });
 }
