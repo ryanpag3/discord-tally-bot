@@ -25,6 +25,18 @@ Cases where `[]` is shown should be replaced in its entirety with the value it r
 `!tb empty [ID]` - Empty a tally, setting counter to 0.
 
 # Getting Started
-// todo
+## Starting
+1. Install required dependancies with `npm i`
+2. Duplicate `private-config.template.json` to file named `private-config.json`
+3. Retrieve your bot's application token and insert it in the token property
+4. Set your database properties, Tally Bot uses a mysql database
+5. Start bot with `npm start`
+6. If you would like to watch for changes, you can also run `npm start-w` (_note_: requires `nodemon`)
+
+## Commands
+Command files are located in `./commands`. If you would like to add one you will need to follow these steps:
+1. add new script file in commands directory
+2. import script in `bot.ts` in the appropriate section, adding a short comment on what it does
+3. initialize script by adding an event listener using the `emitter.on(prefix + command)` pattern
 
 
