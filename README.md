@@ -6,23 +6,25 @@ Cases where `[]` is shown should be replaced in its entirety with the value it r
 
 `!tb` - This is the prefix. All commands should lead with this followed by a space. For example: `!tb show`
 
-`!tb help` - Get a link to return to this README.
+`!tb help` - Get a list of commands.
 
 `!tb show` - List all tallies created in this channel.
 
-`!tb create [ID] [Description]` - Add a new tally with a **required** ID and _optional_ description.
+`!tb create [name] [Description]` - Add a new tally with a **required** name and _optional_ description.
 
-`!tb add [ID] [Description]` - Same as above.
+`!tb add [name] [Description]` - Same as above.
 
-`!tb delete [ID]` - Delete a tally.
+`!tb delete [name]` - Delete a tally.
 
-`!tb rm [ID]` - Same as above.
+`!tb rm [name]` - Same as above.
 
-`!tb bump [ID]` - Bump a tally's counter.
+`!tb bump [name]` - Bump a tally's counter.
 
-`!tb dump [ID]` - ~~Decrease~~ Dump your tally one point!
+`!tb dump [name]` - ~~Decrease~~ Dump your tally one point!
 
-`!tb empty [ID]` - Empty a tally, setting counter to 0.
+`!tb empty [name]` - Empty a tally, setting counter to 0.
+
+`!tb set [name] [amount]` - set a tally to a specified amount
 
 # Getting Started
 ## Starting
