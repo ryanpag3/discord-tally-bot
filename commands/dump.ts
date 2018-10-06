@@ -27,7 +27,7 @@ export default (message: Message) => {
                     returning: true,
                     where: {
                         name: record.name,
-                        channel: message.channel.id
+                        channelId: message.channel.id
                     }
                 })
                 .then(() => record);
