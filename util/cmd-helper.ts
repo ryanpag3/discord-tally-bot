@@ -42,8 +42,11 @@ export default {
     buildRichMsg: (msg: any) => {
         const embed = new Discord.RichEmbed()
             .setTitle(msg.title)
-            .setDescription(msg.description)
-            .setColor(msg.color);
+            .setDescription(msg.description || '')
+            .setColor(msg.color || '#5fcca4');
+        
+        if (!msg.fields)
+            return embed;
         
         for (let field of msg.fields) {
             embed.addField(field.title, field.value);
@@ -57,5 +60,10 @@ export default {
      */
     buildPlainMsg: (msg: any) => {
         // todo
+    },
+
+    getRandomPhrase: (phrases: Array<string>) => {
+        const rand = Math.floor(Math.random() * phrases.length);
+        return phrases[rand];
     }
 }
