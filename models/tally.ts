@@ -1,4 +1,7 @@
-import { Sequelize, DataTypes } from 'sequelize';
+import {
+    Sequelize,
+    DataTypes
+} from 'sequelize';
 
 export default (sequelize: Sequelize, DataTypes: DataTypes) => {
     return sequelize.define('tally', {
@@ -9,6 +12,10 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
         description: DataTypes.STRING,
         count: DataTypes.BIGINT
     }, {
-        timestamps: false
+        timestamps: false,
+        indexes: [{
+            fields: ['name', 'channelId'],
+            unique: true
+        }]
     });
 }

@@ -7,10 +7,8 @@ import db from './util/db';
 const bot = new Discord.Client();
 const emitter = new EventEmitter();
 
-// init db
 db.init();
 
-// TODO: fix implementation
 function getCommand(message: Message) {
     const mArr = message.content.split(' ');
     return mArr[0] + ' ' + mArr[1];
@@ -22,6 +20,10 @@ bot.on('ready', () => {
 });
 
 bot.on('message', (message: Message) => {
+
+    if (message.channel.type == 'dm')
+        console.log('PM received');
+
     if (Math.floor((Math.random() * 2)) == 1) // every other msg or so
         bot.user.setActivity(`Counting things for ${bot.guilds.size} server(s).`);
 
@@ -47,6 +49,7 @@ import bump from './commands/bump';
 import dump from './commands/dump';
 import empty from './commands/empty';
 import set from './commands/set';
+import rmall from './commands/rmall';
 
 /**
  * COMMANDS
@@ -81,6 +84,11 @@ emitter.on(prefix + 'empty', empty);
 
 // set a tally to an amount
 emitter.on(prefix + 'set', set);
+
+/**
+ * The following commands are only exposed when bot is run without `production` flag
+ */
+emitter.on(prefix + 'rmall', rmall)
 
 /**
  * INIT

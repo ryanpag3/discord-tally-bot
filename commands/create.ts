@@ -1,8 +1,18 @@
 import { Message } from "discord.js";
+import moment from 'moment';
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
 
 const Tally = DB.tally;
+
+const startDevDate = moment('2018-09-25'); // repo created date
+const now =  moment();
+const daysExisted = now.diff(startDevDate, 'days');
+const phrases = [
+    `${daysExisted} days since last bug fix.`,
+    `I hope you know what you're doing.`,
+    `Tally Bot's my name, counting's my game.`
+];
 
 export default (message: Message) => {
     let content = helper.removePrefixCommand(message.content, 2);
@@ -22,8 +32,18 @@ export default (message: Message) => {
         description: tallyDescription,
         count: 0
     }).then((res) => {
+        const description = '\n' + (tallyDescription || 'No description.');
+        const msg = {
+            title: `_"${helper.getRandomPhrase(phrases)}"_`,
+            fields: [
+                {
+                    title: `${tallyId}`,
+                    value: `${description}\n\ncreated by **${message.member.user.tag}**`
+                }
+            ]
+        }
         if (res == true)
-            message.channel.send('Tally has been created with name [' + tallyId + ']' + (tallyDescription ? ' and description: ' + tallyDescription : ''));
+            message.channel.send(helper.buildRichMsg(msg));
         else
             message.channel.send('Tally already exists with name [' + tallyId + ']');
     })
