@@ -11,7 +11,13 @@ const daysExisted = now.diff(startDevDate, 'days');
 const phrases = [
     `${daysExisted} days since last bug fix.`,
     `I hope you know what you're doing.`,
-    `Tally Bot's my name, counting's my game.`
+    `Tally Bot's my name, counting's my game.`,
+    `Back to square one...?`,
+    `This one's gunna be good. I can feel it.`,
+    `Here's Johnny!`,
+    `Hi mom!`,
+    `Ashkan, no!`,
+    `Have you tried my fresh yung kokonut?`
 ];
 
 export default (message: Message) => {

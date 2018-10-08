@@ -26,8 +26,8 @@ export default (message: Message) => {
                 fields: records.map((record) => {
                     const description = record.description ? record.description : 'No description.';
                     return {
-                        title: `${record.name} [${record.count}]`,
-                        value: `${description}`
+                        title: `${record.name} **[${record.count}]**`,
+                        value: `• ${description}`
                     }
                 })
             }

@@ -88,7 +88,7 @@ emitter.on(prefix + 'set', set);
 /**
  * The following commands are only exposed when bot is run without `production` flag
  */
-if (process.env.NODE_ENV && process.env.NODE_ENV != 'production') {
+if (process.env.NODE_ENV != 'production') {
     emitter.on(prefix + 'rmall', rmall);
 }
 /**
