@@ -47,7 +47,7 @@ export default (message: Message) => {
         })
         .catch((err) => {
             const failMsg = {
-                title: `We couldn't dump that tally because ${err}`
+                title: `I couldn't dump that tally because ${err}`
             }
             message.channel.send(helper.buildRichMsg(failMsg));
         });
