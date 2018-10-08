@@ -12,6 +12,12 @@ export default (message: Message) => {
     let tallyId = cArr.shift();
 
     console.log('Dumping tally [' + tallyId + ']');
+
+    const phrases = [
+        `Oh snap! You just took a big :poop:`,
+        `What happened?!`,
+        `Turn that bump upside down! :upside_down:`
+    ]
     
     Tally.findOne({ where: {name: tallyId, channelId: message.channel.id}})
         .then((record: any) => {
@@ -33,9 +39,16 @@ export default (message: Message) => {
                 .then(() => record);
         })
         .then((record) => {
-            message.channel.send('Oh snap! You just took a big :poop: on **' + record.name + '** and set it to ' + (record.count-1));
+            const msg = {
+                title: helper.getRandomPhrase(phrases),
+                description: `**${record.name}** is now at count ${record.count - 1}`
+            };
+            message.channel.send(helper.buildRichMsg(msg));
         })
         .catch((err) => {
-            message.channel.send('We couldn\'t bump that tally because ' + err);
+            const failMsg = {
+                title: `We couldn't dump that tally because ${err}`
+            }
+            message.channel.send(helper.buildRichMsg(failMsg));
         });
 }

@@ -39,7 +39,7 @@ export default (message: Message) => {
         count: 0
     }).then((res) => {
         const description = '\n' + (tallyDescription || 'No description.');
-        const msg = {
+        const successMsg = {
             title: `_"${helper.getRandomPhrase(phrases)}"_`,
             fields: [
                 {
@@ -47,10 +47,14 @@ export default (message: Message) => {
                     value: `${description}\n\ncreated by **${message.member.user.tag}**`
                 }
             ]
+        };
+
+        const failMsg = {
+            title: `**${tallyId}** already exists for this channel. :thinking:`
         }
         if (res == true)
-            message.channel.send(helper.buildRichMsg(msg));
+            message.channel.send(helper.buildRichMsg(successMsg));
         else
-            message.channel.send('Tally already exists with name [' + tallyId + ']');
+            message.channel.send(helper.buildRichMsg(failMsg));
     })
 }
