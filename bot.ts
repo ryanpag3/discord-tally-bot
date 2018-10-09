@@ -98,6 +98,8 @@ emitter.on(prefix + 'get', details);
 emitter.on(prefix + 'describe', describe);
 emitter.on(prefix + 'update', describe);
 
+console.log(process.env.NODE_ENV)
+
 /**
  * The following commands are only exposed when bot is run without `production` flag
  */
