@@ -4,7 +4,7 @@
 # Commands
 Cases where `[]` is shown should be replaced in its entirety with the value it represents. (i.e `!tb add my-tally` or `!tb rm my-tally`)
 
-## Basic
+### Basic
 
 `!tb` - This is the prefix. All commands should lead with this followed by a space. For example: `!tb show`
 
@@ -16,7 +16,7 @@ Cases where `[]` is shown should be replaced in its entirety with the value it r
 
 `!tb get [name]` - Same as above.
 
-## Manage
+### Manage
 
 `!tb create [name] [description]` - Add a new tally with a **required** name and _optional_ description.
 
@@ -34,7 +34,7 @@ Cases where `[]` is shown should be replaced in its entirety with the value it r
 
 `!tb dump [name]` - ~~Decrease~~ Dump your tally one point!
 
-## Admin
+### Admin
 
 `!tb empty [name]` - Empty a tally, setting counter to 0.
 
