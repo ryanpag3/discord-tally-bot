@@ -15,7 +15,7 @@ function getCommand(message: Message) {
 }
 
 bot.on('ready', () => {
-    console.log('Bot has been started successfully!');
+    console.log(`Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);
     setInterval(() => {
         let userCount = 0;
         bot.guilds.map((guild) => {
@@ -98,7 +98,6 @@ emitter.on(prefix + 'get', details);
 emitter.on(prefix + 'describe', describe);
 emitter.on(prefix + 'update', describe);
 
-console.log(process.env.NODE_ENV)
 
 /**
  * The following commands are only exposed when bot is run without `production` flag
