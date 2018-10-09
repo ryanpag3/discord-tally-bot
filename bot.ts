@@ -16,16 +16,19 @@ function getCommand(message: Message) {
 
 bot.on('ready', () => {
     console.log('Bot has been started successfully!');
-    bot.user.setActivity(`Counting things for ${bot.guilds.size} server(s).`);
+    setInterval(() => {
+        let userCount = 0;
+        bot.guilds.map((guild) => {
+            userCount += guild.members.size
+        });
+        bot.user.setActivity(`Counting things for ${bot.guilds.size} servers and ${userCount} users.`);
+    }, 5000);
 });
 
 bot.on('message', (message: Message) => {
 
     if (message.channel.type == 'dm')
         console.log('PM received');
-
-    if (Math.floor((Math.random() * 2)) == 1) // every other msg or so
-        bot.user.setActivity(`Counting things for ${bot.guilds.size} server(s).`);
 
     const isBot = message.author.bot;
     if (isBot) return;
