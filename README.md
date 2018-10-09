@@ -10,9 +10,17 @@ Cases where `[]` is shown should be replaced in its entirety with the value it r
 
 `!tb show` - List all tallies created in this channel.
 
-`!tb create [name] [Description]` - Add a new tally with a **required** name and _optional_ description.
+`!tb details [name]` - Get details of a tally.
 
-`!tb add [name] [Description]` - Same as above.
+`!tb get [name]` - Same as above.
+
+`!tb create [name] [description]` - Add a new tally with a **required** name and _optional_ description.
+
+`!tb add [name] [description]` - Same as above.
+
+`!tb describe [name] [description]` - Update a tally with a new description.
+
+`!tb update [name] [description]` - Same as above. 
 
 `!tb delete [name]` - Delete a tally.
 

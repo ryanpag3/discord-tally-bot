@@ -49,7 +49,7 @@ export default {
             return embed;
         
         for (let field of msg.fields) {
-            embed.addField(field.title, field.value);
+            embed.addField(field.title, field.value || '-');
         }
 
         return embed;

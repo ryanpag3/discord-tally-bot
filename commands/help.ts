@@ -13,6 +13,8 @@ export default (message: Message) => {
                 title: `Basic Utilities`,
                 value: `\`!tb help\` - show this dialog
                         \`!tb show\` - show all current tallies
+                        \`!tb details <name>\` - get tally details
+                        \`!tb get <name>\`
                        `
             },
             {
@@ -20,6 +22,8 @@ export default (message: Message) => {
                 value: `
                         \`!tb create <name> <description>\` - create/add a tally
                         \`!tb add <name> <description>\`
+                        \`!tb describe <name> <description>\` - update tally description
+                        \`!tb update <name> <description>\`
                         \`!tb delete <name>\` - delete/rm tally
                         \`!tb rm <name>\`
                         \`!tb bump <name>\` - increase tally by one point

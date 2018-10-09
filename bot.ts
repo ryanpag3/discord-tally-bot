@@ -50,6 +50,8 @@ import dump from './commands/dump';
 import empty from './commands/empty';
 import set from './commands/set';
 import rmall from './commands/rmall';
+import details from './commands/details';
+import describe from './commands/describe';
 
 /**
  * COMMANDS
@@ -84,6 +86,14 @@ emitter.on(prefix + 'empty', empty);
 
 // set a tally to an amount
 emitter.on(prefix + 'set', set);
+
+// get tally details
+emitter.on(prefix + 'details', details);
+emitter.on(prefix + 'get', details);
+
+// set tally description
+emitter.on(prefix + 'describe', describe);
+emitter.on(prefix + 'update', describe);
 
 /**
  * The following commands are only exposed when bot is run without `production` flag
