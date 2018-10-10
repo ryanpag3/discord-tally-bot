@@ -17,7 +17,20 @@ const phrases = [
     `Here's Johnny!`,
     `Hi mom!`,
     `Ashkan, no!`,
-    `Have you tried my fresh yung kokonut?`
+    `Have you tried my fresh yung kokonut?`,
+    `Petabytes and petabytes of 1..2...3...4...`,
+    `>.<`,
+    `Bump me bro!`,
+    `Oh, that tickles!`,
+    `Another one bumps the dust.`,
+    `Oh no, not again.`,
+    `I live! I die! I bump!`,
+    `SKYNET protocol in 1...2...3`,
+    `Game's rigged.`,
+    `Joseph to the rescue!`,
+    `Alvin made me.`,
+    `Machine Learning Optimized:tm:`,
+    `${daysExisted} forgotten birthdays.`
 ];
 
 export default (message: Message) => {
@@ -42,8 +55,12 @@ export default (message: Message) => {
         const successMsg = {
             title: `_"${helper.getRandomPhrase(phrases)}"_`,
             fields: [
+                {   
+                    title: `Title`,
+                    value: `${tallyId}`
+                },
                 {
-                    title: `${tallyId}`,
+                    title: `Description`,
                     value: `${description}\n\ncreated by **${message.member.user.tag}**`
                 }
             ]

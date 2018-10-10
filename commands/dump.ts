@@ -40,14 +40,13 @@ export default (message: Message) => {
         })
         .then((record) => {
             const msg = {
-                title: helper.getRandomPhrase(phrases),
                 description: `**${record.name}** is now at count ${record.count - 1}`
             };
             message.channel.send(helper.buildRichMsg(msg));
         })
         .catch((err) => {
             const failMsg = {
-                title: `I couldn't dump that tally because ${err}`
+                description: `I couldn't dump that tally because ${err}`
             }
             message.channel.send(helper.buildRichMsg(failMsg));
         });

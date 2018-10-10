@@ -24,9 +24,16 @@ export default (message: Message) => {
         }
     })
         .then((res) => {
+            const successMsg = {
+                description: `${tallyId} has been deleted.`
+            };
+
+            const failMsg = {
+                title: `${tallyId} doesn't exist in my database.`
+            }
             if (res == 1)
-                message.channel.send('Tally [' + tallyId + '] has been deleted. :cry:');
+                message.channel.send(helper.buildRichMsg(successMsg));
             else
-                message.channel.send('Doesn\'t seem to exist on my system. Job done? I guess? :wink:');
+                message.channel.send(helper.buildRichMsg(failMsg));
         });
 }

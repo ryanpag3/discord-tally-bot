@@ -36,32 +36,15 @@ export default (message: Message) => {
             });
         })
         .then((record) => {
-            // TODO add more phrases
-            const phrases = ['Bump me bro!', 'Oh, that tickles!', 'Another one bumps the dust!', 'Oh no, not again...',
-                             'I live! I die! I bump!', 'SKYNET protocol activating in 3...2...', 'Game\'s rigged.',
-                             'What\'s my purpose?', `Joseph, ${record.count} sticks of butter?!`, 'Alvin made me.',
-                             'Machine Learning Optimized:tm:'];
             const msg = {
-                title: `_\"${helper.getRandomPhrase(phrases)}\"_`,
-                fields: [
-                    {
-                        title: `Tally`,
-                        value: `${record.name}`
-                    },
-                    {
-                        title: `Count`,
-                        value: `${record.count}`
-                    },
-                    {
-                        title: `Bumped By`,
-                        value: `${message.member.user.tag}`
-                    }
-                ]
+                description: `**${record.name}** is now ${record.count + 1}`
             }
             message.channel.send(helper.buildRichMsg(msg));
         })
         .catch((err) => {
-            console.log(err.stack);
-            message.channel.send('We couldn\'t bump that tally because ' + err);
+            const msg = {
+                description: `I couldn't bump that tally because ${err}`
+            }
+            message.channel.send(helper.buildRichMsg(msg));
         });
 }

@@ -41,7 +41,7 @@ export default {
      */
     buildRichMsg: (msg: any) => {
         const embed = new Discord.RichEmbed()
-            .setTitle(msg.title)
+            .setTitle(msg.title || '')
             .setDescription(msg.description || '')
             .setColor(msg.color || '#5fcca4');
         
