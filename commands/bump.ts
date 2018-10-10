@@ -37,7 +37,7 @@ export default (message: Message) => {
         })
         .then((record) => {
             const msg = {
-                description: `**${record.name}** is now ${record.count + 1}`
+                description: `**${record.name}** is now ${record.count}`
             }
             message.channel.send(helper.buildRichMsg(msg));
         })
