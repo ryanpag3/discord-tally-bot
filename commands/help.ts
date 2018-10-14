@@ -27,7 +27,9 @@ export default (message: Message) => {
                         \`!tb delete <name>\` - delete/rm tally
                         \`!tb rm <name>\`
                         \`!tb bump <name>\` - increase tally by one point
+                        \`!tb bump <name> <amount>\` - increase tally by specified amount
                         \`!tb dump <name>\` - decrease tally by one point
+                        \`!tb dump <name> <amount>\` - decrease a tally by a specified amount
                         \`!tb set <name> <value>\` - set tally to amount
                         \`!tb empty <name>\` - set tally to 0
                        `
