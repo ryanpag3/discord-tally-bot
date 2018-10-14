@@ -7,8 +7,6 @@ import helper from '../util/cmd-helper';
 const Tally = DB.tally;
 
 export default (message: Message) => {
-    let content = helper.removePrefixCommand(message.content, 2);
-    let cArr = content.split(' ');
     const msg = message.content.split(' ');
     msg.shift(); // rm prefix
     msg.shift(); // rm command
