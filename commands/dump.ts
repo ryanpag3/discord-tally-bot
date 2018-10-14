@@ -7,11 +7,15 @@ import helper from '../util/cmd-helper';
 const Tally = DB.tally;
 
 export default (message: Message) => {
-    let content = helper.removePrefixCommand(message.content, 2);
-    let cArr = content.split(' ');
-    let tallyId = cArr.shift();
+    let msg = message.content.split(' ');
+    msg.shift(); // prefix
+    msg.shift(); //command;
+    let tallyName = msg.shift();
 
-    console.log('Dumping tally [' + tallyId + ']');
+    const dumpAmt = Number.parseInt(msg.shift());
+
+
+    console.log('Dumping tally [' + tallyName + ']');
 
     const phrases = [
         `Oh snap! You just took a big :poop:`,
@@ -19,7 +23,7 @@ export default (message: Message) => {
         `Turn that bump upside down! :upside_down:`
     ]
     
-    Tally.findOne({ where: {name: tallyId, channelId: message.channel.id}})
+    Tally.findOne({ where: {name: tallyName, channelId: message.channel.id}})
         .then((record: any) => {
             if (!record) {
                 throw 'I couldn\'t find it in my system. Hmm... :thinking:';
@@ -27,8 +31,9 @@ export default (message: Message) => {
             return record;
         })
         .then((record: any) => {
+            const amt = dumpAmt ? dumpAmt : 1;
             return Tally.update({
-                    count: record.count - 1
+                    count: record.count - amt
                 }, {
                     returning: true,
                     where: {
@@ -36,11 +41,14 @@ export default (message: Message) => {
                         channelId: message.channel.id
                     }
                 })
-                .then(() => record);
+                .then(() => {
+                    record.count -= amt;
+                    return record;
+                });
         })
         .then((record) => {
             const msg = {
-                description: `**${record.name}** is now at count ${record.count - 1}`
+                description: `**${record.name}** is now at count ${record.count}`
             };
             message.channel.send(helper.buildRichMsg(msg));
         })

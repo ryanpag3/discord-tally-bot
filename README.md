@@ -32,6 +32,8 @@ Cases where `[]` is shown should be replaced in its entirety with the value it r
 
 `!tb bump [name]` - Bump a tally's counter.
 
+`!tb bump [name] [id]` - Bump a tally a certain amount.
+
 `!tb dump [name]` - ~~Decrease~~ Dump your tally one point!
 
 ### Admin
@@ -49,7 +51,7 @@ Cases where `[]` is shown should be replaced in its entirety with the value it r
 3. Retrieve your bot's application token and insert it in the token property
 4. Set your database properties, Tally Bot uses a mysql database
 5. Start bot with `npm start`
-6. If you would like to watch for changes, you can also run `npm start-w` (_note_: requires `nodemon`)
+6. If you would like to watch for changes, you can also run `npm run start-w` (_note_: requires `nodemon`)
 
 ## Commands
 Command files are located in `./commands`. If you would like to add one you will need to follow these steps:

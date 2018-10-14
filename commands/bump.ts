@@ -9,11 +9,15 @@ const Tally = DB.tally;
 export default (message: Message) => {
     let content = helper.removePrefixCommand(message.content, 2);
     let cArr = content.split(' ');
-    let tallyId = cArr.shift();
+    const msg = message.content.split(' ');
+    msg.shift(); // rm prefix
+    msg.shift(); // rm command
+    let tallyName = msg.shift();
+    let bumpAmt: number = Number.parseInt(msg.shift());
 
-    console.log('Bumping [' + tallyId + ']');
+    console.log('Bumping [' + tallyName + ']');
 
-    Tally.findOne({where: {name: tallyId, channelId: message.channel.id}})
+    Tally.findOne({where: {name: tallyName, channelId: message.channel.id}})
         .then((record: any) => {
             if (!record) {
                 throw 'I couldn\'t find it. Check your spelling? :thinking:';
@@ -21,8 +25,9 @@ export default (message: Message) => {
             return record;
         })
         .then((record: any) => {
+            const amt: number = bumpAmt ? bumpAmt : 1;
             return Tally.update({
-                count: record.count + 1
+                count: record.count + amt
             }, {
                 returning: true,
                 where: {
@@ -31,7 +36,7 @@ export default (message: Message) => {
                 }
             })
             .then(() => {
-                record.count += 1;
+                record.count += amt;
                 return record;
             });
         })
