@@ -33,8 +33,8 @@ bot.on('message', (message: Message) => {
     const isBot = message.author.bot;
     if (isBot) return;
 
-    const startsWithPrefix = message.content.indexOf(prefix)
-    if (startsWithPrefix) return;
+    const noPrefix = message.content.indexOf(prefix) == -1;
+    if (noPrefix) return;
 
     const command = getCommand(message);
     emitter.emit(command, message);
