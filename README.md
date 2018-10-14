@@ -32,9 +32,11 @@ Cases where `[]` is shown should be replaced in its entirety with the value it r
 
 `!tb bump [name]` - Bump a tally's counter.
 
-`!tb bump [name] [id]` - Bump a tally a certain amount.
+`!tb bump [name] [amount]` - Bump a tally a certain amount.
 
 `!tb dump [name]` - ~~Decrease~~ Dump your tally one point!
+
+`!tb dump [name] [amount]` - Dump a tally a certain amount.
 
 ### Admin
 
