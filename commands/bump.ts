@@ -13,7 +13,7 @@ export default (message: Message) => {
     let tallyName = msg.shift();
     let bumpAmt: number = Number.parseInt(msg.shift());
 
-    console.log('Bumping [' + tallyName + ']');
+    console.log(`Bumping [${tallyName}] by ${bumpAmt || 1}`);
 
     Tally.findOne({where: {name: tallyName, channelId: message.channel.id}})
         .then((record: any) => {
@@ -34,13 +34,18 @@ export default (message: Message) => {
                 }
             })
             .then(() => {
+                record.previous = record.count;
                 record.count += amt;
                 return record;
             });
         })
         .then((record) => {
+            const description = record.description && record.description != '' ? record.description : undefined;
             const msg = {
-                description: `**${record.name}** is now ${record.count}`
+                description: `
+                **${record.name}**: ${record.previous} -> ${record.count}
+                ${description ? '> _' + description + '_' : ''}
+                `
             }
             message.channel.send(helper.buildRichMsg(msg));
         })
