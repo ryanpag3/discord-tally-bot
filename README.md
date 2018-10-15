@@ -61,4 +61,16 @@ Command files are located in `./commands`. If you would like to add one you will
 2. import script in `bot.ts` in the appropriate section, adding a short comment on what it does
 3. initialize script by adding an event listener using the `emitter.on(prefix + command)` pattern
 
+## Example config-private.json
+```
+{
+    "token": "TOKEN_HERE",
+    "database": {
+        "url": "localhost",
+        "user": "root",
+        "password": ""
+    }
+}
+```
+
 
