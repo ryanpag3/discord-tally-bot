@@ -45,7 +45,7 @@ export default (message: Message) => {
             const msg = {
                 description: `
                 **${record.name}**: ${record.previous} -> ${record.count}
-                ${description ? '> _' + description + '_' : ''}
+                ${description ? '• _' + description + '_' : ''}
                 `            
             };
             message.channel.send(helper.buildRichMsg(msg));
