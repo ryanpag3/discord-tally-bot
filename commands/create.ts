@@ -1,5 +1,6 @@
 import { Message } from "discord.js";
 import moment from 'moment';
+import {} from '../config.json';
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
 
@@ -73,5 +74,14 @@ export default (message: Message) => {
             message.channel.send(helper.buildRichMsg(successMsg));
         else
             message.channel.send(helper.buildRichMsg(failMsg));
+    })
+    .catch((err) => {
+        console.log('Failed to create tally. Reason: ' + err);
+        if (err.toString().indexOf('description') != -1) {
+            const lengthMsg = {
+                description: `Please try again with a shorter description. Max length is 255 characters including spaces.`
+            };
+            message.channel.send(helper.buildRichMsg(lengthMsg));
+        }
     })
 }

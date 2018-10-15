@@ -5,6 +5,6 @@
         "dialect": "mysql"
     },
     "status" : {
-        "interval" : 10000
+        "interval" : 12500
     }
 }
