@@ -29,7 +29,7 @@ export default (message: Message) => {
             records.map((record) => {
                 const description = record.description && record.description != '' ? record.description : undefined;
 
-                tallies += `[${record.count}] **${record.name}**• ${description ? '_' + truncate(description, 65) + '_' : 'no description.'}
+                tallies += `[${record.count}] **${record.name}** • ${description ? '_' + truncate(description, 50) + '_' : 'no description.'}
                 `;
             });
             tallies += `\nIf you would like details on a tally, type \`!tb get <name>\``;
