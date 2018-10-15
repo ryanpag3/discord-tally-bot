@@ -27,7 +27,10 @@ export default (message: Message) => {
             });
             let tallies = '';
             records.map((record) => {
-                tallies += `[${record.count}] **${record.name}**\n`;
+                const description = record.description && record.description != '' ? record.description : undefined;
+
+                tallies += `[${record.count}] **${record.name}**• ${description ? '_' + truncate(description, 65) + '_' : 'no description.'}
+                `;
             });
             tallies += `\nIf you would like details on a tally, type \`!tb get <name>\``;
             const msg = {
@@ -39,3 +42,10 @@ export default (message: Message) => {
             message.channel.send(helper.buildRichMsg(msg));
         });
 }
+
+function truncate(string, len){
+    if (string.length > len)
+       return string.substring(0,len)+'...';
+    else
+       return string;
+ };
