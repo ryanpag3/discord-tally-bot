@@ -121,6 +121,10 @@ const startBroadcasting = () => {
         },
         () => {
             bot.user.setActivity(`Always open source @ git.io/fx0Rg`);
+        },
+        async () => {
+            const tallyCnt = await db.getTallyCount();
+            bot.user.setActivity(`${tallyCnt} total tallies managed.`);
         }
     ];
 
@@ -129,7 +133,7 @@ const startBroadcasting = () => {
         if (i == statusGenerators.length) i = 0;
         statusGenerators[i]();
         i++;
-    }, status.interval)    
+    }, process.env.NODE_ENV == 'production' ? status.interval : status.interval_dev);    
 }
 
 startBroadcasting();

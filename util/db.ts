@@ -33,5 +33,10 @@ export default {
                 this.tally.sync();
             });
         });
+    },
+
+    async getTallyCount() {
+        return this.tally.findAll({ where: {}})
+            .then((tallies) => tallies.length);
     }
 }
