@@ -1,6 +1,6 @@
 import Discord, { Message } from 'discord.js';
 import { EventEmitter } from 'events';
-import { prefix } from './config.json';
+import { prefix, status } from './config.json';
 import { token } from './config-private.json';
 import db from './util/db';
 
@@ -16,13 +16,6 @@ function getCommand(message: Message) {
 
 bot.on('ready', () => {
     console.log(`Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);
-    setInterval(() => {
-        let userCount = 0;
-        bot.guilds.map((guild) => {
-            userCount += guild.members.size
-        });
-        bot.user.setActivity(`Counting things for ${bot.guilds.size} servers and ${userCount} users.`);
-    }, 5000);
 });
 
 bot.on('message', (message: Message) => {
@@ -109,3 +102,34 @@ if (process.env.NODE_ENV != 'production') {
  * INIT
  */
 bot.login(token);
+
+/**
+ * start status broadcasting
+ */
+const startBroadcasting = () => {
+    /**
+     *  
+     */
+    const statusGenerators = [
+        () => {
+            let users = 0;
+            bot.guilds.map(guild => users += guild.members.size);
+            bot.user.setActivity(`Counting things for ${bot.guilds.size} servers and ${users} users.`);
+        },
+        () => {
+            bot.user.setActivity(`!tb help for commands.`)
+        },
+        () => {
+            bot.user.setActivity(`Always open source @ git.io/fx0Rg`);
+        }
+    ];
+
+    let i = 0;
+    setInterval(() => {
+        if (i == statusGenerators.length) i = 0;
+        statusGenerators[i]();
+        i++;
+    }, status.interval)    
+}
+
+startBroadcasting();

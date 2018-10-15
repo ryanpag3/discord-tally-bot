@@ -7,21 +7,14 @@ import helper from '../util/cmd-helper';
 const Tally = DB.tally;
 
 export default (message: Message) => {
-    let msg = message.content.split(' ');
+    const msg = message.content.split(' ');
     msg.shift(); // prefix
-    msg.shift(); //command;
-    let tallyName = msg.shift();
+    msg.shift(); //command
+    const tallyName = msg.shift();
 
     const dumpAmt = Number.parseInt(msg.shift());
 
-
-    console.log('Dumping tally [' + tallyName + ']');
-
-    const phrases = [
-        `Oh snap! You just took a big :poop:`,
-        `What happened?!`,
-        `Turn that bump upside down! :upside_down:`
-    ]
+    console.log(`Dumping [${tallyName}] by ${dumpAmt || 1}`);
     
     Tally.findOne({ where: {name: tallyName, channelId: message.channel.id}})
         .then((record: any) => {
@@ -42,13 +35,18 @@ export default (message: Message) => {
                     }
                 })
                 .then(() => {
+                    record.previous = record.count;
                     record.count -= amt;
                     return record;
                 });
         })
         .then((record) => {
+            const description = record.description && record.description != '' ? record.description : undefined;
             const msg = {
-                description: `**${record.name}** is now at count ${record.count}`
+                description: `
+                **${record.name}**: ${record.previous} -> ${record.count}
+                ${description ? '> _' + description + '_' : ''}
+                `            
             };
             message.channel.send(helper.buildRichMsg(msg));
         })

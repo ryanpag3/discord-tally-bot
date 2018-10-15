@@ -3,5 +3,8 @@
     "database": {
         "name": "tally_bot_db",
         "dialect": "mysql"
+    },
+    "status" : {
+        "interval" : 10000
     }
 }
