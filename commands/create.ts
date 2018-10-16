@@ -68,8 +68,12 @@ export default (message: Message) => {
         };
 
         const failMsg = {
-            title: `**${tallyId}** already exists for this channel. :thinking:`
+            description: `**${tallyId}** already exists for this channel. :thinking:
+            create attempted by **${message.author.tag}**`
         }
+
+        helper.finalize(message);
+        
         if (res == true)
             message.channel.send(helper.buildRichMsg(successMsg));
         else
@@ -79,8 +83,9 @@ export default (message: Message) => {
         console.log('Failed to create tally. Reason: ' + err);
         if (err.toString().indexOf('description') != -1) {
             const lengthMsg = {
-                description: `Please try again with a shorter description. Max length is 255 characters including spaces.`
+                description: `**${message.author.tag}**, lease try again with a shorter description. Max length is 255 characters including spaces.`
             };
+            helper.finalize(message);
             message.channel.send(helper.buildRichMsg(lengthMsg));
         }
     })

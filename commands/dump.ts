@@ -46,14 +46,22 @@ export default (message: Message) => {
                 description: `
                 **${record.name}**: ${record.previous} -> ${record.count}
                 ${description ? '• _' + description + '_' : ''}
+                dumped by **${message.author.tag}**
                 `            
             };
+
+            helper.finalize(message);
+
             message.channel.send(helper.buildRichMsg(msg));
         })
         .catch((err) => {
             const failMsg = {
-                description: `I couldn't dump that tally because ${err}`
+                description: `I couldn't dump that tally because ${err}
+                dump attempted by ${message.author.tag}**`
             }
+
+            helper.finalize(message);
+
             message.channel.send(helper.buildRichMsg(failMsg));
         });
 }

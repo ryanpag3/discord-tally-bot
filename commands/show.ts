@@ -32,13 +32,19 @@ export default (message: Message) => {
                 tallies += `[${record.count}] **${record.name}** • ${description ? '_' + truncate(description, 50) + '_' : 'no description.'}
                 `;
             });
-            tallies += `\nIf you would like details on a tally, type \`!tb get <name>\``;
+            tallies += `\nIf you would like details on a tally, type \`!tb get <name>\`
+            
+            shown for **${message.author.tag}**
+            `;
             const msg = {
                 title: records.length == 0 ? 'No tallies could be found!' : 'Here are the existing tallies.\n',
                 description: tallies,
                 color: '#42f4e2'
             }
 !
+
+            helper.finalize(message);
+
             message.channel.send(helper.buildRichMsg(msg));
         });
 }

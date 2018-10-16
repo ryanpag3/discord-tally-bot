@@ -36,9 +36,16 @@ export default (message: Message) => {
                     {
                         title: `Count`,
                         value: `${record.count}`
+                    }, 
+                    {
+                        title: `Requested by`,
+                        value: message.author.tag
                     }
                 ]
             }
+
+            helper.finalize(message);
+
             message.channel.send(helper.buildRichMsg(msg));
         });
 }

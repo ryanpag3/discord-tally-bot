@@ -45,14 +45,18 @@ export default (message: Message) => {
                 description: `
                 **${record.name}**: ${record.previous} -> ${record.count}
                 ${description ? '• _' + description + '_' : ''}
+                bumped by **${message.author.tag}**
                 `
             }
+            helper.finalize(message);
             message.channel.send(helper.buildRichMsg(msg));
         })
         .catch((err) => {
             const msg = {
-                description: `I couldn't bump that tally because ${err}`
+                description: `I couldn't bump that tally because ${err}
+                bump attempted by **${message.author.tag}**`
             }
+            helper.finalize(message);
             message.channel.send(helper.buildRichMsg(msg));
         });
 }

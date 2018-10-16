@@ -49,9 +49,15 @@ export default async (message: Message) => {
             {
                 title: `Updated Description`,
                 value: tally.description
+            },
+            {
+                title: `Updated by`,
+                value: message.author.tag
             }
         ]
     }
     
+    helper.finalize(message);
+
     message.channel.send(helper.buildRichMsg(msgObj));
 }

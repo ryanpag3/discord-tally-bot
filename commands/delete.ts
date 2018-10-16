@@ -25,12 +25,17 @@ export default (message: Message) => {
     })
         .then((res) => {
             const successMsg = {
-                description: `${tallyId} has been deleted.`
+                description: `**${tallyId}** has been deleted.
+                deleted by **${message.author.tag}**`
             };
 
             const failMsg = {
-                title: `${tallyId} doesn't exist in my database.`
+                description: `**${tallyId}** doesn't exist in my database.
+                delete attempted by **${message.author.tag}**`
             }
+
+            helper.finalize(message);
+
             if (res == 1)
                 message.channel.send(helper.buildRichMsg(successMsg));
             else

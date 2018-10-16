@@ -21,14 +21,7 @@ export default (message: Message) => {
 
     Tally.findOne({ where: {name: tallyId, channelId: message.channel.id}})
         .then((record: any) => {
-            if (!record) {
-                message.channel.send('Could not find Tally with ID: ' + tallyId);
-                return;
-            }
-            return record;
-        })
-        .then((record: any) => {
-            if (!record) throw 'I couldnt find it in my system! I didnt lose it. It doesnt exist!';
+            if (!record) throw `${'**'+tallyId+'**' || 'an empty string'} doesn't exist.`;
 
             return Tally.update({
                 count: amount
@@ -45,10 +38,27 @@ export default (message: Message) => {
             });
         })
         .then((record) => {
-            // TODO add more phrases
-            message.channel.send('Whoop Whoopy Whoop! **' + record.name +  '** is now at count: ' + amount);
+            const msg = {
+                description : `
+                **${record.name}** is now ${amount}
+                set by **${message.author.tag}**
+                `
+            }
+
+            helper.finalize(message);
+
+            message.channel.send(helper.buildRichMsg(msg));
         })
         .catch((err) => {
-            message.channel.send('I couldn\'t bump that tally because ' + err);
+            const msg = {
+                description: `
+                I couldn't set that tally because ${err}
+                set attempted by **${message.author.tag}**
+                `
+            }
+
+            helper.finalize(message);
+
+            message.channel.send(helper.buildRichMsg(msg));
         });
 }

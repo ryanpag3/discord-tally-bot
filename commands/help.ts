@@ -32,10 +32,14 @@ export default (message: Message) => {
                         \`!tb dump <name> <amount>\` - decrease a tally by a specified amount
                         \`!tb set <name> <value>\` - set tally to amount
                         \`!tb empty <name>\` - set tally to 0
+
+                        help called by **${message.author.tag}**
                        `
             }
         ]
     }
+
+    helper.finalize(message);
 
     message.channel.send(helper.buildRichMsg(msg));
 }

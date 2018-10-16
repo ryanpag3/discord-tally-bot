@@ -19,8 +19,7 @@ export default (message: Message) => {
     Tally.findOne({ where: {name: tallyId, channelId: message.channel.id}})
         .then((record: any) => {
             if (!record) {
-                message.channel.send('Could not find Tally with ID: ' + tallyId);
-                return;
+                throw 'I could ould not find Tally with name: ' + tallyId;
             }
             return record;
         })
@@ -36,6 +35,27 @@ export default (message: Message) => {
                 .then(() => record);
         })
         .then((record) => {
-            message.channel.send('You just emptied **' + record.name + '** and set it to 0. Sure hope that wasn\'t on accident! :thinking:');
+            const msg = {
+                description : `
+                **${tallyId}** has been emptied by **${message.author.tag}**.
+                `
+            }
+            
+            helper.finalize(message);
+
+            message.channel.send(helper.buildRichMsg(msg));
+        })
+        .catch((err) => {
+            const msg = {
+                description: `
+                I couldn't empty **${tallyId}** because ${err}.
+
+                empty attempted by **${message.author.tag}**
+                `
+            }
+
+            helper.finalize(message);
+
+            message.channel.send(helper.buildRichMsg(msg));
         });
 }

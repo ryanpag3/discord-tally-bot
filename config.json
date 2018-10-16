@@ -6,6 +6,6 @@
     },
     "status" : {
         "interval" : 10000,
-        "interval_dev" : 1000
+        "interval_dev" : 5000
     }
 }

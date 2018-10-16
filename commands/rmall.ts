@@ -21,6 +21,9 @@ export default (message: Message) => {
             const failMsg = {
                 title: `No tallies currently exist to delete.`
             }
+
+            helper.finalize(message);
+
             if (res != 0)
                 message.channel.send(helper.buildRichMsg(successMsg));
             else

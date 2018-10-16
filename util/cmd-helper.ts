@@ -65,5 +65,24 @@ export default {
     getRandomPhrase: (phrases: Array<string>) => {
         const rand = Math.floor(Math.random() * phrases.length);
         return phrases[rand];
+    },
+
+    /**
+     * run any finalization logic for the particular message
+     */
+    finalize: async (msg: any) => {
+        deleteCommandMsg(msg);
+    }
+}
+
+/**
+ * private functions
+ */
+const deleteCommandMsg = async (msg: any) => {
+    try {
+        await msg.delete()
+    } catch (e) {
+        if (JSON.stringify(e).indexOf('Missing Permissions') == -1)
+            console.log(e);
     }
 }
