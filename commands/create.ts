@@ -3,6 +3,7 @@ import moment from 'moment';
 import {} from '../config.json';
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
+import help from "./help.js";
 
 const Tally = DB.tally;
 
@@ -46,7 +47,7 @@ export default (message: Message) => {
     }
 
     console.log('Adding tally [' + tallyId + ']');
-    Tally.insertOrUpdate({
+    Tally.create({
         name: tallyId,
         channelId: message.channel.id,
         description: tallyDescription,
@@ -81,12 +82,21 @@ export default (message: Message) => {
     })
     .catch((err) => {
         console.log('Failed to create tally. Reason: ' + err);
+        
+        helper.finalize(message);
+
         if (err.toString().indexOf('description') != -1) {
             const lengthMsg = {
                 description: `**${message.author.tag}**, lease try again with a shorter description. Max length is 255 characters including spaces.`
             };
-            helper.finalize(message);
             message.channel.send(helper.buildRichMsg(lengthMsg));
         }
+        const msg = {
+            description: `
+            **${tallyId}** already exists.
+            attempted by **${message.author.tag}**
+            `
+        }
+        message.channel.send(helper.buildRichMsg(msg));
     })
 }
