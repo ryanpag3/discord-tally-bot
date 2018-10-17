@@ -56,7 +56,7 @@ export default (message: Message) => {
         })
         .catch((err) => {
             const failMsg = {
-                description: `I couldn't dump that tally because ${err}
+                description: `I couldn't dump **${name}** because ${err}
                 dump attempted by ${message.author.tag}**`
             }
 

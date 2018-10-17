@@ -47,5 +47,16 @@ export default (message: Message) => {
             helper.finalize(message);
 
             message.channel.send(helper.buildRichMsg(msg));
+        })
+        .catch((err) => {
+            const msg = {
+                description: `
+                Could not find ${name}'s details.
+                attempted by **${message.author.tag}**.
+                `
+            }
+
+            helper.finalize(message);
+            message.channel.send(helper.buildRichMsg(msg));
         });
 }

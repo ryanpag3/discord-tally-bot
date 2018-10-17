@@ -4,6 +4,7 @@ import {
 } from "discord.js";
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
+import help from "./help";
 
 const Tally = DB.tally;
 
@@ -17,20 +18,35 @@ export default async (message: Message) => {
 
     console.log('Setting description of [' + name + ']');
 
-    await Tally.update({
-        description: description
-    }, {
-        returning: true,
+        await Tally.update({
+            description: description
+        }, {
+            returning: true,
+            where: {
+                name: name,
+                channelId: message.channel.id
+            }
+        });
+
+
+    const tally: any = await Tally.findOne({
         where: {
             name: name,
             channelId: message.channel.id
         }
     });
 
-    const tally: any = await Tally.findOne({ where: {
-        name: name,
-        channelId: message.channel.id
-    }});
+    if (!tally) {
+        const msg = {
+            description: `
+            Could not find **${name}** to update.
+            update attempted by **${message.author.tag}**
+            `
+        }
+        helper.finalize(message);
+        message.channel.send(helper.buildRichMsg(msg));
+        return;
+    }
 
     const phrases = [
         'Make up your mind already.',
@@ -56,7 +72,7 @@ export default async (message: Message) => {
             }
         ]
     }
-    
+
     helper.finalize(message);
 
     message.channel.send(helper.buildRichMsg(msgObj));

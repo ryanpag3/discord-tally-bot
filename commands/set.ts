@@ -52,7 +52,7 @@ export default (message: Message) => {
         .catch((err) => {
             const msg = {
                 description: `
-                I couldn't set that tally because ${err}
+                I couldn't set **${name}** because ${err}
                 set attempted by **${message.author.tag}**
                 `
             }
