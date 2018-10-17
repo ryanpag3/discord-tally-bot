@@ -52,7 +52,7 @@ export default (message: Message) => {
         channelId: message.channel.id,
         description: tallyDescription,
         count: 0
-    }).then((res) => {
+    }).then((res: any) => {
         const description = '\n' + (tallyDescription || 'No description.');
         const successMsg = {
             title: `_"${helper.getRandomPhrase(phrases)}"_`,
@@ -68,17 +68,9 @@ export default (message: Message) => {
             ]
         };
 
-        const failMsg = {
-            description: `**${tallyId}** already exists for this channel. :thinking:
-            create attempted by **${message.author.tag}**`
-        }
-
         helper.finalize(message);
         
-        if (res == true)
-            message.channel.send(helper.buildRichMsg(successMsg));
-        else
-            message.channel.send(helper.buildRichMsg(failMsg));
+        message.channel.send(helper.buildRichMsg(successMsg));
     })
     .catch((err) => {
         console.log('Failed to create tally. Reason: ' + err);
