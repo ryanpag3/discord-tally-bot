@@ -48,6 +48,9 @@ import set from './commands/set';
 import rmall from './commands/rmall';
 import details from './commands/details';
 import describe from './commands/describe';
+import timer from './commands/timer';
+import start from './commands/start';
+import stop from './commands/stop';
 
 /**
  * COMMANDS
@@ -91,6 +94,14 @@ emitter.on(prefix + 'get', details);
 emitter.on(prefix + 'describe', describe);
 emitter.on(prefix + 'update', describe);
 
+// create a timer
+emitter.on(prefix + 'timer', timer);
+
+// start a timer
+emitter.on(prefix + 'start', start);
+
+// stop a timer
+emitter.on(prefix + 'stop', stop);
 
 /**
  * The following commands are only exposed when bot is run without `production` flag

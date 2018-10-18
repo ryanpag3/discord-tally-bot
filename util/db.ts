@@ -3,9 +3,8 @@ import mysql from 'mysql';
 import * as counter from './counter';
 import pConfig from '../config-private.json';
 import config from '../config.json';
-
-// models
 import Tally from '../models/tally';
+import Timer from '../models/timer';
 
 const sequelize = new Sequelize({
     database: config.database.name,
@@ -28,6 +27,7 @@ const INTERNAL = 'INTERNAL';
 
 export default {
     Tally: sequelize.import('tally', Tally),
+    Timer: sequelize.import('timer', Timer),
     init() {
         conn.connect((err) => {
             if (err) throw err;
@@ -37,7 +37,7 @@ export default {
                     console.log('Database ' + config.database.name + ' has been created.');
                 
                 this.Tally.sync();
-                
+                this.Timer.sync();
                 counter.init();
             });
         });
@@ -121,4 +121,12 @@ export default {
             console.log('Error while getting bump count: ' + e);
         }
     },
+
+    async createTimer(name: string, description: string) {
+        try {
+            
+        } catch (e) {
+
+        }
+    }
 }
