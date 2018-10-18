@@ -119,9 +119,6 @@ const startBroadcasting = () => {
         () => {
             bot.user.setActivity(`!tb help for commands.`)
         },
-        () => {
-            bot.user.setActivity(`Always open source @ git.io/fx0Rg`);
-        },
         async () => {
             const tallyCnt = await db.getTallyCount();
             bot.user.setActivity(`${tallyCnt} total tallies managed.`);
