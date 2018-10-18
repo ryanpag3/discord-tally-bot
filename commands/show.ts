@@ -6,7 +6,7 @@ import { prefix } from '../config.json';
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
 
-const Tally = DB.tally;
+const Tally = DB.Tally;
 
 export default (message: Message) => {
     let content = helper.removePrefixCommand(message.content, 2);

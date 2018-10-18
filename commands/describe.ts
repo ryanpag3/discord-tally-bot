@@ -6,7 +6,7 @@ import DB from '../util/db';
 import helper from '../util/cmd-helper';
 import help from "./help";
 
-const Tally = DB.tally;
+const Tally = DB.Tally;
 
 export default async (message: Message) => {
     const msg = message.content.split(' ');

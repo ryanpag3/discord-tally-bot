@@ -15,7 +15,7 @@ function getCommand(message: Message) {
 }
 
 bot.on('ready', () => {
-    console.log(`Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);
+    console.log(`Tally Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);
 });
 
 bot.on('message', (message: Message) => {
@@ -125,6 +125,14 @@ const startBroadcasting = () => {
         async () => {
             const tallyCnt = await db.getTallyCount();
             bot.user.setActivity(`${tallyCnt} total tallies managed.`);
+        },
+        async () => {
+            const bumpCnt = await db.getBumpCount();
+            bot.user.setActivity(`${bumpCnt} total bumps.`);
+        },
+        async () => {
+            const dumpCnt = await db.getDumpCount();
+            bot.user.setActivity(`${dumpCnt} total dumps.`);
         }
     ];
 

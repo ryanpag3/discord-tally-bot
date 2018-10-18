@@ -4,7 +4,7 @@ import {
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
 
-const Tally = DB.tally;
+const Tally = DB.Tally;
 
 export default (message: Message) => {
     console.log('Deleting all tallies.');

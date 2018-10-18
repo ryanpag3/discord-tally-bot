@@ -3,8 +3,9 @@ import {
 } from "discord.js";
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
+import { increaseTotalBumpCount } from '../util/counter';
 
-const Tally = DB.tally;
+const Tally = DB.Tally;
 
 export default (message: Message) => {
     const msg = message.content.split(' ');
@@ -48,6 +49,9 @@ export default (message: Message) => {
                 bumped by **${message.author.tag}**
                 `
             }
+
+
+            increaseTotalBumpCount();
             helper.finalize(message);
             message.channel.send(helper.buildRichMsg(msg));
         })

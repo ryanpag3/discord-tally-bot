@@ -1,10 +1,11 @@
 import {
     Message
 } from "discord.js";
+import { increaseTotalDumpCount } from '../util/counter';
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
 
-const Tally = DB.tally;
+const Tally = DB.Tally;
 
 export default (message: Message) => {
     const msg = message.content.split(' ');
@@ -49,6 +50,8 @@ export default (message: Message) => {
                 dumped by **${message.author.tag}**
                 `            
             };
+
+            increaseTotalDumpCount();
 
             helper.finalize(message);
 
