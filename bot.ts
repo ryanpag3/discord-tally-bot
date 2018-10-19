@@ -51,6 +51,7 @@ import describe from './commands/describe';
 import timer from './commands/timer';
 import start from './commands/start';
 import stop from './commands/stop';
+import reset from './commands/reset';
 
 /**
  * COMMANDS
@@ -102,6 +103,9 @@ emitter.on(prefix + 'start', start);
 
 // stop a timer
 emitter.on(prefix + 'stop', stop);
+
+// reset a timer
+emitter.on(prefix + 'reset', reset);
 
 /**
  * The following commands are only exposed when bot is run without `production` flag

@@ -1,5 +1,7 @@
 // start a timer
-import { Message } from "discord.js";
+import {
+    Message
+} from "discord.js";
 import moment from 'moment';
 import db from '../util/db';
 import helper from '../util/cmd-helper';
@@ -13,17 +15,21 @@ export default async (message: Message) => {
     const Timer = db.Timer;
 
     try {
-        let timer: any = await Timer.find({where: {
-            name: timerName,
-            channelId: message.channel.id
-        }});
+        let timer: any = await Timer.find({
+            where: {
+                name: timerName,
+                channelId: message.channel.id
+            }
+        });
 
-        const now = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
-        console.log(now); 
-        timer.startTime = now;
-        timer.stopTime = null; // restarting counter
+        if (timer.startTime == null) { // already started
+            const now = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
+            timer.startTime = now;
+        }
+
+        timer.stopTime = null;
         await timer.save();
-        
+
         const msg = {
             description: `
             :clock: Timer **${timerName}** started.
