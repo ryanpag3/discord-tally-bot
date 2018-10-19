@@ -1,5 +1,11 @@
 # [TallyBot](https://discordbots.org/bot/494241511714586634)
-**Tally Bot** lets you keep track of stuff. Count points for teams, burps in chat, etc. You can also use Tally Bot to track time using timers. See how long it took Billy to make that taco rungit a. Tallies and timers are kept track of using a name which you specify when you create it, as well as an optional description. 
+**Tally Bot** lets you keep track of stuff. Count points for teams, burps in chat, etc. 
+
+Track the length of time using timers and see how long it took Billy to make that taco run. 
+
+Tallies and timers are kept track of using a name which you specify when you create it, as well as an optional description. 
+
+Have fun! Don't forget to provide feedback using GitHub issues.
 
 # Commands
 Cases where `[]` is shown should be replaced in its entirety with the value it represents. (i.e `!tb add my-tally` or `!tb rm my-tally`)
