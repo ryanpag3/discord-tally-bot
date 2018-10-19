@@ -22,6 +22,7 @@ export default async (message: Message) => {
 
     try {
         if (isDelete == true) {
+            if (!timerName) throw 'No timer name provided to delete!';
             await Timer.destroy({
                 where: {
                     name: timerName,
