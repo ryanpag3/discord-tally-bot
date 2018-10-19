@@ -82,7 +82,7 @@ const deleteCommandMsg = async (msg: any) => {
     try {
         await msg.delete()
     } catch (e) {
-        if (JSON.stringify(e).indexOf('Missing Permissions') == -1)
+        if (e.toString().indexOf('Missing Permissions') == -1)
             console.log(e);
     }
 }

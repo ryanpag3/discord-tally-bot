@@ -19,7 +19,7 @@ export default async (message: Message) => {
         }});
 
         const now = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
-        
+        console.log(now); 
         timer.startTime = now;
         timer.stopTime = null; // restarting counter
         await timer.save();

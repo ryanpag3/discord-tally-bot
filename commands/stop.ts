@@ -19,10 +19,13 @@ export default async (message: Message) => {
         }});
 
         const format = "YYYY-MM-DD HH:mm:ss";
-        const now = moment(new Date);
+        const now = moment();
+        console.log(now);
         const nowStr = now.format(format);
-        const start = moment(timer.startTime).format("YYYY-MM-DD HH:mm:ss");
-        
+        console.log(timer.startTime);
+        const start = moment(timer.startTime);
+        console.log(start);
+
         timer.stopTime = nowStr;
         await timer.save();
         const duration = moment(timer.stopTime - timer.startTime);
@@ -31,7 +34,7 @@ export default async (message: Message) => {
             description: `
             :clock: Timer **${timerName}** stopped.
 
-            Length was ${now.diff(start, 'minutes')}
+            Length was ${now.diff(start, 'seconds')}
 
             Stop with \`!tb stop <name>\`
 
