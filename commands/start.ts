@@ -22,12 +22,15 @@ export default async (message: Message) => {
             }
         });
 
-        if (timer.startTime == null) { // already started
+        if (timer == null)
+            throw `Could not find timer **${timerName}** to start.`
+
+        if (timer.startDate == null) { // already started
             const now = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
-            timer.startTime = now;
+            timer.startDate = now;
         }
 
-        timer.stopTime = null;
+        timer.stopDate = null;
         await timer.save();
 
         const msg = {
@@ -36,12 +39,20 @@ export default async (message: Message) => {
 
             Stop with \`!tb stop <name>\`
 
-            blame **${message.author.tag}**
+            Blame **${message.author.tag}**
             `
         }
         helper.finalize(message);
         message.channel.send(helper.buildRichMsg(msg));
     } catch (e) {
-        console.log(e);
+        const msg = {
+            description: `
+            ${e}
+            
+            Blame **${message.author.tag}**
+            `
+        }
+        helper.finalize(message);
+        message.channel.send(helper.buildRichMsg(msg));
     }
 }

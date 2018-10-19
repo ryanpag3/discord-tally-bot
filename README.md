@@ -4,6 +4,7 @@
 # Commands
 Cases where `[]` is shown should be replaced in its entirety with the value it represents. (i.e `!tb add my-tally` or `!tb rm my-tally`)
 
+## Tallies
 ### Basic
 
 `!tb` - This is the prefix. All commands should lead with this followed by a space. For example: `!tb show`
@@ -45,6 +46,21 @@ Cases where `[]` is shown should be replaced in its entirety with the value it r
 `!tb set [name] [amount]` - set a tally to a specified amount
 
 **note:** I have on my wishlist to write a permissions feature. These most likely will be admin-only once that is complete.
+
+## Timers
+### General
+`!tb timers` - List all timers created in this channel.
+
+### Manage
+`!tb timer [name] [description]` - Create a timer with a required name and optional description.
+
+`!tb start [name]` - Start the timer.
+
+`!tb stop [name]` - Stop the timer.
+
+`!tb reset [name]` - Reset the timer to zero.
+
+
 
 # Getting Started
 ## Starting

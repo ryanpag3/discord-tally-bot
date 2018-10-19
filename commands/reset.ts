@@ -18,14 +18,17 @@ export default async (message: Message) => {
             channelId: message.channel.id
         }});
 
-        const now = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
-        timer.startTime = null;
-        timer.stopTime = null;
+        if (!timer)
+            throw `Could not find **${timerName}** to reset.`;
+
+        timer.startDate = null;
+        timer.stopDate = null;
+        timer.totTime = null;
         await timer.save();
         
         const msg = {
             description: `
-            :clock: Timer **${timerName}** has been reset.
+            :clock: Timer **${timerName}** has been reset to 00h 00m 00s.
 
             Start with \`!tb start <name>\`
 
@@ -35,6 +38,14 @@ export default async (message: Message) => {
         helper.finalize(message);
         message.channel.send(helper.buildRichMsg(msg));
     } catch (e) {
-        console.log(e);
+        const msg = {
+            description: `
+            ${e}
+            
+            Blame **${message.author.tag}**
+            `
+        }
+        helper.finalize(message);
+        message.channel.send(helper.buildRichMsg(msg));    
     }
 }

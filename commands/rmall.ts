@@ -5,6 +5,7 @@ import DB from '../util/db';
 import helper from '../util/cmd-helper';
 
 const Tally = DB.Tally;
+const Timer = DB.Timer;
 
 export default (message: Message) => {
     console.log('Deleting all tallies.');
@@ -12,14 +13,20 @@ export default (message: Message) => {
         where: {
             channelId: message.channel.id
         }
+    }).then(async () => {
+        return await Timer.destroy({
+            where: {
+                channelId: message.channel.id
+            }
+        })
     })
         .then((res) => {
             const successMsg = {
-                title: `All tallies have been deleted.`
+                title: `All tallies and timers have been deleted.`
             };
 
             const failMsg = {
-                title: `No tallies currently exist to delete.`
+                title: `No tallies or timers currently exist to delete.`
             }
 
             helper.finalize(message);

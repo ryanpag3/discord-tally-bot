@@ -36,8 +36,8 @@ export default {
                 if (result.warningCount != 1)
                     console.log('Database ' + config.database.name + ' has been created.');
                 
-                this.Tally.sync();
-                this.Timer.sync();
+                this.Tally.sync({alter: true});
+                this.Timer.sync({alter: true});
                 counter.init();
             });
         });

@@ -8,8 +8,9 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
         name: DataTypes.STRING,
         channelId: DataTypes.STRING,
         description: DataTypes.STRING,
-        startTime: DataTypes.DATE,
-        endTime: DataTypes.DATE
+        startDate: DataTypes.DATE,
+        endDate: DataTypes.DATE,
+        totTime: DataTypes.TIME
     }, {
         timestamps: false,
         indexes: [{
