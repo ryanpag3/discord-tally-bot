@@ -99,8 +99,10 @@ Command files are located in `./commands`. If you would like to add one you will
 
 # Frequent issues
 ## ER_NOT_SUPPORTED_AUTH_MODE
-This occurs when using MySQL 8. To fix, run the following command in your database.
+This occurs when using MySQL 8 with a user using no password. To fix, run the following command in your database.
 
-`ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password'`
+`ALTER USER 'YOUR_USER'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password'`
+
+Then set your password to empty string.
 
 
