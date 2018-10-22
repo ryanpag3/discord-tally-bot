@@ -6,7 +6,9 @@ export default (message: Message) => {
 
     const msg = {
         title: `_Tally Bot Command Reference_`,
-        description: `For full documentation, please refer to https://github.com/ryanpage42/discord-tally-bot`,
+        description: `For full documentation, please refer to https://github.com/ryanpage42/discord-tally-bot
+        
+        help called by **${message.author.tag}**`,
         color: `#42f486`,
         fields: [
             {
@@ -33,7 +35,15 @@ export default (message: Message) => {
                         \`!tb set <name> <value>\` - set tally to amount
                         \`!tb empty <name>\` - set tally to 0
 
-                        help called by **${message.author.tag}**
+                       `
+            },
+            {
+                title: `Timers`,
+                value: `\`!tb timer [name] description\` - create a timer
+                        \`!tb timer rm [name]\` - delete a timer
+                        \`!tb start [name]\` - start a timer
+                        \`!tb stop [name]\` - stop a timer
+                        \`!tb reset [name]\` - reset a timer
                        `
             }
         ]
