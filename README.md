@@ -60,6 +60,8 @@ Cases where `[]` is shown should be replaced in its entirety with the value it r
 ### Manage
 `!tb timer [name] [description]` - Create a timer with a required name and optional description.
 
+`!tb timer rm [name]` - Remove a timer
+
 `!tb start [name]` - Start the timer.
 
 `!tb stop [name]` - Stop the timer.
