@@ -24,7 +24,7 @@ export default async (message: Message) => {
         const processedTimers = timers.map((timer: any) => {
             let processed = {
                 name: timer.name,
-                description: timer.description,
+                description: (timer.description == '' || !timer.description ? 'No description.' : timer.description),
                 totalTime: timer.totTime || ''
             };
             if (timer.startDate != null) {
