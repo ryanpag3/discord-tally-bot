@@ -18,7 +18,7 @@ const phrases = [
     `This one's gunna be good. I can feel it.`,
     `Here's Johnny!`,
     `Hi mom!`,
-    `Ashkan, no!`,
+    `Ash, what?!`,
     `Have you tried my fresh yung kokonut?`,
     `Petabytes and petabytes of 1..2...3...4...`,
     `>.<`,
