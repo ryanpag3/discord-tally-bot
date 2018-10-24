@@ -35,7 +35,7 @@ export default async (message: Message) => {
 
         const msg = {
             description: `
-            :clock: Timer **${timerName}** started.
+            :clock: Timer **${timerName}** started. ${(timer.totTime ? '\n\nTotal time: **' + timer.totTime + '**' : '')}
 
             Stop with \`!tb stop <name>\`
 

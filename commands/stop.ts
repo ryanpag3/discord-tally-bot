@@ -39,7 +39,7 @@ export default async (message: Message) => {
             description: `
             :clock: Timer **${timerName}** stopped.
 
-            **${totals[0]}h ${totals[1]}m ${totals[2]}s**
+            Total time: **${totals[0]}h ${totals[1]}m ${totals[2]}s**
 
             Start again with \`!tb start <name>\`
 

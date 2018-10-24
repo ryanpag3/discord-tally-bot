@@ -42,14 +42,19 @@ export default (message: Message) => {
                 });
         })
         .then((record) => {
+            // TODO: make unique to dump
+            const userEmojis = [
+                ':spy:', ':upside_down:', ':poop:', ':ghost:', ':astonished:', ':pray:', ':fist:',
+                ':tongue:', ':santa:', ':crown:', ':right_fist:'
+            ]
             const description = record.description && record.description != '' ? record.description : undefined;
             const msg = {
                 description: `
-                **${record.name}**: ${record.previous} -> ${record.count}
-                ${description ? '• _' + description + '_' : ''}
-                dumped by **${message.author.tag}**
-                `            
-            };
+                **${record.name}** | **${record.previous}** >>> **${record.count}** ${(description ? '\n• _' + description + '_' : '')}
+                
+                ${helper.getRandomPhrase(userEmojis)} **${message.author.tag}**
+                `
+            }
 
             increaseTotalDumpCount();
 
