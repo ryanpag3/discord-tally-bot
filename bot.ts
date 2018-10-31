@@ -20,8 +20,10 @@ bot.on('ready', () => {
 
 bot.on('message', (message: Message) => {
 
-    if (message.channel.type == 'dm')
+    if (message.channel.type == 'dm') {
         console.log('PM received');
+        return;
+    }
 
     const isBot = message.author.bot;
     if (isBot) return;
