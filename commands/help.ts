@@ -17,6 +17,8 @@ export default (message: Message) => {
                         \`!tb show\` - show all current tallies
                         \`!tb details <name>\` - get tally details
                         \`!tb get <name>\`
+                        \`!tb suggest <suggestion>\` - make a feature suggestion directly to support channel
+                        \`!tb bug <bug report>\` - report a bug direct to the support channel
                        `
             },
             {

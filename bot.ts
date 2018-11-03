@@ -9,17 +9,11 @@ const emitter = new EventEmitter();
 
 db.init();
 
-function getCommand(message: Message) {
-    const mArr = message.content.split(' ');
-    return mArr[0] + ' ' + mArr[1];
-}
-
 bot.on('ready', () => {
     console.log(`Tally Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);
 });
 
 bot.on('message', (message: Message) => {
-
     if (message.channel.type == 'dm') {
         console.log('PM received');
         return;
@@ -31,9 +25,21 @@ bot.on('message', (message: Message) => {
     const startsWithPrefix = message.content.startsWith(prefix);
     if (!startsWithPrefix) return;
 
-    const command = getCommand(message);
-    emitter.emit(command, message);
+    const mArr = message.content.split(' ');
+    const command = mArr[0] + ' ' + mArr[1];
+    emit(command, message);
 });
+
+function emit(command, message) {
+    // TODO: make more data driven as more added
+    console.log(command);
+    if (command == prefix + 'suggest' || command == prefix + 'bug') {
+        console.log('hmm');
+        emitter.emit(command, {message: message, bot: bot});
+    } else {
+        emitter.emit(command, message);
+    }
+}
 
 /**
  * COMMAND FUNCTIONS
@@ -55,6 +61,8 @@ import start from './commands/start';
 import stop from './commands/stop';
 import reset from './commands/reset';
 import timers from './commands/timers';
+import suggest from './commands/suggest';
+import bug from './commands/bug';
 
 /**
  * COMMANDS
@@ -112,6 +120,12 @@ emitter.on(prefix + 'reset', reset);
 
 // show all timers
 emitter.on(prefix + 'timers', timers);
+
+// make a suggestion
+emitter.on(prefix + 'suggest', suggest);
+
+// report a bug
+emitter.on(prefix + 'bug', bug);
 
 /**
  * The following commands are only exposed when bot is run without `production` flag

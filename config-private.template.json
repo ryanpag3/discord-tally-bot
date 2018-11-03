@@ -4,5 +4,15 @@
         "url": "",
         "user": "",
         "password": ""
+    },
+    "channels" : {
+        "suggestions" : "",
+        "bugs" : ""
+    },
+    "test" : {
+        "channels" : {
+            "suggestions" : "",
+            "bugs" : ""
+        }
     }
 }
