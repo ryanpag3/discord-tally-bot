@@ -126,6 +126,7 @@ emitter.on(prefix + 'suggest', suggest);
 
 // report a bug
 emitter.on(prefix + 'bug', bug);
+emitter.on(prefix + 'report', bug);
 
 /**
  * The following commands are only exposed when bot is run without `production` flag
