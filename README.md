@@ -23,6 +23,12 @@ Cases where `[]` is shown should be replaced in its entirety with the value it r
 
 `!tb get [name]` - Same as above.
 
+`!tb suggest [suggestion]` - Make a suggestion directly to support channel.
+
+`!tb bug [bug report]` - Make a bug report directly to the support channel.
+
+`!tb report [bug report]` - Same as above.
+
 ### Manage
 
 `!tb create [name] [description]` - Add a new tally with a **required** name and _optional_ description.
