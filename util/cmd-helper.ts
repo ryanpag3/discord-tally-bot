@@ -79,6 +79,20 @@ export default {
            return string.substring(0,len)+'...';
         else
            return string;
+     },
+
+     /**
+      * TODO: Error handling
+      * return page based on pagination parameters
+      * @param pageSize - how many results per page
+      * @param pageNum - which page
+      * @param collection - collection to paginate
+      */
+     handlePagination(pageSize: number, pageNum: number, collection: Array<any>) {
+        pageNum == 0 ? pageNum = 1 : pageNum--;
+        const startIndex = pageSize * pageNum;
+        const endIndex = startIndex + pageSize;
+        return collection.slice(startIndex, endIndex);
      }
 }
 

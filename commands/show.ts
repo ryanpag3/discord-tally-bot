@@ -5,12 +5,15 @@ import { table } from 'table';
 import { prefix } from '../config.json';
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
+import cmdHelper from "../util/cmd-helper";
 
 const Tally = DB.Tally;
 
 export default (message: Message) => {
-    let content = helper.removePrefixCommand(message.content, 2);
-    let cArr = content.split(' ');
+    let msg = message.content.split(' ');
+    msg.shift(); // prefix
+    msg.shift(); // command
+    const page: number = Number.parseInt(msg.shift()) || 1;
 
     console.log('Showing tallies for channel [' + message.channel.id + ']');
 
@@ -25,6 +28,11 @@ export default (message: Message) => {
                 if (a.count < b.count) return 1;
                 return 0;
             });
+            const total = records.length;
+            const pageSize = 20;
+            const totalPages = Math.floor(records.length / pageSize) == 0 ? 1 : Math.floor(records.length / pageSize) + 1; 
+            records = cmdHelper.handlePagination(pageSize, page, records);
+            
             let tallies = '';
             records.map((record) => {
                 const description = record.description && record.description != '' ? record.description : undefined;
@@ -36,8 +44,10 @@ export default (message: Message) => {
             
             shown for **${message.author.tag}**
             `;
+
+
             const msg = {
-                title: records.length == 0 ? 'No tallies could be found!' : 'Here are the existing tallies.\n',
+                title: records.length == 0 ? 'No tallies could be found!' : `Here are the existing tallies. \nPage ${page} of ${totalPages} :arrow_right: ${total} total tallies.\nTry \`!tb show [number]\` to show next page\n`,
                 description: tallies,
                 color: '#42f4e2'
             }
