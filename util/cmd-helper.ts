@@ -1,4 +1,5 @@
 import Discord from 'discord.js';
+import config from '../config.json';
 
 export default {
     removePrefixCommand: (messageContent: string, commandLength) => {
@@ -101,7 +102,7 @@ export default {
  */
 const deleteCommandMsg = async (msg: any) => {
     try {
-        await msg.delete()
+        setTimeout(async () => await msg.delete(), config.delete_timeout);
     } catch (e) {
         if (e.toString().indexOf('Missing Permissions') == -1)
             console.log(e);
