@@ -39,8 +39,7 @@ export default async (message: Message) => {
     if (!tally) {
         const msg = {
             description: `
-            Could not find **${name}** to update.
-            update attempted by **${message.author.tag}**
+            Could not find **${name}** to update.\nupdate attempted by **${message.author.tag}**
             `
         }
         helper.finalize(message);

@@ -40,8 +40,8 @@ export default (message: Message) => {
         .then((record) => {
             const msg = {
                 description : `
-                **${record.name}** is now ${amount}
-                set by **${message.author.tag}**
+**${record.name}** is now ${amount}
+set by **${message.author.tag}**
                 `
             }
 
@@ -52,8 +52,8 @@ export default (message: Message) => {
         .catch((err) => {
             const msg = {
                 description: `
-                I couldn't set **${name}** because ${err}
-                set attempted by **${message.author.tag}**
+I couldn't set **${name}** because ${err}
+set attempted by **${message.author.tag}**
                 `
             }
 

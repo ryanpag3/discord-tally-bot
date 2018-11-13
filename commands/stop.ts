@@ -37,13 +37,13 @@ export default async (message: Message) => {
         const totals = timer.totTime.split(':');
         const msg = {
             description: `
-            :clock: Timer **${timerName}** stopped.
+:clock: Timer **${timerName}** stopped.
 
-            Total time: **${totals[0]}h ${totals[1]}m ${totals[2]}s**
+Total time: **${totals[0]}h ${totals[1]}m ${totals[2]}s**
 
-            Start again with \`!tb start <name>\`
+Start again with \`!tb start <name>\`
 
-            blame **${message.author.tag}**
+blame **${message.author.tag}**
             `
         }
         helper.finalize(message);
@@ -51,9 +51,9 @@ export default async (message: Message) => {
     } catch (e) {
         const msg = {
             description: `
-            ${e}
+${e}
             
-            Blame **${message.author.tag}**
+Blame **${message.author.tag}**
             `
         }
         helper.finalize(message);

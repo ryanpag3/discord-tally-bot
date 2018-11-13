@@ -84,8 +84,7 @@ export default (message: Message) => {
             message.channel.send(helper.buildRichMsg(lengthMsg));
         }
         const msg = {
-            description: `
-            **${tallyId}** already exists.
+            description: `**${tallyId}** already exists.
             attempted by **${message.author.tag}**
             `
         }
