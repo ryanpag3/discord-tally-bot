@@ -64,7 +64,7 @@ export default (message: Message) => {
                 },
                 {
                     title: `Description`,
-                    value: `${description}\n\ncreated by **${message.member.user.tag}**`
+                    value: `${description}\n\ncreated by **${message.author.toString()}**`
                 }
             ]
         };

@@ -6,6 +6,7 @@ export default {
         // todo wildcards
         const keywords = await db.getKeywords(message.channel.id);
         keywords.map(commaSeparated => {
+            if (commaSeparated == null) return;
             const arr = commaSeparated.split(',');
             arr.map(keyword => {
                 if(message.content.includes(keyword)) {
