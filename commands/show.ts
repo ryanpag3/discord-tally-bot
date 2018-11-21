@@ -42,7 +42,7 @@ export default (message: Message) => {
             });
             tallies += `\nIf you would like details on a tally, type \`!tb get <name>\`
             
-            shown for **${message.author.toString()}**
+shown for **${message.author.toString()}**
             `;
 
 

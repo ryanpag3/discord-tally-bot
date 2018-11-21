@@ -7,5 +7,6 @@
     "status" : {
         "interval" : 10000,
         "interval_dev" : 5000
-    }
+    },
+    "delete_timeout" : 1250
 }

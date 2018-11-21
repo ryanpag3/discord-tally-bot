@@ -8,7 +8,7 @@ export default (message: Message) => {
         title: `_Tally Bot Command Reference_`,
         description: `For full documentation, please refer to https://github.com/ryanpage42/discord-tally-bot
         
-        help called by **${message.author.toString()}**`,
+help called by **${message.author.toString()}**`,
         color: `#42f486`,
         fields: [
             {

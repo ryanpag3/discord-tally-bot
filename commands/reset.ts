@@ -28,11 +28,11 @@ export default async (message: Message) => {
         
         const msg = {
             description: `
-            :clock: Timer **${timerName}** has been reset to 00h 00m 00s.
+:clock: Timer **${timerName}** has been reset to 00h 00m 00s.
 
-            Start with \`!tb start <name>\`
+Start with \`!tb start <name>\`
 
-            blame **${message.author.toString()}**
+blame **${message.author.toString()}**
             `
         }
         helper.finalize(message);
@@ -40,9 +40,13 @@ export default async (message: Message) => {
     } catch (e) {
         const msg = {
             description: `
-            ${e}
+${e}
             
+<<<<<<< HEAD
             Blame **${message.author.toString()}**
+=======
+Blame **${message.author.toString()}**
+>>>>>>> 93e341fae1dd142f9630e8272740e063f13336c7
             `
         }
         helper.finalize(message);

@@ -40,8 +40,8 @@ export default (message: Message) => {
         .then((record) => {
             const msg = {
                 description : `
-                **${record.name}** is now ${amount}
-                set by **${message.author.toString()}**
+**${record.name}** is now ${amount}
+set by **${message.author.toString()}**
                 `
             }
 
@@ -52,8 +52,13 @@ export default (message: Message) => {
         .catch((err) => {
             const msg = {
                 description: `
+<<<<<<< HEAD
                 I couldn't set **${name}** because ${err}
                 set attempted by **${message.author.toString()}**
+=======
+I couldn't set **${name}** because ${err}
+set attempted by **${message.author.toString()}**
+>>>>>>> 93e341fae1dd142f9630e8272740e063f13336c7
                 `
             }
 

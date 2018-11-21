@@ -48,9 +48,9 @@ export default async (message: Message) => {
     } catch (e) {
         const msg = {
             description: `
-            ${e}
+${e}
             
-            Blame **${message.author.toString()}**`
+Blame **${message.author.toString()}**`
         };
         helper.finalize(message);
         message.channel.send(helper.buildRichMsg(msg));

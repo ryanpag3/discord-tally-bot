@@ -18,11 +18,9 @@ export default async (params) => {
     const Channel = await bot.channels.find(x => x.id === channelId);
 
     const richEmbed = {
-        description: `
-        **${new Date().toLocaleDateString()} | ${new Date().toLocaleTimeString()}**
+        description: `**${new Date().toLocaleDateString()} | ${new Date().toLocaleTimeString()}**
         reported by by **${author.toString()}**
-
-        _${bugReport}_`
+        \n_${bugReport}_`
     }
 
     Channel.send(helper.buildRichMsg(richEmbed));

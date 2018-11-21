@@ -41,12 +41,12 @@ export default async (message: Message) => {
         }
         const msg = {
             description: `
-            :clock: Timer **${timerName}** ${isDelete == true ? 'destroyed' : 'created'}.
-            ${timerDescription}
+:clock: Timer **${timerName}** ${isDelete == true ? 'destroyed' : 'created'}.
+${timerDescription}
 
-            ${isDelete == true ? 'You can recreate with \`!tb timer ' + timerName + '\`' : 'Start with \`!tb start <name>\`'}
+${isDelete == true ? 'You can recreate with \`!tb timer ' + timerName + '\`' : 'Start with \`!tb start <name>\`'}
 
-            Blame **${message.author.toString()}**
+Blame **${message.author.toString()}**
             `
         }
         helper.finalize(message);

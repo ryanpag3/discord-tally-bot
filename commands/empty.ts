@@ -47,10 +47,8 @@ export default (message: Message) => {
         })
         .catch((err) => {
             const msg = {
-                description: `
-                I couldn't empty **${tallyId}** because ${err}.
-
-                empty attempted by **${message.author.toString()}**
+                description: `I couldn't empty **${tallyId}** because ${err}.
+                \nempty attempted by **${message.author.toString()}**
                 `
             }
 

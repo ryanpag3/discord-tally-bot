@@ -49,10 +49,8 @@ export default (message: Message) => {
             ]
             const description = record.description && record.description != '' ? record.description : undefined;
             const msg = {
-                description: `
-                **${record.name}** | **${record.previous}** >>> **${record.count}** ${(description ? '\n• _' + description + '_' : '')}
-                
-                ${helper.getRandomPhrase(userEmojis)} **${message.author.toString()}**
+                description: `**${record.name}** | **${record.previous}** >>> **${record.count}** ${(description ? '\n• _' + description + '_' : '')}
+                \n${helper.getRandomPhrase(userEmojis)} **${message.author.toString()}**
                 `
             }
 

@@ -50,9 +50,7 @@ export default (message: Message) => {
         })
         .catch((err) => {
             const msg = {
-                description: `
-                Could not find ${name}'s details.
-                attempted by **${message.author.toString()}**.
+                description: `Could not find ${name}'s details.\nattempted by **${message.author.toString()}**.
                 `
             }
 
