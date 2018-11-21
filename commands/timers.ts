@@ -39,7 +39,7 @@ export default async (message: Message) => {
         processedTimers.map((timer) => {
             description += `**${timer.name}** ${timer.totalTime || '00:00:00'} | ${helper.truncate(timer.description, 50)}\n`;
         });
-        description += `\nBlame **${message.author.tag}**`
+        description += `\nBlame **${message.author.toString()}**`
         const msg = {
             description: description
         };
@@ -50,7 +50,7 @@ export default async (message: Message) => {
             description: `
             ${e}
             
-            Blame **${message.author.tag}**`
+            Blame **${message.author.toString()}**`
         };
         helper.finalize(message);
         message.channel.send(helper.buildRichMsg(msg));

@@ -50,7 +50,7 @@ export default (message: Message) => {
                 description: `
                 **${record.name}** | **${record.previous}** >>> **${record.count}** ${(description ? '\n• _' + description + '_' : '')}
                 
-                ${helper.getRandomPhrase(userEmojis)} **${message.author.tag}**
+                ${helper.getRandomPhrase(userEmojis)} **${message.author.toString()}**
                 `
             }
 
@@ -62,7 +62,7 @@ export default (message: Message) => {
         .catch((err) => {
             const msg = {
                 description: `I couldn't bump ${tallyName} because ${err}
-                bump attempted by **${message.author.tag}**`
+                bump attempted by **${message.author.toString()}**`
             }
             helper.finalize(message);
             message.channel.send(helper.buildRichMsg(msg));

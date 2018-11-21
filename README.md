@@ -35,6 +35,10 @@ Cases where `[]` is shown should be replaced in its entirety with the value it r
 
 `!tb add [name] [description]` - Same as above.
 
+`!tb keyword [name] [keyword] [description]` - Every time the keyword is found, it will bump the tally automatically.
+
+`!tb kw [name] [keyword] [description]` - Same as above.
+
 `!tb describe [name] [description]` - Update a tally with a new description.
 
 `!tb update [name] [description]` - Same as above. 

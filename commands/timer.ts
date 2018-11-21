@@ -46,7 +46,7 @@ export default async (message: Message) => {
 
             ${isDelete == true ? 'You can recreate with \`!tb timer ' + timerName + '\`' : 'Start with \`!tb start <name>\`'}
 
-            Blame **${message.author.tag}**
+            Blame **${message.author.toString()}**
             `
         }
         helper.finalize(message);
@@ -57,7 +57,7 @@ export default async (message: Message) => {
                 description: `
                 Could not ${isDelete == true ? 'delete' : 'create'} timer **${timerName}**. ${isDelete == true ? 'It doesn\'t exist!' : 'It already exists!'} :thinking:
                 
-                Blame **${message.author.tag}**
+                Blame **${message.author.toString()}**
                 `
             }
             helper.finalize(message);
@@ -68,7 +68,7 @@ export default async (message: Message) => {
             description: `
             There was an error while creating the timer: ${e}
             
-            Blame **${message.author.tag}**
+            Blame **${message.author.toString()}**
             `
         };
         helper.finalize(message);

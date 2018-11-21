@@ -51,9 +51,10 @@ export default (message: Message) => {
         name: tallyId,
         channelId: message.channel.id,
         description: tallyDescription,
-        count: 0
+        count: 0,
+        keyword: null
     }).then((res: any) => {
-        const description = '\n' + (tallyDescription || 'No description.');
+        const description = '\n' + (tallyDescription || 'no description');
         const successMsg = {
             title: `_"${helper.getRandomPhrase(phrases)}"_`,
             fields: [
@@ -79,14 +80,14 @@ export default (message: Message) => {
 
         if (err.toString().indexOf('description') != -1) {
             const lengthMsg = {
-                description: `**${message.author.tag}**, lease try again with a shorter description. Max length is 255 characters including spaces.`
+                description: `**${message.author.toString()}**, lease try again with a shorter description. Max length is 255 characters including spaces.`
             };
             message.channel.send(helper.buildRichMsg(lengthMsg));
         }
         const msg = {
             description: `
             **${tallyId}** already exists.
-            attempted by **${message.author.tag}**
+            attempted by **${message.author.toString()}**
             `
         }
         message.channel.send(helper.buildRichMsg(msg));

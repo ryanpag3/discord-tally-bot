@@ -32,7 +32,7 @@ export default async (message: Message) => {
 
             Start with \`!tb start <name>\`
 
-            blame **${message.author.tag}**
+            blame **${message.author.toString()}**
             `
         }
         helper.finalize(message);
@@ -42,7 +42,7 @@ export default async (message: Message) => {
             description: `
             ${e}
             
-            Blame **${message.author.tag}**
+            Blame **${message.author.toString()}**
             `
         }
         helper.finalize(message);

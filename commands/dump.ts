@@ -52,7 +52,7 @@ export default (message: Message) => {
                 description: `
                 **${record.name}** | **${record.previous}** >>> **${record.count}** ${(description ? '\n• _' + description + '_' : '')}
                 
-                ${helper.getRandomPhrase(userEmojis)} **${message.author.tag}**
+                ${helper.getRandomPhrase(userEmojis)} **${message.author.toString()}**
                 `
             }
 
@@ -65,7 +65,7 @@ export default (message: Message) => {
         .catch((err) => {
             const failMsg = {
                 description: `I couldn't dump **${name}** because ${err}
-                dump attempted by ${message.author.tag}**`
+                dump attempted by ${message.author.toString()}**`
             }
 
             helper.finalize(message);

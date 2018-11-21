@@ -41,7 +41,7 @@ export default (message: Message) => {
             const msg = {
                 description : `
                 **${record.name}** is now ${amount}
-                set by **${message.author.tag}**
+                set by **${message.author.toString()}**
                 `
             }
 
@@ -53,7 +53,7 @@ export default (message: Message) => {
             const msg = {
                 description: `
                 I couldn't set **${name}** because ${err}
-                set attempted by **${message.author.tag}**
+                set attempted by **${message.author.toString()}**
                 `
             }
 

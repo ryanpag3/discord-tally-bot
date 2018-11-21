@@ -26,12 +26,12 @@ export default (message: Message) => {
         .then((res) => {
             const successMsg = {
                 description: `**${tallyId}** has been deleted.
-                deleted by **${message.author.tag}**`
+                deleted by **${message.author.toString()}**`
             };
 
             const failMsg = {
                 description: `**${tallyId}** doesn't exist in my database.
-                delete attempted by **${message.author.tag}**`
+                delete attempted by **${message.author.toString()}**`
             }
 
             helper.finalize(message);

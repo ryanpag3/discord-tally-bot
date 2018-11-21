@@ -35,16 +35,22 @@ export default {
                 if (err) throw err;
                 if (result.warningCount != 1)
                     console.log('Database ' + config.database.name + ' has been created.');
-                
-                this.Tally.sync({alter: true});
-                this.Timer.sync({alter: true});
+
+                this.Tally.sync({
+                    alter: true
+                });
+                this.Timer.sync({
+                    alter: true
+                });
                 counter.init();
             });
         });
     },
 
     async getTallyCount() {
-        return this.Tally.findAll({ where: {}})
+        return this.Tally.findAll({
+                where: {}
+            })
             .then((tallies) => tallies.length);
     },
 
@@ -65,7 +71,12 @@ export default {
 
     async increaseBumpCounter() {
         try {
-            let bumpTally = await this.Tally.find({ where: {name: BUMP_COUNTER, channelId: INTERNAL }});
+            let bumpTally = await this.Tally.find({
+                where: {
+                    name: BUMP_COUNTER,
+                    channelId: INTERNAL
+                }
+            });
             bumpTally.count++;
             await bumpTally.save();
         } catch (e) {
@@ -89,17 +100,27 @@ export default {
 
     async increaseDumpCounter() {
         try {
-            let dumpTally = await this.Tally.find({ where: {name: DUMP_COUNTER, channelId: INTERNAL }});
+            let dumpTally = await this.Tally.find({
+                where: {
+                    name: DUMP_COUNTER,
+                    channelId: INTERNAL
+                }
+            });
             dumpTally.count++;
             await dumpTally.save();
         } catch (e) {
             console.log(e);
-        } 
+        }
     },
 
     async getCount(name: string, channelId: string) {
         try {
-            let tally = await this.Tally.find({where: {name: name, channelId: channelId}});
+            let tally = await this.Tally.find({
+                where: {
+                    name: name,
+                    channelId: channelId
+                }
+            });
             return tally.count;
         } catch (e) {
             console.log(`Error while getting count for ${name}: ${e}`);
@@ -107,11 +128,11 @@ export default {
     },
 
     async getDumpCount() {
-       try {
-           return await this.getCount(DUMP_COUNTER, INTERNAL);
-       } catch (e) {
-           console.log(`Error while getting dump count ${e}`);
-       }
+        try {
+            return await this.getCount(DUMP_COUNTER, INTERNAL);
+        } catch (e) {
+            console.log(`Error while getting dump count ${e}`);
+        }
     },
 
     async getBumpCount() {
@@ -124,9 +145,42 @@ export default {
 
     async createTimer(name: string, description: string) {
         try {
-            
+
         } catch (e) {
 
         }
+    },
+
+    async getKeywords(channelId: string) {
+        const res = await this.Tally.findAll({
+            where: {
+                channelId: channelId
+            }
+        });
+        return res.filter((tally) => {
+            return tally != null;
+        }).map((tally) => {
+            return tally.keyword;
+        });
+
+    },
+
+    async keywordExists(channelId: string, key: string) {
+        const res = await this.Tally.findAll({
+            where: {
+                channelId: channelId,
+                keyword: key
+            }
+        });
+        return res.length != 0;
+    },
+
+    async bumpKeywordTally(channelId, keyword) {
+        if (keyword === null || keyword === undefined) return;
+        const tallies = await this.Tally.findAll({where: {channelId: channelId, keyword: keyword}});
+        tallies.map(tally => {
+            tally.count = tally.count + 1;
+            tally.save();
+        });
     }
 }

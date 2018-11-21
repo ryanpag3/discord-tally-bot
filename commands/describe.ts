@@ -40,7 +40,7 @@ export default async (message: Message) => {
         const msg = {
             description: `
             Could not find **${name}** to update.
-            update attempted by **${message.author.tag}**
+            update attempted by **${message.author.toString()}**
             `
         }
         helper.finalize(message);
@@ -68,7 +68,7 @@ export default async (message: Message) => {
             },
             {
                 title: `Updated by`,
-                value: message.author.tag
+                value: message.author.toString()
             }
         ]
     }

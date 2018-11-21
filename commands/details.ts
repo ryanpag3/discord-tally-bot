@@ -39,7 +39,7 @@ export default (message: Message) => {
                     }, 
                     {
                         title: `Requested by`,
-                        value: message.author.tag
+                        value: message.author.toString()
                     }
                 ]
             }
@@ -52,7 +52,7 @@ export default (message: Message) => {
             const msg = {
                 description: `
                 Could not find ${name}'s details.
-                attempted by **${message.author.tag}**.
+                attempted by **${message.author.toString()}**.
                 `
             }
 

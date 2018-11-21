@@ -10,7 +10,8 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
         },
         channelId: DataTypes.STRING,
         description: DataTypes.STRING,
-        count: DataTypes.BIGINT
+        count: DataTypes.BIGINT,
+        keyword: DataTypes.STRING
     }, {
         timestamps: false,
         indexes: [{

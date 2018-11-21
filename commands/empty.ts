@@ -37,7 +37,7 @@ export default (message: Message) => {
         .then((record) => {
             const msg = {
                 description : `
-                **${tallyId}** has been emptied by **${message.author.tag}**.
+                **${tallyId}** has been emptied by **${message.author.toString()}**.
                 `
             }
             
@@ -50,7 +50,7 @@ export default (message: Message) => {
                 description: `
                 I couldn't empty **${tallyId}** because ${err}.
 
-                empty attempted by **${message.author.tag}**
+                empty attempted by **${message.author.toString()}**
                 `
             }
 

@@ -3,6 +3,7 @@ import { EventEmitter } from 'events';
 import { prefix, status } from './config.json';
 import { token } from './config-private.json';
 import db from './util/db';
+import keywordUtil from './util/keyword-util';
 
 const bot = new Discord.Client();
 const emitter = new EventEmitter();
@@ -19,12 +20,15 @@ bot.on('message', (message: Message) => {
         return;
     }
 
+    const startsWithPrefix = message.content.startsWith(prefix);
+    if (!startsWithPrefix) {
+        keywordUtil.bumpKeywordTallies(message);
+        return; 
+    }
+
     const isBot = message.author.bot;
     if (isBot) return;
-
-    const startsWithPrefix = message.content.startsWith(prefix);
-    if (!startsWithPrefix) return;
-
+    
     const mArr = message.content.split(' ');
     const command = mArr[0] + ' ' + mArr[1];
     emit(command, message);
@@ -48,6 +52,7 @@ import test from './commands/test';
 import help from './commands/help';
 import show from './commands/show';
 import create from './commands/create';
+import keyword from './commands/keyword';
 import del from './commands/delete';
 import bump from './commands/bump';
 import dump from './commands/dump';
@@ -81,6 +86,10 @@ emitter.on(prefix + 'show', show);
 // create new tally
 emitter.on(prefix + 'create', create);
 emitter.on(prefix + 'add', create);
+
+// create a keyword tally
+emitter.on(prefix + 'keyword', keyword);
+emitter.on(prefix + 'kw', keyword);
 
 // delete a tally
 emitter.on(prefix + 'delete', del);
