@@ -14,11 +14,6 @@ import DB from '../util/db';
 
 export default (message: Message) => {
     console.log(`${message.author.tag} called announce for channel ${message.channel.id}`);
-    // announce "name" "description"
-    // announce "name" -tally "tally name" -count "tally goal"
-    // announce "name" -n "new name"
-    // announce "name" -t "every monday"
-    // announce "name" -d "updated description"
     let secondaryArg = false;
     const msg = message.content.split(' ');
     if (msg[3] && msg[3].startsWith('-')) {
@@ -28,16 +23,23 @@ export default (message: Message) => {
 
     switch (msg[3]) {
         case 'tally':
+            validateSecondArg()
             setTally();
             break;
         case 'n':
+            validateSecondArg()
             setName();
             break;
         case 't':
-            setTime();
+            validateSecondArg()
+            setDate();
             break;
         case 'd':
+            validateSecondArg()
             setDescription();
+            break;
+        case 'rm':
+            deleteAnnounce();
             break;
         default:
             // not correct argument or they actually want to make tally
@@ -46,24 +48,131 @@ export default (message: Message) => {
             break;
     }
 
-    function setTally() {
-
+    async function setTally() {
+        console.log(`Setting tally goal for ${message.author.tag}`);
+        try {
+            if (!msg[6]) throw new Error('Count is required for tally goal. Use with \`-count\``');
+            await DB.setAnnounceTallyGoal(message.channel.id, msg[2], msg[4], msg[6]);
+            const richEmbed = {
+                title: `:trumpet: Announcement Tally Goal Set! :trumpet:`, 
+                fields: [
+                    {
+                        title: 'Title',
+                        value: msg[2]
+                    },
+                    {
+                        title: `When announce will run`,
+                        value: 'Once **' + msg[4] + '** reaches ' + msg[6] + ' tallies.'
+                    }
+                ]
+                
+            }
+            helper.finalize(message);
+            message.channel.send(helper.buildRichMsg(richEmbed));
+        } catch (e) {
+            console.log('Failed to update announcement with tally goal. Reason: ' + e);
+        
+            helper.finalize(message);
+    
+            const richEmbed = {
+                description: `Failed to update announcement with tally goal. Reason: ${e}`
+            }
+            message.channel.send(helper.buildRichMsg(richEmbed));        
+        }
     }
 
-    function setDate() {
-
+    async function setDate() {
+        console.log(`Setting date for ${message.author.tag}`);
+        try {
+            const dateStr = msg.slice(4, msg.length).join(' ');
+            await DB.setAnnounceDate(message.channel.id, msg[2], dateStr);
+            const richEmbed = {
+                title: `:trumpet: Announcement Tally Goal Set! :trumpet:`, 
+                fields: [
+                    {
+                        title: 'Title',
+                        value: msg[2]
+                    },
+                    {
+                        title: `When announce will run`,
+                        value: dateStr
+                    }
+                ]
+                
+            }
+            helper.finalize(message);
+            message.channel.send(helper.buildRichMsg(richEmbed));
+        } catch (e) {
+            console.log('Failed to update announcement with date. Reason: ' + e);
+        
+            helper.finalize(message);
+    
+            const richEmbed = {
+                description: `Failed to update announcement with date. Reason: ${e}`
+            }
+            message.channel.send(helper.buildRichMsg(richEmbed));        
+        }
     }
 
-    function setName() {
-
+    async function setName() {
+        console.log(`Setting name for ${message.author.tag}`);
+        try {
+            await DB.setAnnounceName(message.channel.id, msg[2], msg[4]);
+            const richEmbed = {
+                title: `:trumpet: Announcement Name set! :trumpet:`, 
+                fields: [
+                    {
+                        title: 'New name',
+                        value: msg[4]
+                    }
+                ]
+                
+            }
+            helper.finalize(message);
+            message.channel.send(helper.buildRichMsg(richEmbed));
+        } catch (e) {
+            console.log('Failed to update announcement with name. Reason: ' + e);
+        
+            helper.finalize(message);
+    
+            const richEmbed = {
+                description: `Failed to update announcement with name. Reason: ${e}`
+            }
+            message.channel.send(helper.buildRichMsg(richEmbed));        
+        }
     }
 
-    function setTime() {
-
-    }
-
-    function setDescription() {
-
+    async function setDescription() {
+        console.log(`Setting description for ${message.author.tag}`);
+        try {
+            const desc = msg.slice(4, msg.length).join(' ');
+            await DB.setAnnounceDesc(message.channel.id, msg[2], desc);
+            const richEmbed = {
+                title: `:trumpet: Announcement Description! :trumpet:`, 
+                fields: [
+                    {
+                        title: 'Title',
+                        value: msg[2]
+                    },
+                    {
+                        title: 'New description',
+                        value: desc
+                    }
+                ]
+                
+            }
+            helper.finalize(message);
+            message.channel.send(helper.buildRichMsg(richEmbed));
+        } catch (e) {
+            console.log('Failed to update announcement with name. Reason: ' + e);
+        
+            helper.finalize(message);
+    
+            const richEmbed = {
+                description: `Failed to update announcement with name. Reason: ${e}`
+            }
+            message.channel.send(helper.buildRichMsg(richEmbed));        
+        }
     }
 
     async function createAnnouncement() {
@@ -107,5 +216,32 @@ export default (message: Message) => {
             }
             message.channel.send(helper.buildRichMsg(richEmbed));
         }
+    }
+
+    async function deleteAnnounce() {
+        console.log(`Deleting announcement for ${message.author.tag}`);
+        try {
+            const desc = msg.slice(4, msg.length).join(' ');
+            await DB.deleteAnnounce(message.channel.id, msg[2]);
+            const richEmbed = {
+                description: `${msg[2]} has been deleted.\n\ndeleted by ${message.author.toString()}`
+                
+            }
+            helper.finalize(message);
+            message.channel.send(helper.buildRichMsg(richEmbed));
+        } catch (e) {
+            console.log('Failed to delete. Reason: ' + e);
+        
+            helper.finalize(message);
+    
+            const richEmbed = {
+                description: `Failed to delete. Reason: ${e}`
+            }
+            message.channel.send(helper.buildRichMsg(richEmbed));        
+        }
+    }
+
+    function validateSecondArg() {
+        if (!msg[4]) throw new Error('If using a secondary argument for announcements, you need to provide a value.');
     }
 }

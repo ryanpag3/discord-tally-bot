@@ -29,7 +29,7 @@ export default (message: Message) => {
     })
         .then((res) => {
             const successMsg = {
-                title: `All tallies and timers have been deleted.`
+                title: `All tallies, timers, and announcements have been deleted.`
             };
 
             const failMsg = {
