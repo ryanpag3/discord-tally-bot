@@ -28,6 +28,8 @@ const INTERNAL = 'INTERNAL';
 export default {
     Tally: sequelize.import('tally', Tally),
     Timer: sequelize.import('timer', Timer),
+    Announcement: sequelize.import('../models/announcement'),
+
     init() {
         conn.connect((err) => {
             if (err) throw err;
@@ -40,6 +42,9 @@ export default {
                     alter: true
                 });
                 this.Timer.sync({
+                    alter: true
+                });
+                this.Announcement.sync({
                     alter: true
                 });
                 counter.init();
@@ -177,10 +182,23 @@ export default {
 
     async bumpKeywordTally(channelId, keyword) {
         if (keyword === null || keyword === undefined) return;
-        const tallies = await this.Tally.findAll({where: {channelId: channelId, keyword: keyword}});
+        const tallies = await this.Tally.findAll({
+            where: {
+                channelId: channelId,
+                keyword: keyword
+            }
+        });
         tallies.map(tally => {
             tally.count = tally.count + 1;
             tally.save();
+        });
+    },
+
+    async createAnnouncement(channelId, name, description) {
+        return await this.Announcement.create({
+            channelId: channelId,
+            name: name,
+            description: description
         });
     }
 }

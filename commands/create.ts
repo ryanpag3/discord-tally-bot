@@ -80,7 +80,7 @@ export default (message: Message) => {
 
         if (err.toString().indexOf('description') != -1) {
             const lengthMsg = {
-                description: `**${message.author.toString()}**, lease try again with a shorter description. Max length is 255 characters including spaces.`
+                description: `**${message.author.toString()}**, please try again with a shorter description. Max length is 255 characters including spaces.`
             };
             message.channel.send(helper.buildRichMsg(lengthMsg));
         }

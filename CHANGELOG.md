@@ -8,3 +8,4 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Update README.md to reflect new functionality
+- Announcements can now be destroyed with an rmall command (dev only)

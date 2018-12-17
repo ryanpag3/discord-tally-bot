@@ -38,7 +38,6 @@ function emit(command, message) {
     // TODO: make more data driven as more added
     console.log(command);
     if (command == prefix + 'suggest' || command == prefix + 'bug') {
-        console.log('hmm');
         emitter.emit(command, {message: message, bot: bot});
     } else {
         emitter.emit(command, message);
@@ -68,6 +67,7 @@ import reset from './commands/reset';
 import timers from './commands/timers';
 import suggest from './commands/suggest';
 import bug from './commands/bug';
+import announce from './commands/announce';
 
 /**
  * COMMANDS
@@ -136,6 +136,9 @@ emitter.on(prefix + 'suggest', suggest);
 // report a bug
 emitter.on(prefix + 'bug', bug);
 emitter.on(prefix + 'report', bug);
+
+// manage announcements
+emitter.on(prefix + 'announce', announce);
 
 /**
  * The following commands are only exposed when bot is run without `production` flag

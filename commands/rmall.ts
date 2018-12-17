@@ -6,6 +6,7 @@ import helper from '../util/cmd-helper';
 
 const Tally = DB.Tally;
 const Timer = DB.Timer;
+const Announcement = DB.Announcement;
 
 export default (message: Message) => {
     console.log('Deleting all tallies.');
@@ -19,6 +20,12 @@ export default (message: Message) => {
                 channelId: message.channel.id
             }
         })
+    }).then(async () => {
+        return await Announcement.destroy({
+            where: {
+                channelId: message.channel.id
+            }
+        }) 
     })
         .then((res) => {
             const successMsg = {
