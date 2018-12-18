@@ -51,8 +51,8 @@ export default (message: Message) => {
     async function setTally() {
         console.log(`Setting tally goal for ${message.author.tag}`);
         try {
-            if (!msg[6]) throw new Error('Count is required for tally goal. Use with \`-count\``');
-            await DB.setAnnounceTallyGoal(message.channel.id, msg[2], msg[4], msg[6]);
+            if (!msg[5]) throw new Error('Count is required for tally goal.');
+            await DB.setAnnounceTallyGoal(message.channel.id, msg[2], msg[4], msg[5]);
             const richEmbed = {
                 title: `:trumpet: Announcement Tally Goal Set! :trumpet:`, 
                 fields: [
@@ -62,7 +62,7 @@ export default (message: Message) => {
                     },
                     {
                         title: `When announce will run`,
-                        value: 'Once **' + msg[4] + '** reaches ' + msg[6] + ' tallies.'
+                        value: 'Once **' + msg[4] + '** reaches ' + msg[5] + ' tallies.'
                     }
                 ]
                 
