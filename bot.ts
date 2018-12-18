@@ -4,11 +4,13 @@ import { prefix, status } from './config.json';
 import { token } from './config-private.json';
 import db from './util/db';
 import keywordUtil from './util/keyword-util';
+import AnnounceService from './util/announce-service';
 
 const bot = new Discord.Client();
 const emitter = new EventEmitter();
 
 db.init();
+AnnounceService.start();
 
 bot.on('ready', () => {
     console.log(`Tally Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);
