@@ -8,9 +8,10 @@ import AnnounceService from './util/announce-service';
 
 const bot = new Discord.Client();
 const emitter = new EventEmitter();
+const announceService = new AnnounceService({bot: bot});
 
 db.init();
-AnnounceService.start();
+announceService.start();
 
 bot.on('ready', () => {
     console.log(`Tally Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);

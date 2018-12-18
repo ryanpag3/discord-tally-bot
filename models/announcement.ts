@@ -9,8 +9,10 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
         channelId: DataTypes.STRING,
         description: DataTypes.STRING,
         dateQuery: { type: DataTypes.STRING, defaultValue: null },
+        recurringDate: { type: DataTypes.BOOLEAN, defaultValue: null},
         tallyName: { type: DataTypes.STRING, defaultValue: null },
         tallyGoal: { type: DataTypes.INTEGER, defaultValue: null },
+        announcementRan: {type: DataTypes.BOOLEAN, defaultValue: null }
     }, {
         timestamps: false,
         indexes: [{

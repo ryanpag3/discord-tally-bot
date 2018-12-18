@@ -2,22 +2,26 @@ import { Op } from 'sequelize';
 import config from '../config.json';
 import DB from './db';
 import announce from '../commands/announce.js';
+import helper from './cmd-helper';
 
 const env = process.env.NODE_ENV || 'development';
 const devEnv = env === 'development';
 
 export default class AnnounceService {
-    static async start() {
-        setInterval(async () => await AnnounceService.run(), devEnv ? config.announce_check_interval_dev : config.announce_check_interval)
+    private bot: any;
+
+    constructor(params) {
+        this.bot = params.bot;
+    }
+
+    async start() {
+        setInterval(async () => await this.run(), devEnv ? config.announce_check_interval_dev : config.announce_check_interval)
     }
 
     /**
      * TODO: error handling
      */
-    static async run() {
-        console.log('running');
-        // query all announcements
-        // check if tally is valid?
+    async run() {
         try {
             const announcements: Array<any> = await DB.Announcement.findAll({
                 where: {
@@ -41,38 +45,43 @@ export default class AnnounceService {
                 }
             });
 
+            // console.log(`Checking for announcements for ${announcements.length} valid entries.`);
+
             for (let announcement of announcements) {
-                console.log(announcement.name);
-                AnnounceService.checkForAnnounce(announcement);
+                this.checkForAnnounce(announcement);
             }
         } catch (e) {
             console.log(e);
         }
     }
 
-    static async checkForAnnounce(announcement) {
+    async checkForAnnounce(announcement) {
         if (announcement.dateQuery) {
-            AnnounceService.checkDateQuery(announcement);
+            this.checkDateQuery(announcement);
         } else if (announcement.tallyName && announcement.tallyGoal) {
-            AnnounceService.checkTallyGoal(announcement);
+            this.checkTallyGoal(announcement);
         }
     }
 
-    static async checkDateQuery(announcement) {
+    private async checkDateQuery(announcement) {
 
     }
 
-    static async checkTallyGoal(announcement) {
-        const tally = DB.Tally.findOne({ where: {
+    private async checkTallyGoal(announcement) {
+        const tally = await DB.Tally.findOne({ where: {
             channelId: announcement.channelId,
             name: announcement.tallyName,
             count: announcement.tallyGoal
         }});
-        const Channel = await 
-        console.log('****TALLY GOAL****');
-    }
-
-    static async sendTallyGoal(announcement) {
-
+        if (!tally || announcement.announcementRan === true) return;
+        announcement.announcementRan = true;
+        announcement.save();
+        console.log(`announcement triggered: ${JSON.stringify(announcement)}`);
+        const Channel = await this.bot.channels.find(x => x.id === announcement.channelId);
+        const richEmbed = {
+            title: `:trumpet: Announcement **${announcement.name}** :trumpet:`,
+            description: `${announcement.description}\n\n**Goal reached:** ${announcement.tallyName} has hit ${announcement.tallyGoal}!`
+        }
+        Channel.send(helper.buildRichMsg(richEmbed));
     }
 }

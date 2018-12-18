@@ -219,6 +219,7 @@ export default {
     async setAnnounceTallyGoal(channelId, name, tallyName, tallyGoal) {
         const announcement = await this.Announcement.findOne({ where: {channelId: channelId, name: name}});
         if (!announcement) throw new Error('No announcement found to update.');
+        announcement.announcementRan = null;
         announcement.dateQuery = null;
         announcement.tallyGoal = tallyGoal;
         announcement.tallyName = tallyName;
@@ -228,6 +229,7 @@ export default {
     async setAnnounceDate(channelId, name, dateStr) {
         const announcement = await this.Announcement.findOne({ where: {channelId: channelId, name: name}});
         if (!announcement) throw new Error('No announcement found to update.');
+        announcement.announcementRan = null;
         announcement.dateStr = dateStr;
         announcement.tallyGoal = null;
         announcement.tallyName = null;
