@@ -10,6 +10,7 @@ import {
     Message
 } from "discord.js";
 import chrono from 'chrono-node';
+import moment from 'moment';
 import helper from '../util/cmd-helper';
 import DB from '../util/db';
 
@@ -89,8 +90,10 @@ export default (message: Message) => {
     async function setDate() {
         console.log(`Setting date for ${message.author.tag}`);
         try {
+            const now = moment();
             const dateStr = msg.slice(4, msg.length).join(' ');
             const parsed = chrono.parse(dateStr);
+            const timeFrom = moment(parsed[0].start.date()).from(now)
             await DB.setAnnounceDate(message.channel.id, msg[2], dateStr);
             const richEmbed = {
                 title: `:trumpet: Announcement Date Goal Set! :trumpet:`, 
@@ -101,7 +104,7 @@ export default (message: Message) => {
                     },
                     {
                         title: `When announce will run`,
-                        value: `"${dateStr}" \n_or_\n${parsed[0].start.date()}`
+                        value: `"${dateStr}" \n_or_\n${timeFrom}`
                     }
                 ]
                 
