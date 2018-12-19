@@ -9,6 +9,7 @@
 import {
     Message
 } from "discord.js";
+import chrono from 'chrono-node';
 import helper from '../util/cmd-helper';
 import DB from '../util/db';
 
@@ -26,13 +27,17 @@ export default (message: Message) => {
             validateSecondArg()
             setTally();
             break;
+        case 'date':
+            validateSecondArg()
+            setDate();
+            break;
+        case 'locale':
+            validateSecondArg()
+            setLocale();
+            break;
         case 'n':
             validateSecondArg()
             setName();
-            break;
-        case 't':
-            validateSecondArg()
-            setDate();
             break;
         case 'd':
             validateSecondArg()
@@ -85,9 +90,10 @@ export default (message: Message) => {
         console.log(`Setting date for ${message.author.tag}`);
         try {
             const dateStr = msg.slice(4, msg.length).join(' ');
+            const parsed = chrono.parse(dateStr);
             await DB.setAnnounceDate(message.channel.id, msg[2], dateStr);
             const richEmbed = {
-                title: `:trumpet: Announcement Tally Goal Set! :trumpet:`, 
+                title: `:trumpet: Announcement Date Goal Set! :trumpet:`, 
                 fields: [
                     {
                         title: 'Title',
@@ -95,7 +101,7 @@ export default (message: Message) => {
                     },
                     {
                         title: `When announce will run`,
-                        value: dateStr
+                        value: `"${dateStr}" \n_or_\n${parsed[0].start.date()}`
                     }
                 ]
                 
@@ -190,7 +196,7 @@ export default (message: Message) => {
                         title: 'Description',
                         value: msg[3] + `\n\n**Don't forget to activate your announcement with a date schedule or tally goal.**` +
                         `\n \`!tb announce ${msg[2]} -tally test-tally 1000\`` +
-                        `\n \`!tb announce ${msg[2]} -t every monday\`` +
+                        `\n \`!tb announce ${msg[2]} -date monday at 9am\`` +
                         `\n\ncreated by **${message.author.toString()}**`
                     }
                 ]
@@ -239,6 +245,10 @@ export default (message: Message) => {
             }
             message.channel.send(helper.buildRichMsg(richEmbed));        
         }
+    }
+
+    async function setLocale() {
+        
     }
 
     function validateSecondArg() {

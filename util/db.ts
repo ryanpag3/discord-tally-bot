@@ -1,5 +1,6 @@
 import Sequelize from 'sequelize';
 import mysql from 'mysql';
+import chrono from 'chrono-node';
 import * as counter from './counter';
 import pConfig from '../config-private.json';
 import config from '../config.json';
@@ -221,6 +222,7 @@ export default {
         if (!announcement) throw new Error('No announcement found to update.');
         announcement.announcementRan = null;
         announcement.dateQuery = null;
+        announcement.date = null;
         announcement.tallyGoal = tallyGoal;
         announcement.tallyName = tallyName;
         await announcement.save();
@@ -229,8 +231,10 @@ export default {
     async setAnnounceDate(channelId, name, dateStr) {
         const announcement = await this.Announcement.findOne({ where: {channelId: channelId, name: name}});
         if (!announcement) throw new Error('No announcement found to update.');
+        if (JSON.stringify(chrono.parse(dateStr)) === '[]') throw new Error('Invalid date string.');
         announcement.announcementRan = null;
-        announcement.dateStr = dateStr;
+        announcement.dateQuery = dateStr;
+        announcement.date = chrono.parse(dateStr)[0].ref;
         announcement.tallyGoal = null;
         announcement.tallyName = null;
         await announcement.save();

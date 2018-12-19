@@ -17,6 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "bufferutil": "^3.0.5",
+    "chrono-node": "^1.3.5",
     "discord.js": "^11.4.2",
     "erlpack": "github:discordapp/erlpack",
     "mysql": "^2.16.0",

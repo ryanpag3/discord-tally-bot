@@ -1,4 +1,5 @@
 import { Op } from 'sequelize';
+import chrono from 'chrono-node'
 import config from '../config.json';
 import DB from './db';
 import announce from '../commands/announce.js';
@@ -64,7 +65,8 @@ export default class AnnounceService {
     }
 
     private async checkDateQuery(announcement) {
-
+        const parsed = chrono.parse(announcement.dateQuery);
+        // console.log(JSON.stringify(parsed));
     }
 
     private async checkTallyGoal(announcement) {
