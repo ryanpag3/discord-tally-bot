@@ -30,6 +30,7 @@ export default {
     Tally: sequelize.import('tally', Tally),
     Timer: sequelize.import('timer', Timer),
     Announcement: sequelize.import('../models/announcement'),
+    Channel: sequelize.import('../models/channel'),
 
     init() {
         conn.connect((err) => {
@@ -46,6 +47,9 @@ export default {
                     alter: true
                 });
                 this.Announcement.sync({
+                    alter: true
+                });
+                this.Channel.sync({
                     alter: true
                 });
                 counter.init();

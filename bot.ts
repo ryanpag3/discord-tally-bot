@@ -71,6 +71,7 @@ import timers from './commands/timers';
 import suggest from './commands/suggest';
 import bug from './commands/bug';
 import announce from './commands/announce';
+import timezone from './commands/timezone';
 
 /**
  * COMMANDS
@@ -142,6 +143,10 @@ emitter.on(prefix + 'report', bug);
 
 // manage announcements
 emitter.on(prefix + 'announce', announce);
+emitter.on(prefix + 'a', announce);
+
+// set channel timezone
+emitter.on(prefix + 'timezone', timezone);
 
 /**
  * The following commands are only exposed when bot is run without `production` flag

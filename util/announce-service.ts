@@ -2,7 +2,6 @@ import { Op } from 'sequelize';
 import chrono from 'chrono-node'
 import config from '../config.json';
 import DB from './db';
-import announce from '../commands/announce.js';
 import helper from './cmd-helper';
 
 const env = process.env.NODE_ENV || 'development';

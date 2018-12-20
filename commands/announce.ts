@@ -1,16 +1,8 @@
-// create an announcement
-// set announcement goal
-// change announcement goal
-// set announcement timer
-// change announcement timer
-// make announce service for checking for announcements once a minute
-// start on boot
-
 import {
     Message
 } from "discord.js";
 import chrono from 'chrono-node';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import helper from '../util/cmd-helper';
 import DB from '../util/db';
 
@@ -92,8 +84,9 @@ export default (message: Message) => {
         try {
             const now = moment();
             const dateStr = msg.slice(4, msg.length).join(' ');
+            const channelInfo = await DB.Channel.findOne({ where: { id: message.channel.id }}) as any;
             const parsed = chrono.parse(dateStr);
-            const timeFrom = moment(parsed[0].start.date()).from(now)
+            const zoned = moment(parsed[0].start.date()).tz(channelInfo.timezone).format('MMMM Do YYYY, h:mm:ssa');
             await DB.setAnnounceDate(message.channel.id, msg[2], dateStr);
             const richEmbed = {
                 title: `:trumpet: Announcement Date Goal Set! :trumpet:`, 
@@ -104,7 +97,7 @@ export default (message: Message) => {
                     },
                     {
                         title: `When announce will run`,
-                        value: `"${dateStr}" \n_or_\n${timeFrom}`
+                        value: `"${dateStr}" \n_or_\n${zoned} (${channelInfo.timezone})`
                     }
                 ]
                 
