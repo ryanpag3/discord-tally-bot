@@ -65,10 +65,10 @@ Cases where `[]` is shown should be replaced in its entirety with the value it r
 
 ## Announcements
 ### General
-`!tb announcements` - List all timers created in this channel.
+`!tb announcements` - List all announcement created in this channel.
 
 ### Manage
-`!tb announce [name] [description]` - Create a timer with a required name and optional description.
+`!tb announce [name] [description]` - Create a announcement with a required name and optional description.
 
 `!tb announce [name] -d [date]` - Set a specified date for when to run the announcement. [See here for help](https://www.w3schools.com/js/js_date_formats.asp)
 
