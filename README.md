@@ -7,6 +7,9 @@ Tallies and timers are kept track of using a name which you specify when you cre
 
 Have fun! Don't forget to provide feedback using GitHub issues.
 
+## Changelog
+[Click here](https://github.com/ryanpage42/discord-tally-bot/blob/master/CHANGELOG.md)
+
 # Commands
 Cases where `[]` is shown should be replaced in its entirety with the value it represents. (i.e `!tb add my-tally` or `!tb rm my-tally`)
 
