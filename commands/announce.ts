@@ -1,186 +1,140 @@
 import {
     Message
 } from "discord.js";
-import chrono from 'chrono-node';
-import moment from 'moment-timezone';
+import cronParser from 'cron-parser';
+import { CronJob } from 'cron';
 import helper from '../util/cmd-helper';
 import DB from '../util/db';
+import CronAnnouncer from '../util/cron-announcer';
+
+// !tb announce tt -t test-tally 1000
+// !tb announce tt -d next monday
+// !tb announce tt -d * * * * *
+
+// !tb announce tt test description
+// !tb announce tt -t test-tally 1000
 
 export default (message: Message) => {
-    console.log(`${message.author.tag} called announce for channel ${message.channel.id}`);
-    let secondaryArg = false;
+    console.log('Running test command for channel [' + message.channel.id + ']');
     const msg = message.content.split(' ');
-    if (msg[3] && msg[3].startsWith('-')) {
-        secondaryArg = true;
-        msg[3] = msg[3].substr(1); // remove dash
+    const announceName = msg[2];
+    const subArg = msg[3];
+    try {
+        switch (subArg) {
+            case '-t':
+                setTallyGoal();
+                break;
+            case '-d':
+                setDateGoal();
+                break;
+            case '-kill':
+                killAnnouncement();
+                break;
+            case '-active':
+                activateAnnouncement();
+                break;
+            default:
+                createAnnouncement();
+                break;
+        }
+    } catch (e) {
+        console.log('Announcement command failed. Reason: ' + e);
+        helper.finalize(message);
+        const richEmbed = {
+            description: `Announcement command failed. Reason ${e}`
+        };
+        message.channel.send(helper.buildRichMsg(richEmbed));
     }
 
-    switch (msg[3]) {
-        case 'tally':
-            validateSecondArg()
-            setTally();
-            break;
-        case 'date':
-            validateSecondArg()
-            setDate();
-            break;
-        case 'locale':
-            validateSecondArg()
-            setLocale();
-            break;
-        case 'n':
-            validateSecondArg()
-            setName();
-            break;
-        case 'd':
-            validateSecondArg()
-            setDescription();
-            break;
-        case 'rm':
-            deleteAnnounce();
-            break;
-        default:
-            // not correct argument or they actually want to make tally
-            if (secondaryArg === true) msg[3] = '-' + msg[3]; 
-            createAnnouncement();
-            break;
-    }
-
-    async function setTally() {
+    async function setTallyGoal() {
         console.log(`Setting tally goal for ${message.author.tag}`);
-        try {
-            if (!msg[5]) throw new Error('Count is required for tally goal.');
-            await DB.setAnnounceTallyGoal(message.channel.id, msg[2], msg[4], msg[5]);
-            const richEmbed = {
-                title: `:trumpet: Announcement Tally Goal Set! :trumpet:`, 
-                fields: [
-                    {
-                        title: 'Title',
-                        value: msg[2]
-                    },
-                    {
-                        title: `When announce will run`,
-                        value: 'Once **' + msg[4] + '** reaches ' + msg[5] + ' tallies.'
-                    }
-                ]
-                
-            }
-            helper.finalize(message);
-            message.channel.send(helper.buildRichMsg(richEmbed));
-        } catch (e) {
-            console.log('Failed to update announcement with tally goal. Reason: ' + e);
+        const channelId = message.channel.id;
+        const goalName: string = msg[4], goalCount: string = msg[5];
         
-            helper.finalize(message);
-    
-            const richEmbed = {
-                description: `Failed to update announcement with tally goal. Reason: ${e}`
-            }
-            message.channel.send(helper.buildRichMsg(richEmbed));        
+        if (!goalCount) throw new Error(`Goal count is required to set tally goal.`);
+
+        await DB.setAnnounceTallyGoal(channelId, announceName, goalName, goalCount);
+
+        const richEmbed = {
+            title: `:trumpet: Announcement Tally Goal Set! :trumpet:`,
+            fields: [
+                {
+                    title: `Title`,
+                    value: announceName
+                },
+                {
+                    title: `When this announcement will trigger`,
+                    value: `Once **${goalName}** reaches ${goalCount}.`
+                }
+            ]
         }
+        finalize(richEmbed);
     }
 
-    async function setDate() {
-        console.log(`Setting date for ${message.author.tag}`);
-        try {
-            const now = moment();
-            const dateStr = msg.slice(4, msg.length).join(' ');
-            const channelInfo = await DB.Channel.findOne({ where: { id: message.channel.id }}) as any;
-            const parsed = chrono.parse(dateStr);
-            const zoned = moment(parsed[0].start.date()).tz(channelInfo.timezone).format('MMMM Do YYYY, h:mm:ssa');
-            await DB.setAnnounceDate(message.channel.id, msg[2], dateStr);
-            const richEmbed = {
-                title: `:trumpet: Announcement Date Goal Set! :trumpet:`, 
-                fields: [
-                    {
-                        title: 'Title',
-                        value: msg[2]
-                    },
-                    {
-                        title: `When announce will run`,
-                        value: `"${dateStr}" \n_or_\n${zoned} (${channelInfo.timezone})`
-                    }
-                ]
-                
-            }
-            helper.finalize(message);
-            message.channel.send(helper.buildRichMsg(richEmbed));
-        } catch (e) {
-            console.log('Failed to update announcement with date. Reason: ' + e);
+    async function setDateGoal() {
+        console.log(`Setting date goal for ${message.author.tag}.`);
+        const datePattern = msg.slice(4, msg.length).join(' ');
+        if (!isValidDate(datePattern) && !isValidCron(datePattern))
+            throw new Error(`Invalid date pattern provided.\n` +
+            `If your event fires once, please use a valid date. If it repeats, please make sure it is a valid CRON pattern.\n` +
+            `You can refer here for help: https://crontab.guru/`);
         
-            helper.finalize(message);
-    
-            const richEmbed = {
-                description: `Failed to update announcement with date. Reason: ${e}`
-            }
-            message.channel.send(helper.buildRichMsg(richEmbed));        
+        let date;
+        if (isValidDate(datePattern)){
+            console.log('Using date pattern to create date object.');
+            date = new Date(datePattern);
+            console.log(date);
         }
+
+        await DB.setAnnounceDate(message.channel.id, announceName, datePattern);
+
+        CronAnnouncer.createCronJob(announceName, message.channel.id, date || datePattern);
+
+        const richEmbed = {
+            title: `:trumpet: Announcement Date Goal Set! :trumpet:`,
+            fields: [
+                {
+                    title: `Title`,
+                    value: announceName
+                },
+                {
+                    title: `When announcement will run`,
+                    value: date ? date.toLocaleDateString() + ' ' + date.toLocaleTimeString() : datePattern
+                }
+            ]
+        }
+        finalize(richEmbed);
     }
 
-    async function setName() {
-        console.log(`Setting name for ${message.author.tag}`);
-        try {
-            await DB.setAnnounceName(message.channel.id, msg[2], msg[4]);
-            const richEmbed = {
-                title: `:trumpet: Announcement Name set! :trumpet:`, 
-                fields: [
-                    {
-                        title: 'New name',
-                        value: msg[4]
-                    }
-                ]
-                
-            }
-            helper.finalize(message);
-            message.channel.send(helper.buildRichMsg(richEmbed));
-        } catch (e) {
-            console.log('Failed to update announcement with name. Reason: ' + e);
-        
-            helper.finalize(message);
-    
-            const richEmbed = {
-                description: `Failed to update announcement with name. Reason: ${e}`
-            }
-            message.channel.send(helper.buildRichMsg(richEmbed));        
-        }
+    async function killAnnouncement() {
+        CronAnnouncer.destroyCronJob(announceName, message.channel.id);
+        helper.finalize(message);
+        const richEmbed = {
+            description: `Announcement will not run anymore.`
+        };
+        message.channel.send(helper.buildRichMsg(richEmbed));
     }
 
-    async function setDescription() {
-        console.log(`Setting description for ${message.author.tag}`);
-        try {
-            const desc = msg.slice(4, msg.length).join(' ');
-            await DB.setAnnounceDesc(message.channel.id, msg[2], desc);
-            const richEmbed = {
-                title: `:trumpet: Announcement Description! :trumpet:`, 
-                fields: [
-                    {
-                        title: 'Title',
-                        value: msg[2]
-                    },
-                    {
-                        title: 'New description',
-                        value: desc
-                    }
-                ]
-                
-            }
-            helper.finalize(message);
-            message.channel.send(helper.buildRichMsg(richEmbed));
-        } catch (e) {
-            console.log('Failed to update announcement with name. Reason: ' + e);
-        
-            helper.finalize(message);
-    
-            const richEmbed = {
-                description: `Failed to update announcement with name. Reason: ${e}`
-            }
-            message.channel.send(helper.buildRichMsg(richEmbed));        
-        }
+    async function activateAnnouncement() {
+        const announce: any = await DB.Announcement.findOne({ where: {
+            channelId: message.channel.id, 
+            name: announceName
+        }});
+        DB.activateAnnouncement(message.channel.id, announceName);
+        if (!announce) return;
+        CronAnnouncer.createCronJob(announceName, message.channel.id, announce.datePattern);
+        helper.finalize(message);
+        const richEmbed = {
+            description: `Announcement will start running again.`
+        };
+        message.channel.send(helper.buildRichMsg(richEmbed));
     }
 
     async function createAnnouncement() {
         console.log(`Creating announcement for ${message.author.tag}`);
         try {
-            await DB.createAnnouncement(message.channel.id, msg[2], msg[3]);
+            const noDescription = 'no description.';
+            await DB.createAnnouncement(message.channel.id, msg[2], msg[3] || noDescription);
             const richEmbed = {
                 title: `:trumpet: Announcement Created! :trumpet:`,
                 fields: [
@@ -190,9 +144,10 @@ export default (message: Message) => {
                     },
                     {
                         title: 'Description',
-                        value: msg[3] + `\n\n**Don't forget to activate your announcement with a date schedule or tally goal.**` +
-                        `\n \`!tb announce ${msg[2]} -tally test-tally 1000\`` +
-                        `\n \`!tb announce ${msg[2]} -date monday at 9am\`` +
+                        value: (msg[3] || noDescription) + `\n\n**Don't forget to activate your announcement with a date schedule or tally goal.**` +
+                        `\n \`!tb announce ${msg[2]} -t test-tally 1000\`` +
+                        `\n \`!tb announce ${msg[2]} -d 0 6 * * *\`` +
+                        `\n \`!tb announce ${msg[2]} -d 07-14-2042 01:01:00 AM\`` +
                         `\n\ncreated by **${message.author.toString()}**`
                     }
                 ]
@@ -208,46 +163,29 @@ export default (message: Message) => {
                 const lengthMsg = {
                     description: `**${message.author.toString()}**, please try again with a shorter description. Max length is 255 characters including spaces.`
                 };
-                message.channel.send(helper.buildRichMsg(lengthMsg));
+                throw new Error(lengthMsg.description);
             }
-            const richEmbed = {
-                description: `
-                The announcement **${msg[2]}** already exists.
-                attempted by **${message.author.toString()}**
-                `
-            }
-            message.channel.send(helper.buildRichMsg(richEmbed));
+            throw e;
         }
+
     }
 
-    async function deleteAnnounce() {
-        console.log(`Deleting announcement for ${message.author.tag}`);
+    function finalize(richEmbed) {
+        helper.finalize(message);
+        message.channel.send(helper.buildRichMsg(richEmbed));
+    }
+
+    function isValidDate(d) {
+        const ts = Date.parse(d);
+        return isNaN(ts) == false;
+    }
+
+    function isValidCron(cronPattern) {
         try {
-            const desc = msg.slice(4, msg.length).join(' ');
-            await DB.deleteAnnounce(message.channel.id, msg[2]);
-            const richEmbed = {
-                description: `${msg[2]} has been deleted.\n\ndeleted by ${message.author.toString()}`
-                
-            }
-            helper.finalize(message);
-            message.channel.send(helper.buildRichMsg(richEmbed));
+            cronParser.parseExpression(cronPattern);
+            return true;
         } catch (e) {
-            console.log('Failed to delete. Reason: ' + e);
-        
-            helper.finalize(message);
-    
-            const richEmbed = {
-                description: `Failed to delete. Reason: ${e}`
-            }
-            message.channel.send(helper.buildRichMsg(richEmbed));        
+            return false;
         }
-    }
-
-    async function setLocale() {
-        
-    }
-
-    function validateSecondArg() {
-        if (!msg[4]) throw new Error('If using a secondary argument for announcements, you need to provide a value.');
     }
 }

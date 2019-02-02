@@ -1,5 +1,6 @@
 import { Op } from 'sequelize';
-import chrono from 'chrono-node'
+import chrono from 'chrono-node';
+import later from 'later';
 import config from '../config.json';
 import DB from './db';
 import helper from './cmd-helper';
@@ -15,7 +16,7 @@ export default class AnnounceService {
     }
 
     async start() {
-        setInterval(async () => await this.run(), devEnv ? config.announce_check_interval_dev : config.announce_check_interval)
+        // setInterval(async () => await this.run(), devEnv ? config.announce_check_interval_dev : config.announce_check_interval)
     }
 
     /**
@@ -64,8 +65,11 @@ export default class AnnounceService {
     }
 
     private async checkDateQuery(announcement) {
-        const parsed = chrono.parse(announcement.dateQuery);
-        // console.log(JSON.stringify(parsed));
+        // const parsed = chrono.parse(announcement.dateQuery);
+        console.log(announcement.dateQuery);
+        const parsed = later.parse.text(announcement.dateQuery);
+        const occurences = later.schedule(parsed).next(10);
+        console.log(occurences[0]);
     }
 
     private async checkTallyGoal(announcement) {
@@ -78,7 +82,7 @@ export default class AnnounceService {
         announcement.announcementRan = true;
         announcement.save();
         console.log(`announcement triggered: ${JSON.stringify(announcement)}`);
-        const Channel = await this.bot.channels.find(x => x.id === announcement.channelId);
+        const Channel = await this.bot.channels.findOne(x => x.id === announcement.channelId);
         const richEmbed = {
             title: `:trumpet: Announcement **${announcement.name}** :trumpet:`,
             description: `${announcement.description}\n\n**Goal reached:** ${announcement.tallyName} has hit ${announcement.tallyGoal}!`

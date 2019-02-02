@@ -3,18 +3,19 @@ import { EventEmitter } from 'events';
 import { prefix, status } from './config.json';
 import { token } from './config-private.json';
 import db from './util/db';
+import CronAnnouncer from './util/cron-announcer';
 import keywordUtil from './util/keyword-util';
-import AnnounceService from './util/announce-service';
 
 const bot = new Discord.Client();
 const emitter = new EventEmitter();
-const announceService = new AnnounceService({bot: bot});
 
 db.init();
-announceService.start();
+
 
 bot.on('ready', () => {
     console.log(`Tally Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);
+    CronAnnouncer.setBot({bot: bot });
+    CronAnnouncer.initCronJobs();
 });
 
 bot.on('message', (message: Message) => {
@@ -163,14 +164,15 @@ bot.login(token);
  * start status broadcasting
  */
 const startBroadcasting = () => {
-    /**
-     *  
-     */
     const statusGenerators = [
         () => {
             let users = 0;
             bot.guilds.map(guild => users += guild.members.size);
-            bot.user.setActivity(`Counting things for ${bot.guilds.size} servers and ${users} users.`);
+            // TODO: this is workaround, need real solution
+            if (bot.user == null) 
+                setTimeout(() => process.exit(1), 30000);
+            else
+                bot.user.setActivity(`Counting things for ${bot.guilds.size} servers and ${users} users.`);
         },
         () => {
             bot.user.setActivity(`!tb help for commands.`)

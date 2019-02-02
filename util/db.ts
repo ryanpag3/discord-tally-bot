@@ -81,7 +81,7 @@ export default {
 
     async increaseBumpCounter() {
         try {
-            let bumpTally = await this.Tally.find({
+            let bumpTally = await this.Tally.findOne({
                 where: {
                     name: BUMP_COUNTER,
                     channelId: INTERNAL
@@ -110,7 +110,7 @@ export default {
 
     async increaseDumpCounter() {
         try {
-            let dumpTally = await this.Tally.find({
+            let dumpTally = await this.Tally.findOne({
                 where: {
                     name: DUMP_COUNTER,
                     channelId: INTERNAL
@@ -125,7 +125,7 @@ export default {
 
     async getCount(name: string, channelId: string) {
         try {
-            let tally = await this.Tally.find({
+            let tally = await this.Tally.findOne({
                 where: {
                     name: name,
                     channelId: channelId
@@ -207,6 +207,13 @@ export default {
         });
     },
 
+    async activateAnnouncement(channelId, name) {
+        const announcement = await this.Announcement.findOne({ where: {channelId: channelId, name: name}});
+        if (!announcement) throw new Error('No announcement found to update.');
+        announcement.active = true;
+        await announcement.save();
+    },
+
     async setAnnounceName(channelId, name, newName) {
         const announcement = await this.Announcement.findOne({ where: {channelId: channelId, name: name}});
         if (!announcement) throw new Error('No announcement found to update.');
@@ -235,10 +242,8 @@ export default {
     async setAnnounceDate(channelId, name, dateStr) {
         const announcement = await this.Announcement.findOne({ where: {channelId: channelId, name: name}});
         if (!announcement) throw new Error('No announcement found to update.');
-        if (JSON.stringify(chrono.parse(dateStr)) === '[]') throw new Error('Invalid date string.');
         announcement.announcementRan = null;
-        announcement.dateQuery = dateStr;
-        announcement.date = chrono.parse(dateStr)[0].ref;
+        announcement.datePattern = dateStr;
         announcement.tallyGoal = null;
         announcement.tallyName = null;
         await announcement.save();

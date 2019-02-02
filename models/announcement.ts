@@ -5,15 +5,14 @@ import {
 
 export default (sequelize: Sequelize, DataTypes: DataTypes) => {
     return sequelize.define('announcement', {
+        id: {type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
         name: DataTypes.STRING,
         channelId: DataTypes.STRING,
         description: DataTypes.STRING,
-        dateQuery: { type: DataTypes.STRING, defaultValue: null },
-        date: { type: DataTypes.DATE },
-        recurringDate: { type: DataTypes.BOOLEAN, defaultValue: null},
+        datePattern: { type: DataTypes.STRING, defaultValue: null },
         tallyName: { type: DataTypes.STRING, defaultValue: null },
         tallyGoal: { type: DataTypes.INTEGER, defaultValue: null },
-        announcementRan: {type: DataTypes.BOOLEAN, defaultValue: null }
+        active: {type: DataTypes.BOOLEAN, defaultValue: true }
     }, {
         timestamps: false,
         indexes: [{

@@ -13,7 +13,7 @@ export default async (message: Message) => {
     const Timer = db.Timer;
 
     try {
-        let timer: any = await Timer.find({where: {
+        let timer: any = await Timer.findOne({where: {
             name: timerName,
             channelId: message.channel.id
         }});
