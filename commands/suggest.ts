@@ -20,7 +20,7 @@ export default async (params) => {
     const richEmbed = {
         description: `
 **${new Date().toLocaleDateString()} | ${new Date().toLocaleTimeString()}**
-suggested by **${author.toString()}**
+suggested by **${author.tag}**
 
         _${suggestion}_`
     }
