@@ -63,6 +63,21 @@ Cases where `[]` is shown should be replaced in its entirety with the value it r
 
 **note:** I have on my wishlist to write a permissions feature. These most likely will be admin-only once that is complete.
 
+## Announcements
+### General
+`!tb announcements` - List all timers created in this channel.
+
+### Manage
+`!tb announce [name] [description]` - Create a timer with a required name and optional description.
+
+`!tb announce [name] -d [date]` - Set a specified date for when to run the announcement. [See here for help](https://www.w3schools.com/js/js_date_formats.asp)
+
+`!tb announce [name] -d [cron]` - Set a valid cron expression to run the announcement. [See here for help](https://crontab.guru/)
+
+`!tb announce [name] -kill` - Stop an announcement from running.
+
+`!tb announce [name] -activate` - Start an announcement. 
+
 ## Timers
 ### General
 `!tb timers` - List all timers created in this channel.

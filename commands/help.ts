@@ -51,7 +51,11 @@ help called by **${message.author.toString()}**`,
         ]
     }
 
+    const shortMsg = {
+        description: `For documentation and commands, go to\n https://github.com/ryanpage42/discord-tally-bot/blob/master/README.md`
+    }
+
     helper.finalize(message);
 
-    message.channel.send(helper.buildRichMsg(msg));
+    message.channel.send(helper.buildRichMsg(shortMsg));
 }

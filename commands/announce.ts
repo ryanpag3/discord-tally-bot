@@ -30,7 +30,7 @@ export default (message: Message) => {
             case '-kill':
                 killAnnouncement();
                 break;
-            case '-active':
+            case '-activate':
                 activateAnnouncement();
                 break;
             default:
