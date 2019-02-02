@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## 1.1.1
+### Added
+
+### Changed
+
 ## 1.1.0
 ### Added
 - Add support for announcements. 
