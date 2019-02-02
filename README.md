@@ -64,6 +64,8 @@ Cases where `[]` is shown should be replaced in its entirety with the value it r
 **note:** I have on my wishlist to write a permissions feature. These most likely will be admin-only once that is complete.
 
 ## Announcements
+All announcement schedules are run in `America/Los_Angeles` timezone. I have plans to do channel specific timezones but it is low priority. Please schedule accordingly!
+
 ### General
 `!tb announcements` - List all announcement created in this channel.
 
