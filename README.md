@@ -73,7 +73,7 @@ All announcement schedules are run in `America/Los_Angeles` timezone. I have pla
 `!tb announcements` - List all announcement created in this channel.
 
 ### Manage
-`!tb announce [name] [description]` - Create a announcement with a required name and optional description.
+`!tb announce [name] [description]` - Create a announcement with a required name and optional description. This can also be used to update the description of an existing announcement.
 
 `!tb announce [name] -d [date]` - Set a specified date for when to run the announcement. [See here for help](https://www.w3schools.com/js/js_date_formats.asp)
 

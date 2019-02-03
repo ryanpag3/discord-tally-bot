@@ -15,7 +15,6 @@ import CronAnnouncer from '../util/cron-announcer';
 // !tb announce tt -t test-tally 1000
 
 export default (message: Message) => {
-    console.log('Running test command for channel [' + message.channel.id + ']');
     const msg = message.content.split(' ');
     const announceName = msg[2];
     const subArg = msg[3];
@@ -134,7 +133,7 @@ export default (message: Message) => {
         console.log(`Creating announcement for ${message.author.tag}`);
         try {
             const noDescription = 'no description.';
-            await DB.createAnnouncement(message.channel.id, msg[2], msg[3] || noDescription);
+            await DB.upsertAnnouncement(message.channel.id, msg[2], msg[3] || noDescription);
             const richEmbed = {
                 title: `:trumpet: Announcement Created! :trumpet:`,
                 fields: [

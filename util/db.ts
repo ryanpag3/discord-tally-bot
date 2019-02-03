@@ -207,6 +207,14 @@ export default {
         });
     },
 
+    async upsertAnnouncement(channelId, name, description) {
+        return await this.Announcement.upsert({
+            channelId: channelId,
+            name: name,
+            description: description
+        });
+    },
+
     async activateAnnouncement(channelId, name) {
         const announcement = await this.Announcement.findOne({ where: {channelId: channelId, name: name}});
         if (!announcement) throw new Error('No announcement found to update.');
