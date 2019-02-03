@@ -1,5 +1,6 @@
 import Discord from 'discord.js';
 import config from '../config.json';
+import PatchAnnouncer from './patch-announcer';
 
 export default {
     removePrefixCommand: (messageContent: string, commandLength) => {
@@ -72,6 +73,7 @@ export default {
      * run any finalization logic for the particular message
      */
     finalize: async (msg: any) => {
+        PatchAnnouncer.announcePatch(msg);
         deleteCommandMsg(msg);
     },
 

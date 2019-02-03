@@ -16,6 +16,7 @@ bot.on('ready', () => {
     console.log(`Tally Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);
     CronAnnouncer.setBot({bot: bot });
     CronAnnouncer.initCronJobs();
+    db.initServers(bot.guilds);
 });
 
 bot.on('message', (message: Message) => {
@@ -29,10 +30,11 @@ bot.on('message', (message: Message) => {
         keywordUtil.bumpKeywordTallies(message);
         return; 
     }
-
     const isBot = message.author.bot;
     if (isBot) return;
     
+    db.initServer(message.guild.id);
+
     const mArr = message.content.split(' ');
     const command = mArr[0] + ' ' + mArr[1];
     emit(command, message);
@@ -74,6 +76,7 @@ import bug from './commands/bug';
 import announce from './commands/announce';
 import announcements from './commands/announcements';
 import timezone from './commands/timezone';
+import patchnotes from './commands/patchnotes';
 
 /**
  * COMMANDS
@@ -152,6 +155,9 @@ emitter.on(prefix + 'announcements', announcements);
 
 // set channel timezone
 // emitter.on(prefix + 'timezone', timezone);
+
+// enable/disable patch notes alerts
+emitter.on(prefix + 'patchnotes', patchnotes);
 
 /**
  * The following commands are only exposed when bot is run without `production` flag

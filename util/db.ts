@@ -6,6 +6,7 @@ import pConfig from '../config-private.json';
 import config from '../config.json';
 import Tally from '../models/tally';
 import Timer from '../models/timer';
+import server from '../models/server';
 
 const sequelize = new Sequelize({
     database: config.database.name,
@@ -31,6 +32,7 @@ export default {
     Timer: sequelize.import('timer', Timer),
     Announcement: sequelize.import('../models/announcement'),
     Channel: sequelize.import('../models/channel'),
+    Server: sequelize.import('../models/server'),
 
     init() {
         conn.connect((err) => {
@@ -52,9 +54,30 @@ export default {
                 this.Channel.sync({
                     alter: true
                 });
+                this.Server.sync({
+                    alter: true
+                });
                 counter.init();
             });
         });
+    },
+
+    async initServers(servers) {
+        servers.map(async server => {
+            try {
+                await this.Server.upsert({ id: server.id });
+            } catch (e) {
+                console.log(`Failed to upsert Server record on init. Reason: ${e}`);
+            }
+        })
+    },
+
+    async initServer(id) {
+        try {
+            await this.Server.upsert({ id: id});
+        } catch (e) {
+            console.log(`Failed to upsert Server record on init. Reason: ${e}`);
+        }
     },
 
     async getTallyCount() {

@@ -7,13 +7,6 @@ import helper from '../util/cmd-helper';
 import DB from '../util/db';
 import CronAnnouncer from '../util/cron-announcer';
 
-// !tb announce tt -t test-tally 1000
-// !tb announce tt -d next monday
-// !tb announce tt -d * * * * *
-
-// !tb announce tt test description
-// !tb announce tt -t test-tally 1000
-
 export default (message: Message) => {
     const msg = message.content.split(' ');
     const announceName = msg[2];
