@@ -1,6 +1,6 @@
 {
   "name": "discord-tally-bot",
-  "version": "1.1.1",
+  "version": "1.1.",
   "description": "A discord bot for tallying things.",
   "main": "dist/bot.js",
   "scripts": {
