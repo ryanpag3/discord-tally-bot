@@ -1,16 +1,17 @@
 import Discord, { Message } from 'discord.js';
+import DBL from 'dblapi.js';
 import { EventEmitter } from 'events';
 import { prefix, status } from './config.json';
-import { token } from './config-private.json';
+import { token, dbots_token } from './config-private.json';
 import db from './util/db';
 import CronAnnouncer from './util/cron-announcer';
 import keywordUtil from './util/keyword-util';
 
 const bot = new Discord.Client();
 const emitter = new EventEmitter();
+const dbl = new DBL(dbots_token, bot);
 
 db.init();
-
 
 bot.on('ready', () => {
     console.log(`Tally Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);
@@ -181,8 +182,10 @@ const startBroadcasting = () => {
             // TODO: this is workaround, need real solution
             if (bot.user == null) 
                 setTimeout(() => process.exit(1), 30000);
-            else
+            else {
                 bot.user.setActivity(`Counting things for ${bot.guilds.size} servers and ${users} users.`);
+                dbl.postStats(bot.guilds.size);
+            }
         },
         () => {
             bot.user.setActivity(`!tb help for commands.`)

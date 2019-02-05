@@ -1,5 +1,6 @@
 {
     "token": "",
+    "dbots_token" : "",
     "database": {
         "url": "",
         "user": "",
