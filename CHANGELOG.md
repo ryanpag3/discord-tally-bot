@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## 1.2.0
+### Added
+- You can now manage user permissions for all bot commands.
+
+### Changed
+- TBD
+
+### Fixed
+- Creating a timer with `!tb timer` with no timer name provided will now properly throw an error.
+
 ## 1.1.0
 ### Added
 - Add support for announcements.

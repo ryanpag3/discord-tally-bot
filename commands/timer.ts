@@ -17,10 +17,12 @@ export default async (message: Message) => {
         isDelete = true;
     }
 
+
     let timerDescription = msg.join(' ');
     const Timer = db.Timer;
 
     try {
+        if (!timerName) throw 'No timer name provided to delete.';
         if (isDelete == true) {
             if (!timerName) throw 'No timer name provided to delete!';
             await Timer.destroy({

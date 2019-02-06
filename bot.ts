@@ -6,10 +6,13 @@ import { token, dbots_token } from './config-private.json';
 import db from './util/db';
 import CronAnnouncer from './util/cron-announcer';
 import keywordUtil from './util/keyword-util';
+import Permissions from './util/permissions';
 
 const bot = new Discord.Client();
 const emitter = new EventEmitter();
-const dbl = new DBL(dbots_token, bot);
+let dbl;
+if (process.env.NODE_ENV == 'production') // don't POST stats in dev
+    dbl = new DBL(dbots_token, bot);
 
 db.init();
 
@@ -38,12 +41,20 @@ bot.on('message', (message: Message) => {
 
     const mArr = message.content.split(' ');
     const command = mArr[0] + ' ' + mArr[1];
+    
+    if (Permissions.isPermissionCommand(mArr)) {
+        Permissions.setPermissionRole(message);
+        return;
+    } else if (Permissions.isGlobalPermissionCommand(mArr)) {
+        Permissions.setAllPermissions(message)     
+        return;
+    }
+
     emit(command, message);
 });
 
 function emit(command, message) {
     // TODO: make more data driven as more added
-    console.log(command);
     if (command == prefix + 'suggest' || command == prefix + 'bug') {
         emitter.emit(command, {message: message, bot: bot});
     } else {
@@ -184,7 +195,7 @@ const startBroadcasting = () => {
                 setTimeout(() => process.exit(1), 30000);
             else {
                 bot.user.setActivity(`Counting things for ${bot.guilds.size} servers and ${users} users.`);
-                dbl.postStats(bot.guilds.size);
+                if (dbl) dbl.postStats(bot.guilds.size);
             }
         },
         () => {
