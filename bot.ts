@@ -7,6 +7,8 @@ import db from './util/db';
 import CronAnnouncer from './util/cron-announcer';
 import keywordUtil from './util/keyword-util';
 import Permissions from './util/permissions';
+import cmdHelper from './util/cmd-helper';
+import Commands from './static/Commands';
 
 const bot = new Discord.Client();
 const emitter = new EventEmitter();
@@ -23,9 +25,8 @@ bot.on('ready', () => {
     db.initServers(bot.guilds);
 });
 
-bot.on('message', (message: Message) => {
+bot.on('message', async (message: Message) => {
     if (message.channel.type == 'dm') {
-        console.log('PM received');
         return;
     }
 
@@ -42,6 +43,13 @@ bot.on('message', (message: Message) => {
     const mArr = message.content.split(' ');
     const command = mArr[0] + ' ' + mArr[1];
     
+    const hasPermission = await Permissions.hasPermission(message);
+    if (!hasPermission) {
+        cmdHelper.finalize(message);
+        message.author.send(`You do not have permission to run that command in that server. Please contact your server admin for help.`);
+        return;
+    }
+
     if (Permissions.isPermissionCommand(mArr)) {
         Permissions.setPermissionRole(message);
         return;
@@ -89,93 +97,97 @@ import announce from './commands/announce';
 import announcements from './commands/announcements';
 import timezone from './commands/timezone';
 import patchnotes from './commands/patchnotes';
+import permissions from './commands/permissions';
 
 /**
  * COMMANDS
  */
 // test command functionality
-emitter.on(prefix + 'test', test);
-emitter.on(prefix + 't', test);
+emitter.on(prefix + Commands.TEST, test);
+emitter.on(prefix + Commands.T, test);
 
 // give help
-emitter.on(prefix + 'help', help);
-emitter.on(prefix + 'h', help);
+emitter.on(prefix + Commands.HELP, help);
+emitter.on(prefix + Commands.H, help);
 
 // show existing tallies
-emitter.on(prefix + 'show', show);
+emitter.on(prefix + Commands.SHOW, show);
 
 // create new tally
-emitter.on(prefix + 'create', create);
-emitter.on(prefix + 'add', create);
+emitter.on(prefix + Commands.CREATE, create);
+emitter.on(prefix + Commands.ADD, create);
 
 // create a keyword tally
-emitter.on(prefix + 'keyword', keyword);
-emitter.on(prefix + 'kw', keyword);
+emitter.on(prefix + Commands.KEYWORD, keyword);
+emitter.on(prefix + Commands.KW, keyword);
 
 // delete a tally
-emitter.on(prefix + 'delete', del);
-emitter.on(prefix + 'rm', del);
+emitter.on(prefix + Commands.DELETE, del);
+emitter.on(prefix + Commands.RM, del);
 
 // bump a tally's count up
-emitter.on(prefix + 'bump', bump);
+emitter.on(prefix + Commands.BUMP, bump);
 
 // dump a tally's count down
-emitter.on(prefix + 'dump', dump)
+emitter.on(prefix + Commands.DUMP, dump)
 
 // set a tally to 0
-emitter.on(prefix + 'empty', empty);
+emitter.on(prefix + Commands.EMPTY, empty);
 
 // set a tally to an amount
-emitter.on(prefix + 'set', set);
+emitter.on(prefix + Commands.SET, set);
 
 // get tally details
-emitter.on(prefix + 'details', details);
-emitter.on(prefix + 'get', details);
+emitter.on(prefix + Commands.DETAILS, details);
+emitter.on(prefix + Commands.GET, details);
 
 // set tally description
-emitter.on(prefix + 'describe', describe);
-emitter.on(prefix + 'update', describe);
+emitter.on(prefix + Commands.DESCRIBE, describe);
+emitter.on(prefix + Commands.UPDATE, describe);
 
 // create a timer
-emitter.on(prefix + 'timer', timer);
+emitter.on(prefix + Commands.TIMER, timer);
 
 // start a timer
-emitter.on(prefix + 'start', start);
+emitter.on(prefix + Commands.START, start);
 
 // stop a timer
-emitter.on(prefix + 'stop', stop);
+emitter.on(prefix + Commands.STOP, stop);
 
 // reset a timer
-emitter.on(prefix + 'reset', reset);
+emitter.on(prefix + Commands.RESET, reset);
 
 // show all timers
-emitter.on(prefix + 'timers', timers);
+emitter.on(prefix + Commands.TIMERS, timers);
 
 // make a suggestion
-emitter.on(prefix + 'suggest', suggest);
+emitter.on(prefix + Commands.SUGGEST, suggest);
 
 // report a bug
-emitter.on(prefix + 'bug', bug);
-emitter.on(prefix + 'report', bug);
+emitter.on(prefix + Commands.BUG, bug);
+emitter.on(prefix + Commands.REPORT, bug);
 
 // manage announcements
-emitter.on(prefix + 'announce', announce);
-emitter.on(prefix + 'a', announce);
+emitter.on(prefix + Commands.ANNOUNCE, announce);
+emitter.on(prefix + Commands.A, announce);
 
 // show announcements
-emitter.on(prefix + 'announcements', announcements);
+emitter.on(prefix + Commands.ANNOUNCEMENTS, announcements);
 
 // set channel timezone
 // emitter.on(prefix + 'timezone', timezone);
 
 // enable/disable patch notes alerts
-emitter.on(prefix + 'patchnotes', patchnotes);
+emitter.on(prefix + Commands.PATCHNOTES, patchnotes);
+
+// show permissions
+emitter.on(prefix + Commands.PERMISSIONS, permissions);
 
 /**
  * The following commands are only exposed when bot is run without `production` flag
  */
 if (process.env.NODE_ENV != 'production') {
-    emitter.on(prefix + 'rmall', rmall);
+    emitter.on(prefix + Commands.RMALL, rmall);
 }
 /**
  * INIT

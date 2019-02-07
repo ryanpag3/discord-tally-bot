@@ -33,6 +33,7 @@ export default {
     Announcement: sequelize.import('../models/announcement'),
     Channel: sequelize.import('../models/channel'),
     Server: sequelize.import('../models/server'),
+    Permission: sequelize.import('../models/permission'),
 
     init() {
         conn.connect((err) => {
@@ -55,6 +56,9 @@ export default {
                     alter: true
                 });
                 this.Server.sync({
+                    alter: true
+                });
+                this.Permission.sync({
                     alter: true
                 });
                 counter.init();
