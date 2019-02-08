@@ -232,17 +232,17 @@ const startBroadcasting = () => {
             bot.user.setActivity(`!tb help for commands.`)
         },
         async () => {
-                const tallyCnt = await db.getTallyCount();
-                bot.user.setActivity(`${tallyCnt} total tallies managed.`);
-            },
-            async () => {
-                    const bumpCnt = await db.getBumpCount();
-                    bot.user.setActivity(`${bumpCnt} total bumps.`);
-                },
-                async () => {
-                    const dumpCnt = await db.getDumpCount();
-                    bot.user.setActivity(`${dumpCnt} total dumps.`);
-                }
+            const tallyCnt = await db.getTallyCount();
+            bot.user.setActivity(`${tallyCnt} total tallies managed.`);
+        },
+        async () => {
+            const bumpCnt = await db.getBumpCount();
+            bot.user.setActivity(`${bumpCnt} total bumps.`);
+        },
+        async () => {
+            const dumpCnt = await db.getDumpCount();
+            bot.user.setActivity(`${dumpCnt} total dumps.`);
+        }
     ];
 
     let i = 0;
