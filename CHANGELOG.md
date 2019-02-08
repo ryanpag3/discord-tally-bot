@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## **1.1.1**
 ### Added
-- You can now manage user permissions for all bot commands. See [README.md](https://github.com/ryanpage42/discord-tally-bot/blob/master/README.md) for details.
+- **PERMISSIONS ARE HERE!** You can now manage user permissions for all bot commands. See [README.md](https://github.com/ryanpage42/discord-tally-bot/blob/master/README.md) for details.
 
 ### Fixed
 - Creating a timer with `!tb timer` with no timer name provided will now properly throw an error.
