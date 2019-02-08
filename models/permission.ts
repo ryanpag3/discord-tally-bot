@@ -9,6 +9,7 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
         serverId: DataTypes.STRING,
         command: DataTypes.STRING,
         roleId: DataTypes.STRING,
+        roleName: DataTypes.STRING
     }, {
         timestamps: false,
         indexes: [{

@@ -1,13 +1,22 @@
-import Discord, { Message } from 'discord.js';
+import Discord, {
+    Message
+} from 'discord.js';
 import DBL from 'dblapi.js';
-import { EventEmitter } from 'events';
-import { prefix, status } from './config.json';
-import { token, dbots_token } from './config-private.json';
+import {
+    EventEmitter
+} from 'events';
+import {
+    prefix,
+    status
+} from './config.json';
+import {
+    token,
+    dbots_token
+} from './config-private.json';
 import db from './util/db';
 import CronAnnouncer from './util/cron-announcer';
 import keywordUtil from './util/keyword-util';
 import Permissions from './util/permissions';
-import cmdHelper from './util/cmd-helper';
 import Commands from './static/Commands';
 
 const bot = new Discord.Client();
@@ -20,51 +29,60 @@ db.init();
 
 bot.on('ready', () => {
     console.log(`Tally Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);
-    CronAnnouncer.setBot({bot: bot });
+    CronAnnouncer.setBot({
+        bot: bot
+    });
     CronAnnouncer.initCronJobs();
     db.initServers(bot.guilds);
 });
 
 bot.on('message', async (message: Message) => {
-    if (message.channel.type == 'dm') {
-        return;
-    }
+    try {
+        if (message.channel.type == 'dm') {
+            return;
+        }
 
-    const startsWithPrefix = message.content.startsWith(prefix);
-    if (!startsWithPrefix) {
-        keywordUtil.bumpKeywordTallies(message);
-        return; 
-    }
-    const isBot = message.author.bot;
-    if (isBot) return;
-    
-    db.initServer(message.guild.id);
+        const startsWithPrefix = message.content.startsWith(prefix);
+        if (!startsWithPrefix) {
+            keywordUtil.bumpKeywordTallies(message);
+            return;
+        }
+        const isBot = message.author.bot;
+        if (isBot) return;
 
-    const mArr = message.content.split(' ');
-    const command = mArr[0] + ' ' + mArr[1];
-    
-    const hasPermission = await Permissions.hasPermission(message);
-    if (!hasPermission) {
-        cmdHelper.finalize(message);
-        message.author.send(`You do not have permission to run that command in that server. Please contact your server admin for help.`);
-        return;
-    }
+        db.initServer(message.guild.id);
 
-    if (Permissions.isPermissionCommand(mArr)) {
-        Permissions.setPermissionRole(message);
-        return;
-    } else if (Permissions.isGlobalPermissionCommand(mArr)) {
-        Permissions.setAllPermissions(message)     
-        return;
-    }
+        const mArr = message.content.split(' ');
+        const command = mArr[0] + ' ' + mArr[1];
 
-    emit(command, message);
+        const hasPermission = await Permissions.hasPermission(message);
+        if (!hasPermission) {
+            await message.delete();
+            message.author.send(`You do not have permission to run that command in that server. Please contact your server admin for help.`);
+            return;
+        }
+
+        if (Permissions.isPermissionCommand(mArr)) {
+            Permissions.setPermissionRole(message);
+            return;
+        } else if (Permissions.isGlobalPermissionCommand(mArr)) {
+            Permissions.setAllPermissions(message)
+            return;
+        }
+
+        emit(command, message);
+    } catch (e) {
+        console.log(`Error while inbounding message: ` + e);
+    }
 });
 
 function emit(command, message) {
     // TODO: make more data driven as more added
     if (command == prefix + 'suggest' || command == prefix + 'bug') {
-        emitter.emit(command, {message: message, bot: bot});
+        emitter.emit(command, {
+            message: message,
+            bot: bot
+        });
     } else {
         emitter.emit(command, message);
     }
@@ -203,7 +221,7 @@ const startBroadcasting = () => {
             let users = 0;
             bot.guilds.map(guild => users += guild.members.size);
             // TODO: this is workaround, need real solution
-            if (bot.user == null) 
+            if (bot.user == null)
                 setTimeout(() => process.exit(1), 30000);
             else {
                 bot.user.setActivity(`Counting things for ${bot.guilds.size} servers and ${users} users.`);
@@ -214,17 +232,17 @@ const startBroadcasting = () => {
             bot.user.setActivity(`!tb help for commands.`)
         },
         async () => {
-            const tallyCnt = await db.getTallyCount();
-            bot.user.setActivity(`${tallyCnt} total tallies managed.`);
-        },
-        async () => {
-            const bumpCnt = await db.getBumpCount();
-            bot.user.setActivity(`${bumpCnt} total bumps.`);
-        },
-        async () => {
-            const dumpCnt = await db.getDumpCount();
-            bot.user.setActivity(`${dumpCnt} total dumps.`);
-        }
+                const tallyCnt = await db.getTallyCount();
+                bot.user.setActivity(`${tallyCnt} total tallies managed.`);
+            },
+            async () => {
+                    const bumpCnt = await db.getBumpCount();
+                    bot.user.setActivity(`${bumpCnt} total bumps.`);
+                },
+                async () => {
+                    const dumpCnt = await db.getDumpCount();
+                    bot.user.setActivity(`${dumpCnt} total dumps.`);
+                }
     ];
 
     let i = 0;
@@ -232,7 +250,7 @@ const startBroadcasting = () => {
         if (i == statusGenerators.length) i = 0;
         statusGenerators[i]();
         i++;
-    }, process.env.NODE_ENV == 'production' ? status.interval : status.interval_dev);    
+    }, process.env.NODE_ENV == 'production' ? status.interval : status.interval_dev);
 }
 
 startBroadcasting();

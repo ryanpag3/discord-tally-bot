@@ -13,6 +13,17 @@ Have fun! Don't forget to provide feedback using GitHub issues.
 # Commands
 Cases where `[]` is shown should be replaced in its entirety with the value it represents. (i.e `!tb add my-tally` or `!tb rm my-tally`)
 
+## Permissions
+On installation, Tally Bot will allow any user to run any command. Admins can set permissions for commands to allow only users with a certain role to run them.
+
+`!tb -role [Role]` - Set all permissions to a specific role. Server administrators can **always** run this.
+
+`!tb [command] -role [Role]` - Set a specific command's role. Server administrators can **always** run this.
+
+`!tb permissions` - Display all current permissions.
+
+`!tb -role -role [Role]` - To allow users to grant permission access (global and per command)
+
 ## Tallies
 ### Basic
 

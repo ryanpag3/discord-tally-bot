@@ -17,16 +17,31 @@ export default class Permissions {
             const mArr = message.content.split(' ');
             const isValid = Permissions.isValidCommand(mArr[1]);
             if (!isValid) throw new Error('invalid command');
-            const permission: any = await DB.Permission.findOne({
+            let permission: any = await DB.Permission.findOne({
                 where: {
                     serverId: message.guild.id,
                     command: mArr[1]
                 }
             });
+            
+            // admins can always set permissions
             if ((Permissions.isGlobalPermissionCommand(mArr) ||
                 Permissions.isPermissionCommand(mArr)) && Permissions.isAdminUser(message.member)) return true;
+            
+            // admins can allow other users to set permissions
+            let newPermission;
+            if (Permissions.isPermissionCommand(mArr)) {
+                newPermission = await DB.Permission.findOne({
+                    where: {
+                        serverId: message.guild.id,
+                        command: Commands.ROLE
+                    }
+                });
+            }
+
             return permission == null || message.member.roles.has(permission.roleId);
         } catch (e) {
+            console.log(e);
         }
         return false;
     }
@@ -41,11 +56,13 @@ export default class Permissions {
             const isValid = Permissions.isValidServerRole(message.guild, roleStr);
             if (!isValid) throw `${mArr[2]} is not a valid role for this server. Valid roles are the following: \n[${roles.toString()}]`;
             const roleId = Permissions.getRoleId(message.guild.roles, roleStr);
-            const keys = Object.keys(Commands);
+            let keys = Object.keys(Commands);
+            keys = keys.filter(key => key != Commands.RMALL.toUpperCase());
             for (let key of keys) {
                 await Permission.upsert({
                     serverId: message.guild.id,
                     roleId: roleId,
+                    roleName: roleStr,
                     command: Commands[key]
                 });
             }
@@ -68,7 +85,7 @@ export default class Permissions {
             const Permission = DB.Permission;
             const roles = message.guild.roles.map(role => role.name);
             const mArr = message.content.split(' ');
-            const rawCommand = mArr[1];
+            const rawCommand = mArr[1] == Commands.ROLE ? mArr[1].substr(1) : mArr[1];
             if (!mArr[3]) throw `Role definition missing for role command. Please provide one.`
 
             mArr.splice(0, 3);
@@ -85,6 +102,7 @@ export default class Permissions {
             await Permission.upsert({
                 serverId: message.guild.id,
                 roleId: roleId,
+                roleName: roleStr,
                 command: command
             });
 
@@ -102,7 +120,15 @@ export default class Permissions {
     }
 
     static getPermissionRole(channelId, permissionId) {
+        // TODO
+    }
 
+    static async getServerPermissions(serverId) {
+        return await DB.Permission.findAll({
+            where: {
+                serverId: serverId
+            }
+        });
     }
 
     static isValidServerRole(server, roleName) {
