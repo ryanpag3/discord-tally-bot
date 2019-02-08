@@ -38,7 +38,7 @@ export default class Permissions {
                     }
                 });
             }
-
+            permission = newPermission ? newPermission : permission;
             return permission == null || message.member.roles.has(permission.roleId);
         } catch (e) {
             console.log(e);
