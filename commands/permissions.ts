@@ -13,7 +13,6 @@ export default async (message: Message) => {
         if (permissions.length == 0) richEmbed = { description: `**No Server Permissions Set.**\nSet with \`!tb -role [Your Role]\` to set all initial permissions.` };
         message.channel.send(helper.buildRichMsg(richEmbed));
     } catch (e) {
-        console.log(e);
         const richEmbed = {
             description: `There was an error displaying permissions. Reason: ${e.toString()}`
         };

@@ -13,37 +13,32 @@ export default class Permissions {
     }
 
     static async hasPermission(message) {
-        try {
-            const mArr = message.content.split(' ');
-            const isValid = Permissions.isValidCommand(mArr[1]);
-            if (!isValid) throw new Error('invalid command');
-            let permission: any = await DB.Permission.findOne({
+        const mArr = message.content.split(' ');
+        const isValid = Permissions.isValidCommand(mArr[1]);
+        if (!isValid) throw new Error('invalid command');
+        let permission: any = await DB.Permission.findOne({
+            where: {
+                serverId: message.guild.id,
+                command: mArr[1]
+            }
+        });
+
+        // admins can always set permissions
+        if ((Permissions.isGlobalPermissionCommand(mArr) ||
+                Permissions.isPermissionCommand(mArr)) && Permissions.isAdminUser(message.member)) return true;
+
+        // admins can allow other users to set permissions
+        let newPermission;
+        if (Permissions.isPermissionCommand(mArr)) {
+            newPermission = await DB.Permission.findOne({
                 where: {
                     serverId: message.guild.id,
-                    command: mArr[1]
+                    command: Commands.ROLE
                 }
             });
-            
-            // admins can always set permissions
-            if ((Permissions.isGlobalPermissionCommand(mArr) ||
-                Permissions.isPermissionCommand(mArr)) && Permissions.isAdminUser(message.member)) return true;
-            
-            // admins can allow other users to set permissions
-            let newPermission;
-            if (Permissions.isPermissionCommand(mArr)) {
-                newPermission = await DB.Permission.findOne({
-                    where: {
-                        serverId: message.guild.id,
-                        command: Commands.ROLE
-                    }
-                });
-            }
-            permission = newPermission ? newPermission : permission;
-            return permission == null || message.member.roles.has(permission.roleId);
-        } catch (e) {
-            console.log(e);
         }
-        return false;
+        permission = newPermission ? newPermission : permission;
+        return permission == null || message.member.roles.has(permission.roleId);
     }
 
     static async setAllPermissions(message) {

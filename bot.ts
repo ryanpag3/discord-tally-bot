@@ -37,6 +37,8 @@ bot.on('ready', () => {
 });
 
 bot.on('message', async (message: Message) => {
+    let command;
+
     try {
         if (message.channel.type == 'dm') {
             return;
@@ -53,7 +55,7 @@ bot.on('message', async (message: Message) => {
         db.initServer(message.guild.id);
 
         const mArr = message.content.split(' ');
-        const command = mArr[0] + ' ' + mArr[1];
+        command = mArr[0] + ' ' + mArr[1];
 
         const hasPermission = await Permissions.hasPermission(message);
         if (!hasPermission) {
@@ -73,6 +75,12 @@ bot.on('message', async (message: Message) => {
         emit(command, message);
     } catch (e) {
         console.log(`Error while inbounding message: ` + e);
+        if (e.toString().includes('invalid command')) {
+            const richEmbed = {
+                description: `Invalid command used: **${command}**`
+            };
+            message.channel.send(cmdHelper.buildRichMsg(richEmbed));
+        }
     }
 });
 
@@ -116,6 +124,7 @@ import announcements from './commands/announcements';
 import timezone from './commands/timezone';
 import patchnotes from './commands/patchnotes';
 import permissions from './commands/permissions';
+import cmdHelper from './util/cmd-helper.js';
 
 /**
  * COMMANDS
