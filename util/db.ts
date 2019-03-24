@@ -96,6 +96,7 @@ export default {
             await this.Tally.create({
                 name: BUMP_COUNTER,
                 channelId: INTERNAL,
+                serverId: INTERNAL,
                 description: 'Internal tally for bumps.',
                 count: 0
             });
@@ -140,7 +141,8 @@ export default {
             let dumpTally = await this.Tally.findOne({
                 where: {
                     name: DUMP_COUNTER,
-                    channelId: INTERNAL
+                    channelId: INTERNAL,
+                    serverId: INTERNAL
                 }
             });
             dumpTally.count++;

@@ -1,4 +1,6 @@
-import { Message } from "discord.js";
+import {
+    Message
+} from "discord.js";
 import moment from 'moment';
 import {} from '../config.json';
 import DB from '../util/db';
@@ -8,7 +10,7 @@ import help from "./help.js";
 const Tally = DB.Tally;
 
 const startDevDate = moment('2018-09-25'); // repo created date
-const now =  moment();
+const now = moment();
 const daysExisted = now.diff(startDevDate, 'days');
 const phrases = [
     `${daysExisted} days since last bug fix.`,
@@ -35,7 +37,7 @@ const phrases = [
     `${daysExisted} forgotten birthdays.`
 ];
 
-export default (message: Message) => {
+export default async (message: Message) => {
     let content = helper.removePrefixCommand(message.content, 2);
     let cArr = content.split(' ');
     let tallyId = cArr.shift();
@@ -46,20 +48,24 @@ export default (message: Message) => {
         return;
     }
 
-    console.log('Adding tally [' + tallyId + ']');
-    Tally.create({
-        name: tallyId,
-        channelId: message.channel.id,
-        serverId: null,
-        description: tallyDescription,
-        count: 0,
-        keyword: null
-    }).then((res: any) => {
+    try {
+        const globalTallyExists = await getGlobalTallyExists(tallyId, message.guild.id);
+        console.log(globalTallyExists);
+        if (globalTallyExists) throw new Error(`Tally already exists globally.`);
+
+        console.log('Adding tally [' + tallyId + ']');
+        await Tally.create({
+            name: tallyId,
+            channelId: message.channel.id,
+            serverId: message.guild.id,
+            description: tallyDescription,
+            count: 0,
+            keyword: null
+        });
         const description = '\n' + (tallyDescription || 'no description');
         const successMsg = {
             title: `_"${helper.getRandomPhrase(phrases)}"_`,
-            fields: [
-                {   
+            fields: [{
                     title: `Title`,
                     value: `${tallyId}`
                 },
@@ -71,12 +77,11 @@ export default (message: Message) => {
         };
 
         helper.finalize(message);
-        
+
         message.channel.send(helper.buildRichMsg(successMsg));
-    })
-    .catch((err) => {
+    } catch (err) {
         console.log('Failed to create tally. Reason: ' + err);
-        
+
         helper.finalize(message);
 
         if (err.toString().indexOf('description') != -1) {
@@ -87,10 +92,20 @@ export default (message: Message) => {
         }
         const msg = {
             description: `
-            **${tallyId}** already exists.
-            attempted by **${message.author.toString()}**
-            `
+        **${tallyId}** already exists.
+        attempted by **${message.author.toString()}**
+        `
         }
         message.channel.send(helper.buildRichMsg(msg));
-    })
+    }
+}
+
+async function getGlobalTallyExists(tallyName, serverId) {
+    const tally = await Tally.findOne({
+        where: {
+            name: tallyName,
+            serverId: serverId
+        }
+    });
+    return tally != null;
 }

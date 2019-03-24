@@ -16,7 +16,7 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
     }, {
         timestamps: false,
         indexes: [{
-            fields: ['name', 'channelId'],
+            fields: ['name', 'channelId', 'serverId'],
             unique: true
         }]
     });

@@ -27,7 +27,8 @@ export default (message: Message) => {
         .then((record: any) => {
             const amt = dumpAmt ? dumpAmt : 1;
             return Tally.update({
-                    count: record.count - amt
+                    count: record.count - amt,
+                    serverId: message.guild.id
                 }, {
                     returning: true,
                     where: {

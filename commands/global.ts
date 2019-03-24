@@ -1,6 +1,4 @@
-import {
-    Message
-} from "discord.js";
+import { Message } from "discord.js";
 import helper from '../util/cmd-helper';
 import DB from '../util/db';
 
@@ -10,24 +8,26 @@ export default async (message: Message) => {
     const msg = message.content.split(' ');
     msg.shift(); // prefix
     msg.shift(); // command
-
+    
     const tallyName = msg.shift();
 
     try {
-        const exists = await channelTallyExists(tallyName, message.channel.id);
-        if (exists) throw new Error(`A channel-specific tally with the name **${tallyName}** already exists. Consider using a different channel.`);
-
+        const existsAlready = await globalTallyExists(tallyName, message.guild.id);
+        if (existsAlready) throw new Error(`Tally with name **${tallyName}** has already been declared global. ` +
+        `Consider setting that tally to be channel specific before promoting this tally to global.\n\n` + 
+        `\`!tb channel ${tallyName}\``);
         const tally = await Tally.update({
-            channelId: message.channel.id
+            channelId: null,
+            serverId: message.guild.id
         }, {
             where: {
                 name: tallyName,
-                serverId: message.guild.id
+                channelId: message.channel.id
             }
         });
         console.log(tally);
     } catch (e) {
-        const error = `There was an error while attempting to set tally to be channel specific. ${e}`;
+        const error = `There was an error while attempting to set tally to be global. ${e}`;
         const rich = {
             description: error + `\n\nBlame ${message.author.toString()}`
         };
@@ -35,12 +35,12 @@ export default async (message: Message) => {
     }
 }
 
-async function channelTallyExists(tallyName, channelId) {
+async function globalTallyExists(tallyName, serverId) {
     const tally = await Tally.findOne({
         where: {
             name: tallyName,
-            channelId: channelId
+            serverId: serverId
         }
     });
-    return tally != null; 
+    return tally != null;
 }

@@ -1,23 +1,14 @@
-import Discord, {
-    Message
-} from 'discord.js';
+import Discord, { Message } from 'discord.js';
 import DBL from 'dblapi.js';
-import {
-    EventEmitter
-} from 'events';
-import {
-    prefix,
-    status
-} from './config.json';
-import {
-    token,
-    dbots_token
-} from './config-private.json';
+import { EventEmitter } from 'events';
+import { prefix, status } from './config.json';
+import { token, dbots_token } from './config-private.json';
 import db from './util/db';
 import CronAnnouncer from './util/cron-announcer';
 import keywordUtil from './util/keyword-util';
 import Permissions from './util/permissions';
 import Commands from './static/Commands';
+import cmdHelper from './util/cmd-helper';
 
 const bot = new Discord.Client();
 const emitter = new EventEmitter();
@@ -124,7 +115,9 @@ import announcements from './commands/announcements';
 import timezone from './commands/timezone';
 import patchnotes from './commands/patchnotes';
 import permissions from './commands/permissions';
-import cmdHelper from './util/cmd-helper.js';
+import global from './commands/global';
+import channel from './commands/channel';
+
 
 /**
  * COMMANDS
@@ -143,6 +136,12 @@ emitter.on(prefix + Commands.SHOW, show);
 // create new tally
 emitter.on(prefix + Commands.CREATE, create);
 emitter.on(prefix + Commands.ADD, create);
+
+// set a tally to be global
+emitter.on(prefix + Commands.GLOBAL, global);
+
+// set a tally to be channel-specific
+emitter.on(prefix + Commands.CHANNEL, channel);
 
 // create a keyword tally
 emitter.on(prefix + Commands.KEYWORD, keyword);
