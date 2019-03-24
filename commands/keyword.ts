@@ -36,6 +36,7 @@ export default async (message: Message) => {
         const result = await Tally.create({
             name: name,
             channelId: message.channel.id,
+            serverId: null,
             description: description,
             count: 0,
             keyword: keyword

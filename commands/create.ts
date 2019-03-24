@@ -50,6 +50,7 @@ export default (message: Message) => {
     Tally.create({
         name: tallyId,
         channelId: message.channel.id,
+        serverId: null,
         description: tallyDescription,
         count: 0,
         keyword: null

@@ -9,6 +9,7 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
             type: DataTypes.STRING
         },
         channelId: DataTypes.STRING,
+        serverId: DataTypes.STRING,
         description: DataTypes.STRING,
         count: DataTypes.BIGINT,
         keyword: DataTypes.STRING
