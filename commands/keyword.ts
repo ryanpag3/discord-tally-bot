@@ -39,7 +39,8 @@ export default async (message: Message) => {
             serverId: null,
             description: description,
             count: 0,
-            keyword: keyword
+            keyword: keyword,
+            isGlobal: false
         });
         let keywordMsg = '';
         keyword.split(',').map((key) => { // check for comma separated

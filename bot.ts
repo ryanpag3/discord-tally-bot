@@ -18,13 +18,15 @@ if (process.env.NODE_ENV == 'production') // don't POST stats in dev
 
 db.init();
 
-bot.on('ready', () => {
+bot.on('ready', async () => {
     console.log(`Tally Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);
+    setTimeout(() => startBroadcasting(), 5000);
     CronAnnouncer.setBot({
         bot: bot
     });
     CronAnnouncer.initCronJobs();
-    db.initServers(bot.guilds);
+    await db.initServers(bot.guilds);
+    await db.normalizeTallies(bot.channels);
 });
 
 bot.on('message', async (message: Message) => {
@@ -224,17 +226,15 @@ bot.login(token);
  * start status broadcasting
  */
 const startBroadcasting = () => {
+    if (bot.user == null)
+        process.exit(1);
+
     const statusGenerators = [
         () => {
             let users = 0;
             bot.guilds.map(guild => users += guild.members.size);
-            // TODO: this is workaround, need real solution
-            if (bot.user == null)
-                setTimeout(() => process.exit(1), 30000);
-            else {
-                bot.user.setActivity(`Counting things for ${bot.guilds.size} servers and ${users} users.`);
-                if (dbl) dbl.postStats(bot.guilds.size);
-            }
+            bot.user.setActivity(`Counting things for ${bot.guilds.size} servers and ${users} users.`);
+            if (dbl) dbl.postStats(bot.guilds.size);
         },
         () => {
             bot.user.setActivity(`!tb help for commands.`)
@@ -261,4 +261,3 @@ const startBroadcasting = () => {
     }, process.env.NODE_ENV == 'production' ? status.interval : status.interval_dev);
 }
 
-startBroadcasting();

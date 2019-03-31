@@ -50,17 +50,16 @@ export default async (message: Message) => {
 
     try {
         const globalTallyExists = await getGlobalTallyExists(tallyId, message.guild.id);
-        console.log(globalTallyExists);
         if (globalTallyExists) throw new Error(`Tally already exists globally.`);
-
         console.log('Adding tally [' + tallyId + ']');
         await Tally.create({
             name: tallyId,
             channelId: message.channel.id,
-            serverId: message.guild.id,
+            serverId: null/*message.guild.id*/, // TODO: fix this
             description: tallyDescription,
             count: 0,
-            keyword: null
+            keyword: null,
+            isGlobal: false
         });
         const description = '\n' + (tallyDescription || 'no description');
         const successMsg = {

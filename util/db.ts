@@ -288,5 +288,35 @@ export default {
 
     async deleteAnnounce(channelId, name) {
         await this.Announcement.destroy({ where: {channelId: channelId, name: name}});
+    },
+
+    /**
+     * normalize tallies by adding their serverId to any tally that belonds to a channel
+     * @param channels 
+     */
+    async normalizeTallies(channels) {
+        const tallies = await this.getUnnormalizedTallies();
+        if (tallies.length > 0) console.log(`Normalizing tally schemas for ${tallies.length} tallies.`);
+        for (let tally of tallies) {
+            const channel = channels.get(tally.channelId);
+            if (!channel) continue;
+            const server = channel.guild;
+            tally.serverId = server.id;
+            tally.save();
+            console.log(`Assigned channel [${channel.id}] to server [${server.id}]`);
+        }
+    },
+
+    async getUnnormalizedTallies() {
+        const Tally = this.Tally;
+        const tallies = await Tally.findAll({
+            where: {
+                serverId: null,
+                channelId : {
+                    [Sequelize.Op.ne] : 'INTERNAL'
+                }
+            }
+        });
+        return tallies;
     }
 }

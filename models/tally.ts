@@ -12,7 +12,8 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
         serverId: DataTypes.STRING,
         description: DataTypes.STRING,
         count: DataTypes.BIGINT,
-        keyword: DataTypes.STRING
+        keyword: DataTypes.STRING,
+        isGlobal: DataTypes.BOOLEAN
     }, {
         timestamps: false,
         indexes: [{
