@@ -3,11 +3,14 @@ import {
 } from "discord.js";
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
-import { increaseTotalBumpCount } from '../util/counter';
+import {
+    increaseTotalBumpCount
+} from '../util/counter';
 
 const Tally = DB.Tally;
 
 export default (message: Message) => {
+    const isGlobal = helper.isGlobalTallyMessage(message);
     const msg = message.content.split(' ');
     msg.shift(); // rm prefix
     msg.shift(); // rm command
@@ -16,7 +19,14 @@ export default (message: Message) => {
 
     console.log(`Bumping [${tallyName}] by ${bumpAmt || 1}`);
 
-    Tally.findOne({where: {name: tallyName, channelId: message.channel.id}})
+    Tally.findOne({
+            where: {
+                name: tallyName,
+                channelId: message.channel.id,
+                serverId: message.guild.id,
+                isGlobal: isGlobal
+            }
+        })
         .then((record: any) => {
             if (!record) {
                 throw 'I couldn\'t find it. Check your spelling? :thinking:';
@@ -26,20 +36,20 @@ export default (message: Message) => {
         .then((record: any) => {
             const amt: number = bumpAmt ? bumpAmt : 1;
             return Tally.update({
-                count: record.count + amt,
-                serverId: message.guild.id
-            }, {
-                returning: true,
-                where: {
-                    name: record.name,
-                    channelId: message.channel.id
-                }
-            })
-            .then(() => {
-                record.previous = record.count;
-                record.count += amt;
-                return record;
-            });
+                    count: record.count + amt,
+                    serverId: message.guild.id
+                }, {
+                    returning: true,
+                    where: {
+                        name: record.name,
+                        channelId: message.channel.id
+                    }
+                })
+                .then(() => {
+                    record.previous = record.count;
+                    record.count += amt;
+                    return record;
+                });
         })
         .then((record) => {
             const userEmojis = [

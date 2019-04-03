@@ -69,7 +69,9 @@ export default {
     async initServers(servers) {
         servers.map(async server => {
             try {
-                await this.Server.upsert({ id: server.id });
+                await this.Server.upsert({
+                    id: server.id
+                });
             } catch (e) {
                 console.log(`Failed to upsert Server record on init. Reason: ${e}`);
             }
@@ -78,7 +80,9 @@ export default {
 
     async initServer(id) {
         try {
-            await this.Server.upsert({ id: id});
+            await this.Server.upsert({
+                id: id
+            });
         } catch (e) {
             console.log(`Failed to upsert Server record on init. Reason: ${e}`);
         }
@@ -93,12 +97,26 @@ export default {
 
     async createBumpCounter() {
         try {
+            const oldTally = await this.Tally.findOne({
+                where: {
+                    name: BUMP_COUNTER,
+                    channelId: INTERNAL,
+                    serverId: null
+                }
+            });
+
+            if (oldTally) {
+                oldTally.serverId = INTERNAL;
+                await oldTally.save();
+                return;
+            }
             await this.Tally.create({
                 name: BUMP_COUNTER,
                 channelId: INTERNAL,
                 serverId: INTERNAL,
                 description: 'Internal tally for bumps.',
-                count: 0
+                count: 0,
+                isGlobal: true
             });
             console.log('Created internal bump counter.');
         } catch (e) {
@@ -112,7 +130,8 @@ export default {
             let bumpTally = await this.Tally.findOne({
                 where: {
                     name: BUMP_COUNTER,
-                    channelId: INTERNAL
+                    channelId: INTERNAL,
+                    serverId: INTERNAL
                 }
             });
             bumpTally.count++;
@@ -124,12 +143,29 @@ export default {
 
     async createDumpCounter() {
         try {
+            const oldTally = await this.Tally.findOne({
+                where: {
+                    name: DUMP_COUNTER,
+                    channelId: INTERNAL,
+                    serverId: null
+                }
+            });
+
+            if (oldTally) {
+                oldTally.serverId = INTERNAL;
+                await oldTally.save();
+                return;
+            }            
+
             await this.Tally.create({
                 name: DUMP_COUNTER,
                 channelId: INTERNAL,
+                serverId: INTERNAL,
                 description: 'Internal tally for dumps.',
-                count: 0
+                count: 0,
+                isGlobal: true
             });
+            console.log('Created internal dump counter');
         } catch (e) {
             // Throws error if it already exists, which most times it will.
             // console.log(`Error while creating dump counter. ${e}`); 
@@ -245,28 +281,48 @@ export default {
     },
 
     async activateAnnouncement(channelId, name) {
-        const announcement = await this.Announcement.findOne({ where: {channelId: channelId, name: name}});
+        const announcement = await this.Announcement.findOne({
+            where: {
+                channelId: channelId,
+                name: name
+            }
+        });
         if (!announcement) throw new Error('No announcement found to update.');
         announcement.active = true;
         await announcement.save();
     },
 
     async setAnnounceName(channelId, name, newName) {
-        const announcement = await this.Announcement.findOne({ where: {channelId: channelId, name: name}});
+        const announcement = await this.Announcement.findOne({
+            where: {
+                channelId: channelId,
+                name: name
+            }
+        });
         if (!announcement) throw new Error('No announcement found to update.');
         announcement.name = newName;
         await announcement.save();
     },
 
     async setAnnounceDesc(channelId, name, description) {
-        const announcement = await this.Announcement.findOne({ where: {channelId: channelId, name: name}});
+        const announcement = await this.Announcement.findOne({
+            where: {
+                channelId: channelId,
+                name: name
+            }
+        });
         if (!announcement) throw new Error('No announcement found to update.');
         announcement.description = description;
         await announcement.save();
     },
 
     async setAnnounceTallyGoal(channelId, name, tallyName, tallyGoal) {
-        const announcement = await this.Announcement.findOne({ where: {channelId: channelId, name: name}});
+        const announcement = await this.Announcement.findOne({
+            where: {
+                channelId: channelId,
+                name: name
+            }
+        });
         if (!announcement) throw new Error('No announcement found to update.');
         announcement.announcementRan = null;
         announcement.dateQuery = null;
@@ -277,7 +333,12 @@ export default {
     },
 
     async setAnnounceDate(channelId, name, dateStr) {
-        const announcement = await this.Announcement.findOne({ where: {channelId: channelId, name: name}});
+        const announcement = await this.Announcement.findOne({
+            where: {
+                channelId: channelId,
+                name: name
+            }
+        });
         if (!announcement) throw new Error('No announcement found to update.');
         announcement.announcementRan = null;
         announcement.datePattern = dateStr;
@@ -287,7 +348,12 @@ export default {
     },
 
     async deleteAnnounce(channelId, name) {
-        await this.Announcement.destroy({ where: {channelId: channelId, name: name}});
+        await this.Announcement.destroy({
+            where: {
+                channelId: channelId,
+                name: name
+            }
+        });
     },
 
     /**
@@ -302,6 +368,7 @@ export default {
             if (!channel) continue;
             const server = channel.guild;
             tally.serverId = server.id;
+            tally.isGlobal = false;
             tally.save();
             console.log(`Assigned channel [${channel.id}] to server [${server.id}]`);
         }
@@ -311,9 +378,13 @@ export default {
         const Tally = this.Tally;
         const tallies = await Tally.findAll({
             where: {
-                serverId: null,
-                channelId : {
-                    [Sequelize.Op.ne] : 'INTERNAL'
+                [Sequelize.Op.or]: [{
+                    serverId: null
+                }, {
+                    isGlobal: null
+                }],
+                channelId: {
+                    [Sequelize.Op.ne]: 'INTERNAL'
                 }
             }
         });

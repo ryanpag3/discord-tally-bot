@@ -96,7 +96,16 @@ export default {
         const startIndex = pageSize * pageNum;
         const endIndex = startIndex + pageSize;
         return collection.slice(startIndex, endIndex);
-     }
+     },
+
+     /**
+      * parse message contents and check for global flag
+      */
+     isGlobalTallyMessage(message) {
+        const split = message.content.split(' ');
+        if (split.length < 4) return false; // !tb bump -g test
+        return split[2] === '-g';
+    }
 }
 
 /**

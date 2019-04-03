@@ -14,18 +14,33 @@ export default async (message: Message) => {
     const tallyName = msg.shift();
 
     try {
-        const exists = await channelTallyExists(tallyName, message.channel.id);
-        if (exists) throw new Error(`A channel-specific tally with the name **${tallyName}** already exists. Consider using a different channel.`);
+        // const exists = await channelTallyExists(tallyName, message.channel.id);
+        // if (exists) throw new Error(`A channel-specific tally with the name **${tallyName}** already exists. Consider using a different channel.`);
 
-        const tally = await Tally.update({
-            channelId: message.channel.id
+        await Tally.update({
+            isGlobal: false
         }, {
             where: {
                 name: tallyName,
+                channelId: message.channel.id,
                 serverId: message.guild.id
             }
         });
+        const tally: any = await Tally.findOne({
+            where: {
+                isGlobal: false,
+                name: tallyName,
+                serverId: message.guild.id,
+                channelId: message.channel.id
+            }
+        });
         console.log(tally);
+        const richEmbed = {
+            description: `**${tally.name}** has been set to be channel specific. You can always revert this by running \`!tb global ${tally.name}\`` + 
+            `\n\nBlame **${message.author.toString()}**`
+        };
+        message.channel.send(helper.buildRichMsg(richEmbed));
+
     } catch (e) {
         const error = `There was an error while attempting to set tally to be channel specific. ${e}`;
         const rich = {
