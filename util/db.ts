@@ -107,6 +107,7 @@ export default {
 
             if (oldTally) {
                 oldTally.serverId = INTERNAL;
+                oldTally.isGlobal = true;
                 await oldTally.save();
                 return;
             }
@@ -153,6 +154,7 @@ export default {
 
             if (oldTally) {
                 oldTally.serverId = INTERNAL;
+                oldTally.isGlobal = true;
                 await oldTally.save();
                 return;
             }            

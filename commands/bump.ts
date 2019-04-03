@@ -14,10 +14,11 @@ export default (message: Message) => {
     const msg = message.content.split(' ');
     msg.shift(); // rm prefix
     msg.shift(); // rm command
+    if (isGlobal) msg.shift(); // -g
     let tallyName = msg.shift();
     let bumpAmt: number = Number.parseInt(msg.shift());
 
-    console.log(`Bumping [${tallyName}] by ${bumpAmt || 1}`);
+    console.log(`Bumping [${tallyName} | Global: ${isGlobal}] by ${bumpAmt || 1}`);
 
     Tally.findOne({
             where: {
@@ -36,13 +37,14 @@ export default (message: Message) => {
         .then((record: any) => {
             const amt: number = bumpAmt ? bumpAmt : 1;
             return Tally.update({
-                    count: record.count + amt,
-                    serverId: message.guild.id
+                    count: record.count + amt
                 }, {
                     returning: true,
                     where: {
                         name: record.name,
-                        channelId: message.channel.id
+                        channelId: message.channel.id,
+                        serverId: message.guild.id,
+                        isGlobal: isGlobal
                     }
                 })
                 .then(() => {
@@ -58,9 +60,10 @@ export default (message: Message) => {
             ]
             const description = record.description && record.description != '' ? record.description : undefined;
             const msg = {
+                title: `${record.name}`,
                 description: `
-                **${record.name}** | **${record.previous}** >>> **${record.count}** ${(description ? '\n• _' + description + '_' : '')}
-                
+                **${isGlobal ? 'Global' : 'Channel'} Tally** | **${record.previous}** >>> **${record.count}** ${(description ? '\n• _' + description + '_' : '')}
+
                 ${helper.getRandomPhrase(userEmojis)} **${message.author.toString()}**
                 `
             }
