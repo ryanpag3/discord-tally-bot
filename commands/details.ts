@@ -2,17 +2,17 @@
 import {
     Message
 } from "discord.js";
-import { table } from 'table';
-import { prefix } from '../config.json';
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
 
 const Tally = DB.Tally;
 
 export default (message: Message) => {
+    const isGlobal = helper.isGlobalTallyMessage(message);
     let msg = message.content.split(' ');
     msg.shift(); // rm prefix
     msg.shift(); // rm 'details'
+    if (isGlobal) msg.shift(); // -g
     const name = msg.shift();
 
     console.log(`Giving ${name} details for channel ${message.channel.id}`);
@@ -20,12 +20,14 @@ export default (message: Message) => {
     Tally.findOne({
         where: {
             channelId: message.channel.id,
+            serverId: message.guild.id,
+            isGlobal: isGlobal,
             name: name
         }
     })
         .then((record: any) => {
             const msg = {
-                title: `**${record.name}**`,
+                title: `[${isGlobal ? 'G' : 'C'}] **${record.name}**`,
                 description: ``,
                 color: '#42f4e2',
                 fields: [
@@ -50,7 +52,7 @@ export default (message: Message) => {
         })
         .catch((err) => {
             const msg = {
-                description: `Could not find ${name}'s details.\nattempted by **${message.author.toString()}**.
+                description: `Could not find [${isGlobal ? 'G' : 'C'}] ${name}'s details.\nattempted by **${message.author.toString()}**.
                 `
             }
 

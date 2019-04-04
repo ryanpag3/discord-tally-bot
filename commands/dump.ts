@@ -8,14 +8,16 @@ import helper from '../util/cmd-helper';
 const Tally = DB.Tally;
 
 export default (message: Message) => {
+    const isGlobal = helper.isGlobalTallyMessage(message);
     const msg = message.content.split(' ');
     msg.shift(); // prefix
     msg.shift(); //command
+    if (isGlobal) msg.shift(); // -g
     const tallyName = msg.shift();
 
     const dumpAmt = Number.parseInt(msg.shift());
 
-    console.log(`Dumping [${tallyName}] by ${dumpAmt || 1}`);
+    console.log(`Dumping [${isGlobal ? 'G' : 'C'}] [${tallyName}] by ${dumpAmt || 1}`);
     
     Tally.findOne({ where: {name: tallyName, channelId: message.channel.id}})
         .then((record: any) => {
@@ -27,13 +29,14 @@ export default (message: Message) => {
         .then((record: any) => {
             const amt = dumpAmt ? dumpAmt : 1;
             return Tally.update({
-                    count: record.count - amt,
-                    serverId: message.guild.id
+                    count: record.count - amt
                 }, {
                     returning: true,
                     where: {
                         name: record.name,
-                        channelId: message.channel.id
+                        channelId: message.channel.id,
+                        serverId: message.guild.id,
+                        isGlobal: isGlobal
                     }
                 })
                 .then(() => {
@@ -50,7 +53,7 @@ export default (message: Message) => {
             ]
             const description = record.description && record.description != '' ? record.description : undefined;
             const msg = {
-                description: `**${record.name}** | **${record.previous}** >>> **${record.count}** ${(description ? '\n• _' + description + '_' : '')}
+                description: `[${isGlobal ? 'G' : 'C'}] **${record.name}** | **${record.previous}** >>> **${record.count}** ${(description ? '\n• _' + description + '_' : '')}
                 \n${helper.getRandomPhrase(userEmojis)} **${message.author.toString()}**
                 `
             }

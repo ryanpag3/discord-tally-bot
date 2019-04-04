@@ -9,10 +9,11 @@ import help from "./help";
 const Tally = DB.Tally;
 
 export default async (message: Message) => {
+    const isGlobal = helper.isGlobalTallyMessage(message);
     const msg = message.content.split(' ');
     msg.shift(); // prefix
     msg.shift(); // command
-
+    if (isGlobal) msg.shift(); // -g
     let name = msg.shift();
     let description = msg.join(' ');
 
@@ -24,7 +25,9 @@ export default async (message: Message) => {
             returning: true,
             where: {
                 name: name,
-                channelId: message.channel.id
+                channelId: message.channel.id,
+                serverIs: message.guild.id,
+                isGlobal: isGlobal
             }
         });
 
@@ -32,14 +35,16 @@ export default async (message: Message) => {
     const tally: any = await Tally.findOne({
         where: {
             name: name,
-            channelId: message.channel.id
+            channelId: message.channel.id,
+            serverIs: message.guild.id,
+            isGlobal: isGlobal
         }
     });
 
     if (!tally) {
         const msg = {
             description: `
-            Could not find **${name}** to update.\nupdate attempted by **${message.author.toString()}**
+            Could not find [${isGlobal ? 'G' : 'C'}] **${name}** to update.\nupdate attempted by **${message.author.toString()}**
             `
         }
         helper.finalize(message);
@@ -59,7 +64,7 @@ export default async (message: Message) => {
         title: `_\"${helper.getRandomPhrase(phrases)}\"_`,
         fields: [{
                 title: `Tally`,
-                value: `${tally.name}`
+                value: `[${isGlobal ? 'G' : 'C'}] ${tally.name}`
             },
             {
                 title: `Updated Description`,

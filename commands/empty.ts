@@ -10,16 +10,25 @@ const phrases = [
 ];
 
 export default (message: Message) => {
+    const isGlobal = helper.isGlobalTallyMessage(message);
     let content = helper.removePrefixCommand(message.content, 2);
     let cArr = content.split(' ');
+    if (isGlobal) cArr.shift(); // -g
     let tallyId = cArr.shift();
 
-    console.log('Deleting tally [' + tallyId + ']');
+    console.log(`Deleting tally [${isGlobal ? 'G' : 'C'}] [' + ${tallyId} + ']`);
 
-    Tally.findOne({ where: {name: tallyId, channelId: message.channel.id}})
+    Tally.findOne({
+            where: {
+                name: tallyId,
+                channelId: message.channel.id,
+                serverId: message.guild.id,
+                isGlobal: isGlobal
+            }
+        })
         .then((record: any) => {
             if (!record) {
-                throw 'I could ould not find Tally with name: ' + tallyId;
+                throw `I could ould not find Tally with name: [${isGlobal ? 'G' : 'C'}]` + tallyId;
             }
             return record;
         })
@@ -36,18 +45,18 @@ export default (message: Message) => {
         })
         .then((record) => {
             const msg = {
-                description : `
-                **${tallyId}** has been emptied by **${message.author.toString()}**.
+                description: `
+                [${isGlobal ? 'G' : 'C'}] **${tallyId}** has been emptied by **${message.author.toString()}**.
                 `
             }
-            
+
             helper.finalize(message);
 
             message.channel.send(helper.buildRichMsg(msg));
         })
         .catch((err) => {
             const msg = {
-                description: `I couldn't empty **${tallyId}** because ${err}.
+                description: `I couldn't empty [${isGlobal ? 'G' : 'C'}] **${tallyId}** because ${err}.
                 \nempty attempted by **${message.author.toString()}**
                 `
             }

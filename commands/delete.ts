@@ -7,8 +7,10 @@ import helper from '../util/cmd-helper';
 const Tally = DB.Tally;
 
 export default (message: Message) => {
+    const isGlobal = helper.isGlobalTallyMessage(message);
     let content = helper.removePrefixCommand(message.content, 2);
     let cArr = content.split(' ');
+    if (isGlobal) cArr.shift(); // -g
     let tallyId = cArr.shift();
 
     if (!tallyId) {
@@ -20,16 +22,18 @@ export default (message: Message) => {
     Tally.destroy({
         where: {
             name: tallyId,
-            channelId: message.channel.id
+            channelId: message.channel.id,
+            serverId: message.guild.id,
+            isGlobal: isGlobal
         }
     })
         .then((res) => {
             const successMsg = {
-                description: `**${tallyId}** has been deleted.\ndeleted by **${message.author.toString()}**`
+                description: `[${isGlobal ? 'G' : 'C'}] **${tallyId}** has been deleted.\ndeleted by **${message.author.toString()}**`
             };
 
             const failMsg = {
-                description: `**${tallyId}** doesn't exist in my database.\ndelete attempted by **${message.author.toString()}**`
+                description: `[${isGlobal ? 'G' : 'C'}] **${tallyId}** doesn't exist in my database.\ndelete attempted by **${message.author.toString()}**`
             }
 
             helper.finalize(message);

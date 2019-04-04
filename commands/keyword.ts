@@ -11,9 +11,11 @@ const Tally = DB.Tally;
 // create tally like normal
 // send res
 export default async (message: Message) => {
+    const isGlobal = cmdHelper.isGlobalTallyMessage(message);
     let msg = message.content.split(' ');
     msg.shift(); // prefix
     msg.shift(); // !tb keyword
+    if (isGlobal) msg.shift(); // -g
     const name = msg.shift();
     const keyword = msg.shift();
     const description = msg.shift() || 'no description';
@@ -36,11 +38,11 @@ export default async (message: Message) => {
         const result = await Tally.create({
             name: name,
             channelId: message.channel.id,
-            serverId: null,
+            serverId: message.guild.id,
             description: description,
             count: 0,
             keyword: keyword,
-            isGlobal: false
+            isGlobal: isGlobal
         });
         let keywordMsg = '';
         keyword.split(',').map((key) => { // check for comma separated
@@ -52,7 +54,7 @@ export default async (message: Message) => {
             title: `Keyword Tally Created`, // todo add phrases
             fields: [{
                     title: `Name`,
-                    value: `${name}`
+                    value: `[${isGlobal ? 'G' : 'C'}] ${name}`
                 },
                 {
                     title: 'Keyword',
@@ -65,7 +67,7 @@ export default async (message: Message) => {
                 }
             ]
         }));
-        console.log(`keyword tally ${name} created.`);
+        console.log(`keyword tally  [${isGlobal ? 'G' : 'C'}] ${name} created.`);
     } catch (e) {
         if (e.toString().toLowerCase().indexOf('uniqueconstrainterror') != -1) e = 'tally alread exists';
         if (e.toString().toLowerCase().indexOf('incorrect string value') != -1) e = 'non-valid characters provided.';
