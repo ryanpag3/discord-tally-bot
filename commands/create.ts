@@ -38,8 +38,10 @@ const phrases = [
 ];
 
 export default async (message: Message) => {
+    const isGlobal = helper.isGlobalTallyMessage(message);
     let content = helper.removePrefixCommand(message.content, 2);
     let cArr = content.split(' ');
+    if (isGlobal) cArr.shift(); // -g
     let tallyId = cArr.shift();
     let tallyDescription = cArr.join(' '); // remainder is description
 
@@ -57,13 +59,13 @@ export default async (message: Message) => {
             description: tallyDescription,
             count: 0,
             keyword: null,
-            isGlobal: false
+            isGlobal: isGlobal
         });
         const description = '\n' + (tallyDescription || 'no description');
         const successMsg = {
             title: `_"${helper.getRandomPhrase(phrases)}"_`,
             fields: [{
-                    title: `Title`,
+                    title: `${isGlobal ? 'Global' : 'Channel'} Tally`,
                     value: `${tallyId}`
                 },
                 {

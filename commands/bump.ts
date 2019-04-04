@@ -60,9 +60,8 @@ export default (message: Message) => {
             ]
             const description = record.description && record.description != '' ? record.description : undefined;
             const msg = {
-                title: `${record.name}`,
                 description: `
-                **${isGlobal ? 'Global' : 'Channel'} Tally** | **${record.previous}** >>> **${record.count}** ${(description ? '\n• _' + description + '_' : '')}
+                [${isGlobal ? 'G' : 'C'}] **${record.name}** | **${record.previous}** >>> **${record.count}** ${(description ? '\n• _' + description + '_' : '')}
 
                 ${helper.getRandomPhrase(userEmojis)} **${message.author.toString()}**
                 `
