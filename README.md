@@ -25,6 +25,20 @@ On installation, Tally Bot will allow any user to run any command. Admins can se
 `!tb -role -role [Role]` - To allow users to grant permission access (global and per command)
 
 ## Tallies
+
+### Scoping
+Tallies are defined as *Channel Tallies* when initially created. You will see that identified by **[C]** in the relevant commands. You are also allowed to convert these to *Global Tallies* identified by **[G]**.
+
+All relevent tally commands can be either used for channel tallies or global tallies. Simply add `-g` after the command.
+
+`!tb global [name]` - Set a **channel** tally to be globally scoped.
+
+`!tb channel -g [name]` - Set a **global** tally to be channel scoped.
+
+For example, if I wanted to bump a **global** tally named *test*, I would issue this command
+
+`!tb bump -g test` 
+
 ### Basic
 
 `!tb` - This is the prefix. All commands should lead with this followed by a space. For example: `!tb show`
