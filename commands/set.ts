@@ -7,8 +7,10 @@ import helper from '../util/cmd-helper';
 const Tally = DB.Tally;
 
 export default (message: Message) => {
+    const isGlobal = helper.isGlobalTallyMessage(message);
     let content = helper.removePrefixCommand(message.content, 2);
     let cArr = content.split(' ');
+    if (isGlobal) cArr.shift(); // -g
     let tallyId = cArr.shift();
     let amount = cArr.shift();
 
@@ -29,7 +31,9 @@ export default (message: Message) => {
                 returning: true,
                 where: {
                     name: record.name,
-                    channelId: message.channel.id
+                    channelId: message.channel.id,
+                    serverId: message.guild.id,
+                    isGlobal: isGlobal
                 }
             })
             .then(() => {
@@ -40,7 +44,7 @@ export default (message: Message) => {
         .then((record) => {
             const msg = {
                 description : `
-**${record.name}** is now ${amount}
+                [${isGlobal ? 'G' : 'C'}] **${record.name}** is now ${amount}
 set by **${message.author.toString()}**
                 `
             }
@@ -52,13 +56,8 @@ set by **${message.author.toString()}**
         .catch((err) => {
             const msg = {
                 description: `
-<<<<<<< HEAD
-                I couldn't set **${name}** because ${err}
-                set attempted by **${message.author.toString()}**
-=======
-I couldn't set **${name}** because ${err}
+I couldn't set [${isGlobal ? 'G' : 'C'}] **${name}** because ${err}
 set attempted by **${message.author.toString()}**
->>>>>>> 93e341fae1dd142f9630e8272740e063f13336c7
                 `
             }
 

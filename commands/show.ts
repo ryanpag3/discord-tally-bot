@@ -10,16 +10,20 @@ import cmdHelper from "../util/cmd-helper";
 const Tally = DB.Tally;
 
 export default (message: Message) => {
+    const isGlobal = cmdHelper.isGlobalTallyMessage(message);
     let msg = message.content.split(' ');
     msg.shift(); // prefix
     msg.shift(); // command
+    if (isGlobal) msg.shift(); // -g
     const page: number = Number.parseInt(msg.shift()) || 1;
 
-    console.log('Showing tallies for channel [' + message.channel.id + ']');
+    console.log(`Showing tallies for channel [${isGlobal ? 'G' : 'C'}] [' + ${message.channel.id} + ']`);
 
     Tally.findAll({
         where: {
-            channelId: message.channel.id
+            channelId: message.channel.id,
+            serverId: message.guild.id,
+            isGlobal: isGlobal
         }
     })
         .then((records: any) => {
@@ -37,7 +41,7 @@ export default (message: Message) => {
             records.map((record) => {
                 const description = record.description && record.description != '' ? record.description : undefined;
 
-                tallies += `[${record.count}] **${record.name}** • ${description ? '_' + truncate(description, 50) + '_' : 'no description.'}
+                tallies += `[${isGlobal ? 'G' : 'C'}] [${record.count}] **${record.name}** • ${description ? '_' + truncate(description, 50) + '_' : 'no description.'}
                 `;
             });
             tallies += `\nIf you would like details on a tally, type \`!tb get <name>\`
@@ -47,7 +51,7 @@ shown for **${message.author.toString()}**
 
 
             const msg = {
-                title: records.length == 0 ? 'No tallies could be found!' : `Here are the existing tallies. \nPage ${page} of ${totalPages} :arrow_right: ${total} total tallies.\nTry \`!tb show [number]\` to show next page\n`,
+                title: records.length == 0 ? 'No tallies could be found!' : `Here are the existing tallies. \nPage ${page} of ${totalPages} :star: ${total} total tallies\nTry \`!tb show [number]\` to show next page\n`,
                 description: tallies,
                 color: '#42f4e2'
             }

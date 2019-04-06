@@ -7,23 +7,22 @@ import DB from '../util/db';
 const Tally = DB.Tally;
 
 export default async (message: Message) => {
+    const isGlobal = helper.isGlobalTallyMessage(message);
     const msg = message.content.split(' ');
     msg.shift(); // prefix
     msg.shift(); // command
-
+    if (isGlobal) msg.shift();
     const tallyName = msg.shift();
 
     try {
-        // const exists = await channelTallyExists(tallyName, message.channel.id);
-        // if (exists) throw new Error(`A channel-specific tally with the name **${tallyName}** already exists. Consider using a different channel.`);
-
         await Tally.update({
             isGlobal: false
         }, {
             where: {
                 name: tallyName,
                 channelId: message.channel.id,
-                serverId: message.guild.id
+                serverId: message.guild.id,
+                isGlobal: isGlobal
             }
         });
         const tally: any = await Tally.findOne({
@@ -34,9 +33,8 @@ export default async (message: Message) => {
                 channelId: message.channel.id
             }
         });
-        console.log(tally);
         const richEmbed = {
-            description: `**${tally.name}** has been set to be channel specific. You can always revert this by running \`!tb global ${tally.name}\`` + 
+            description: `[${isGlobal ? 'G' : 'C'}] **${tally.name}** has been set to be channel specific. \n\nYou can always revert this by running \`!tb global ${tally.name}\`` + 
             `\n\nBlame **${message.author.toString()}**`
         };
         message.channel.send(helper.buildRichMsg(richEmbed));

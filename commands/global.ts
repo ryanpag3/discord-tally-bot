@@ -7,27 +7,25 @@ import DB from '../util/db';
 const Tally = DB.Tally;
 
 export default async (message: Message) => {
+    const isGlobal = helper.isGlobalTallyMessage(message);
     const msg = message.content.split(' ');
     msg.shift(); // prefix
     msg.shift(); // command
-
+    if (isGlobal) msg.shift(); // -g
     const tallyName = msg.shift();
 
     try {
-        // const existsAlready = await globalTallyExists(tallyName, message.guild.id);
-        // if (existsAlready) throw new Error(`Tally with name **${tallyName}** has already been declared global. ` +
-        // `Consider setting that tally to be channel specific before promoting this tally to global.\n\n` + 
-        // `\`!tb channel ${tallyName}\``);
         await Tally.update({
             isGlobal: true
         }, {
             where: {
                 name: tallyName,
                 channelId: message.channel.id,
-                serverId: message.guild.id
+                serverId: message.guild.id,
+                isGlobal: isGlobal
             }
         });
-        const tally = await Tally.findOne({
+        const tally: any = await Tally.findOne({
             where: {
                 isGlobal: true,
                 name: tallyName,
@@ -35,7 +33,11 @@ export default async (message: Message) => {
                 channelId: message.channel.id
             }
         });
-        console.log(tally);
+        if (!tally) throw `Tally could not be found with name **${tallyName}**`;
+        const richEmbed = {
+            description: `[${isGlobal ? 'G' : 'C'}] **${tally.name}** has been set to global scope.\n\nYou can revert this with \`!tb channel -g ${tallyName}\`\n\nblame ${message.author.toString()}`
+        }
+        message.channel.send(helper.buildRichMsg(richEmbed));
     } catch (e) {
         const error = `There was an error while attempting to set tally to be global. ${e}`;
         const rich = {
@@ -43,14 +45,4 @@ export default async (message: Message) => {
         };
         message.channel.send(helper.buildRichMsg(rich));
     }
-}
-
-async function globalTallyExists(tallyName, serverId) {
-    const tally = await Tally.findOne({
-        where: {
-            name: tallyName,
-            serverId: serverId
-        }
-    });
-    return tally != null;
 }
