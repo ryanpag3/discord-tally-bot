@@ -19,13 +19,17 @@ export default (message: Message) => {
     }
 
     console.log('Deleting tally [' + tallyId + ']');
+    const where = {
+        name: tallyId,
+        channelId: message.channel.id,
+        serverId: message.guild.id,
+        isGlobal: isGlobal
+    };
+    
+    if (isGlobal) delete where.channelId;
+
     Tally.destroy({
-        where: {
-            name: tallyId,
-            channelId: message.channel.id,
-            serverId: message.guild.id,
-            isGlobal: isGlobal
-        }
+        where: where
     })
         .then((res) => {
             const successMsg = {

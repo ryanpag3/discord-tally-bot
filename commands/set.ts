@@ -21,6 +21,15 @@ export default (message: Message) => {
 
     console.log('Setting [' + tallyId + '] to ' + amount);
 
+    const where = {
+        name: tallyId,
+        channelId: message.channel.id,
+        serverId: message.guild.id,
+        isGlobal: isGlobal
+    };
+
+    if (isGlobal) delete where.channelId;
+
     Tally.findOne({ where: {name: tallyId, channelId: message.channel.id}})
         .then((record: any) => {
             if (!record) throw `${'**'+tallyId+'**' || 'an empty string'} doesn't exist.`;
@@ -29,12 +38,7 @@ export default (message: Message) => {
                 count: amount
             }, {
                 returning: true,
-                where: {
-                    name: record.name,
-                    channelId: message.channel.id,
-                    serverId: message.guild.id,
-                    isGlobal: isGlobal
-                }
+                where: where
             })
             .then(() => {
                 record.count += 1;

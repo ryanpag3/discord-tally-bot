@@ -14,24 +14,22 @@ export default async (message: Message) => {
     if (isGlobal) msg.shift(); // -g
     const tallyName = msg.shift();
 
+    const where = {
+        name: tallyName,
+        channelId: message.channel.id,
+        serverId: message.guild.id,
+        isGlobal: isGlobal
+    };
+    if (isGlobal) delete where.channelId;
+
     try {
         await Tally.update({
             isGlobal: true
         }, {
-            where: {
-                name: tallyName,
-                channelId: message.channel.id,
-                serverId: message.guild.id,
-                isGlobal: isGlobal
-            }
+            where: where 
         });
         const tally: any = await Tally.findOne({
-            where: {
-                isGlobal: true,
-                name: tallyName,
-                serverId: message.guild.id,
-                channelId: message.channel.id
-            }
+            where: where
         });
         if (!tally) throw `Tally could not be found with name **${tallyName}**`;
         const richEmbed = {

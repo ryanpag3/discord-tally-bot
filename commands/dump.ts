@@ -18,8 +18,17 @@ export default (message: Message) => {
     const dumpAmt = Number.parseInt(msg.shift());
 
     console.log(`Dumping [${isGlobal ? 'G' : 'C'}] [${tallyName}] by ${dumpAmt || 1}`);
+
+    const where = {
+        name: tallyName,
+        channelId: message.channel.id,
+        serverId: message.guild.id,
+        isGlobal: isGlobal
+    };
     
-    Tally.findOne({ where: {name: tallyName, channelId: message.channel.id}})
+    if (isGlobal) delete where.channelId;
+
+    Tally.findOne({ where: where })
         .then((record: any) => {
             if (!record) {
                 throw 'I couldn\'t find it in my system. Hmm... :thinking:';
@@ -32,12 +41,7 @@ export default (message: Message) => {
                     count: record.count - amt
                 }, {
                     returning: true,
-                    where: {
-                        name: record.name,
-                        channelId: message.channel.id,
-                        serverId: message.guild.id,
-                        isGlobal: isGlobal
-                    }
+                    where: where
                 })
                 .then(() => {
                     record.previous = record.count;

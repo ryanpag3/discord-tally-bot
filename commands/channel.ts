@@ -14,24 +14,23 @@ export default async (message: Message) => {
     if (isGlobal) msg.shift();
     const tallyName = msg.shift();
 
+    const where = {
+        name: tallyName,
+        channelId: message.channel.id,
+        serverId: message.guild.id,
+        isGlobal: isGlobal
+    };
+
+    if (isGlobal) delete where.channelId;
+
     try {
         await Tally.update({
             isGlobal: false
         }, {
-            where: {
-                name: tallyName,
-                channelId: message.channel.id,
-                serverId: message.guild.id,
-                isGlobal: isGlobal
-            }
+            where: where 
         });
         const tally: any = await Tally.findOne({
-            where: {
-                isGlobal: false,
-                name: tallyName,
-                serverId: message.guild.id,
-                channelId: message.channel.id
-            }
+            where: where
         });
         const richEmbed = {
             description: `[${isGlobal ? 'G' : 'C'}] **${tally.name}** has been set to be channel specific. \n\nYou can always revert this by running \`!tb global ${tally.name}\`` + 
@@ -46,14 +45,4 @@ export default async (message: Message) => {
         };
         message.channel.send(helper.buildRichMsg(rich));
     }
-}
-
-async function channelTallyExists(tallyName, channelId) {
-    const tally = await Tally.findOne({
-        where: {
-            name: tallyName,
-            channelId: channelId
-        }
-    });
-    return tally != null; 
 }

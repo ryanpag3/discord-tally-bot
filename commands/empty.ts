@@ -18,13 +18,16 @@ export default (message: Message) => {
 
     console.log(`Deleting tally [${isGlobal ? 'G' : 'C'}] [' + ${tallyId} + ']`);
 
+    const where = {
+        name: tallyId,
+        channelId: message.channel.id,
+        serverId: message.guild.id,
+        isGlobal: isGlobal
+    };
+    if (isGlobal) delete where.channelId;
+
     Tally.findOne({
-            where: {
-                name: tallyId,
-                channelId: message.channel.id,
-                serverId: message.guild.id,
-                isGlobal: isGlobal
-            }
+            where: where
         })
         .then((record: any) => {
             if (!record) {
@@ -36,10 +39,7 @@ export default (message: Message) => {
             return Tally.update({
                     count: 0
                 }, {
-                    returning: true,
-                    where: {
-                        name: record.name
-                    }
+                    where: where
                 })
                 .then(() => record);
         })

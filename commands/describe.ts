@@ -19,26 +19,24 @@ export default async (message: Message) => {
 
     console.log('Setting description of [' + name + ']');
 
-        await Tally.update({
-            description: description
-        }, {
-            returning: true,
-            where: {
-                name: name,
-                channelId: message.channel.id,
-                serverIs: message.guild.id,
-                isGlobal: isGlobal
-            }
-        });
+    const where = {
+        name: name,
+        channelId: message.channel.id,
+        serverIs: message.guild.id,
+        isGlobal: isGlobal
+    };
+    if (isGlobal) delete where.channelId;
+
+    await Tally.update({
+        description: description
+    }, {
+        returning: true,
+        where: where
+    });
 
 
     const tally: any = await Tally.findOne({
-        where: {
-            name: name,
-            channelId: message.channel.id,
-            serverIs: message.guild.id,
-            isGlobal: isGlobal
-        }
+        where: where
     });
 
     if (!tally) {

@@ -19,12 +19,16 @@ export default (message: Message) => {
 
     console.log(`Showing tallies for channel [${isGlobal ? 'G' : 'C'}] [' + ${message.channel.id} + ']`);
 
+    const where = {
+        channelId: message.channel.id,
+        serverId: message.guild.id,
+        isGlobal: isGlobal
+    };
+
+    if (isGlobal) delete where.channelId;
+
     Tally.findAll({
-        where: {
-            channelId: message.channel.id,
-            serverId: message.guild.id,
-            isGlobal: isGlobal
-        }
+        where: where
     })
         .then((records: any) => {
             records = records.sort((a, b) => {

@@ -98,13 +98,3 @@ export default async (message: Message) => {
         message.channel.send(helper.buildRichMsg(msg));
     }
 }
-
-async function getGlobalTallyExists(tallyName, serverId) {
-    const tally = await Tally.findOne({
-        where: {
-            name: tallyName,
-            serverId: serverId
-        }
-    });
-    return tally != null;
-}

@@ -17,13 +17,17 @@ export default (message: Message) => {
 
     console.log(`Giving ${name} details for channel ${message.channel.id}`);
 
+    const where = {
+        channelId: message.channel.id,
+        serverId: message.guild.id,
+        isGlobal: isGlobal,
+        name: name
+    };
+
+    if (isGlobal) delete where.channelId;
+
     Tally.findOne({
-        where: {
-            channelId: message.channel.id,
-            serverId: message.guild.id,
-            isGlobal: isGlobal,
-            name: name
-        }
+        where: where
     })
         .then((record: any) => {
             const msg = {

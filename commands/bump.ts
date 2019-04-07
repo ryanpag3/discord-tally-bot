@@ -20,13 +20,16 @@ export default (message: Message) => {
 
     console.log(`Bumping [${tallyName} | Global: ${isGlobal}] by ${bumpAmt || 1}`);
 
+    const where = {
+        name: tallyName,
+        channelId: message.channel.id,
+        serverId: message.guild.id,
+        isGlobal: isGlobal
+    };
+    if (isGlobal) delete where.channelId;
+
     Tally.findOne({
-            where: {
-                name: tallyName,
-                channelId: message.channel.id,
-                serverId: message.guild.id,
-                isGlobal: isGlobal
-            }
+            where: where
         })
         .then((record: any) => {
             if (!record) {
@@ -40,12 +43,7 @@ export default (message: Message) => {
                     count: record.count + amt
                 }, {
                     returning: true,
-                    where: {
-                        name: record.name,
-                        channelId: message.channel.id,
-                        serverId: message.guild.id,
-                        isGlobal: isGlobal
-                    }
+                    where: where
                 })
                 .then(() => {
                     record.previous = record.count;
