@@ -9,6 +9,7 @@ import Timer from '../models/timer';
 import server from '../models/server';
 
 const sequelize = new Sequelize({
+    host: pConfig.database.url,
     database: config.database.name,
     username: pConfig.database.user,
     password: pConfig.database.password,
@@ -36,12 +37,11 @@ export default {
     Permission: sequelize.import('../models/permission'),
 
     init() {
-        conn.connect((err) => {
+        conn.connect(err => {
             if (err) throw err;
             conn.query('CREATE DATABASE IF NOT EXISTS ' + config.database.name, (err, result) => {
                 if (err) throw err;
-                if (result.warningCount != 1)
-                    console.log('Database ' + config.database.name + ' has been created.');
+                if (result.warningCount != 1) console.log('Database ' + config.database.name + ' has been created.');
 
                 this.Tally.sync({
                     alter: true
@@ -75,7 +75,7 @@ export default {
             } catch (e) {
                 console.log(`Failed to upsert Server record on init. Reason: ${e}`);
             }
-        })
+        });
     },
 
     async initServer(id) {
@@ -90,9 +90,8 @@ export default {
 
     async getTallyCount() {
         return this.Tally.findAll({
-                where: {}
-            })
-            .then((tallies) => tallies.length);
+            where: {}
+        }).then(tallies => tallies.length);
     },
 
     async createBumpCounter() {
@@ -156,7 +155,7 @@ export default {
                 oldTally.isGlobal = true;
                 await oldTally.save();
                 return;
-            }            
+            }
 
             await this.createTally(
                 INTERNAL,
@@ -168,7 +167,7 @@ export default {
             console.log('Created internal dump counter');
         } catch (e) {
             // Throws error if it already exists, which most times it will.
-            // console.log(`Error while creating dump counter. ${e}`); 
+            // console.log(`Error while creating dump counter. ${e}`);
         }
     },
 
@@ -309,10 +308,7 @@ export default {
 
     async createTimer(name: string, description: string) {
         try {
-
-        } catch (e) {
-
-        }
+        } catch (e) {}
     },
 
     async getKeywords(channelId: string) {
@@ -321,12 +317,13 @@ export default {
                 channelId: channelId
             }
         });
-        return res.filter((tally) => {
-            return tally != null;
-        }).map((tally) => {
-            return tally.keyword;
-        });
-
+        return res
+            .filter(tally => {
+                return tally != null;
+            })
+            .map(tally => {
+                return tally.keyword;
+            });
     },
 
     async keywordExists(channelId: string, key: string) {
@@ -454,7 +451,7 @@ export default {
 
     /**
      * normalize tallies by adding their serverId to any tally that belonds to a channel
-     * @param channels 
+     * @param channels
      */
     async normalizeTallies(channels) {
         const tallies = await this.getUnnormalizedTallies();
@@ -475,11 +472,14 @@ export default {
         const Tally = this.Tally;
         const tallies = await Tally.findAll({
             where: {
-                [Sequelize.Op.or]: [{
-                    serverId: null
-                }, {
-                    isGlobal: null
-                }],
+                [Sequelize.Op.or]: [
+                    {
+                        serverId: null
+                    },
+                    {
+                        isGlobal: null
+                    }
+                ],
                 channelId: {
                     [Sequelize.Op.ne]: 'INTERNAL'
                 }
@@ -502,4 +502,4 @@ export default {
             await tally.save();
         }
     }
-}
+};
