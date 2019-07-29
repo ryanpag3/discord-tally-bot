@@ -35,15 +35,15 @@ export default async (message: Message) => {
     }
 
     try {
-        const result = await Tally.create({
-            name: name,
-            channelId: message.channel.id,
-            serverId: message.guild.id,
-            description: description,
-            count: 0,
-            keyword: keyword,
-            isGlobal: isGlobal
-        });
+        await DB.createTally(
+            message.channel.id,
+            message.guild.id,
+            isGlobal,
+            name,
+            description,
+            keyword
+        )
+
         let keywordMsg = '';
         keyword.split(',').map((key) => { // check for comma separated
             if (key == undefined || key == '') throw new Error('comma-separated keywords cannot be empty (i.e test,,key');

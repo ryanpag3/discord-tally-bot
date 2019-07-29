@@ -6,7 +6,7 @@ import helper from '../util/cmd-helper';
 
 const Tally = DB.Tally;
 
-export default (message: Message) => {
+export default async (message: Message) => {
     const isGlobal = helper.isGlobalTallyMessage(message);
     let content = helper.removePrefixCommand(message.content, 2);
     let cArr = content.split(' ');
@@ -19,32 +19,26 @@ export default (message: Message) => {
     }
 
     console.log('Deleting tally [' + tallyId + ']');
-    const where = {
-        name: tallyId,
-        channelId: message.channel.id,
-        serverId: message.guild.id,
-        isGlobal: isGlobal
-    };
-    
-    if (isGlobal) delete where.channelId;
 
-    Tally.destroy({
-        where: where
-    })
-        .then((res) => {
-            const successMsg = {
-                description: `[${isGlobal ? 'G' : 'C'}] **${tallyId}** has been deleted.\ndeleted by **${message.author.toString()}**`
-            };
+    try {
+        await DB.deleteTally(
+            message.channel.id,
+            message.guild.id,
+            isGlobal,
+            tallyId
+        );
 
-            const failMsg = {
-                description: `[${isGlobal ? 'G' : 'C'}] **${tallyId}** doesn't exist in my database.\ndelete attempted by **${message.author.toString()}**`
-            }
+        const successMsg = {
+            description: `[${isGlobal ? 'G' : 'C'}] **${tallyId}** has been deleted.\ndeleted by **${message.author.toString()}**`
+        };
 
-            helper.finalize(message);
+        helper.finalize(message);
 
-            if (res == 1)
-                message.channel.send(helper.buildRichMsg(successMsg));
-            else
-                message.channel.send(helper.buildRichMsg(failMsg));
-        });
+        message.channel.send(helper.buildRichMsg(successMsg));
+    } catch (e) {
+        const failMsg = {
+            description: `[${isGlobal ? 'G' : 'C'}] **${tallyId}** doesn't exist in my database.\ndelete attempted by **${message.author.toString()}**`
+        }
+        message.channel.send(helper.buildRichMsg(failMsg));
+    }
 }

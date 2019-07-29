@@ -111,14 +111,21 @@ export default {
                 await oldTally.save();
                 return;
             }
-            await this.Tally.create({
-                name: BUMP_COUNTER,
-                channelId: INTERNAL,
-                serverId: INTERNAL,
-                description: 'Internal tally for bumps.',
-                count: 0,
-                isGlobal: true
-            });
+            await this.createTally(
+                INTERNAL,
+                INTERNAL,
+                true,
+                BUMP_COUNTER,
+                'Internal tally for bumps.'
+            )
+            // await this.Tally.create({
+            //     name: BUMP_COUNTER,
+            //     channelId: INTERNAL,
+            //     serverId: INTERNAL,
+            //     description: 'Internal tally for bumps.',
+            //     count: 0,
+            //     isGlobal: true
+            // });
             console.log('Created internal bump counter.');
         } catch (e) {
             // Throws error if it already exists, which most times it will.
@@ -159,14 +166,22 @@ export default {
                 return;
             }            
 
-            await this.Tally.create({
-                name: DUMP_COUNTER,
-                channelId: INTERNAL,
-                serverId: INTERNAL,
-                description: 'Internal tally for dumps.',
-                count: 0,
-                isGlobal: true
-            });
+            await this.createTally(
+                INTERNAL,
+                INTERNAL,
+                true,
+                DUMP_COUNTER,
+                'Internal tally for dumps.'
+            )
+
+            // await this.Tally.create({
+            //     name: DUMP_COUNTER,
+            //     channelId: INTERNAL,
+            //     serverId: INTERNAL,
+            //     description: 'Internal tally for dumps.',
+            //     count: 0,
+            //     isGlobal: true
+            // });
             console.log('Created internal dump counter');
         } catch (e) {
             // Throws error if it already exists, which most times it will.
@@ -218,6 +233,89 @@ export default {
         } catch (e) {
             console.log('Error while getting bump count: ' + e);
         }
+    },
+
+    async createTally(channelId, serverId, isGlobal, name, description, keyword?) {
+        if (description.length > 255) {
+            throw new Error('description cannot be longer than 255 characters.');
+        }
+
+        await this.Tally.create({
+            channelId,
+            serverId,
+            isGlobal,
+            name,
+            description: Buffer.from(description).toString('base64'),
+            count: 0,
+            keyword: keyword ? keyword : null,
+            base64Encoded: true
+        });
+    },
+
+    async getTally(channelId, serverId, isGlobal, name) {
+        const where = {
+            channelId,
+            serverId,
+            isGlobal,
+            name
+        };
+        if (isGlobal === true) delete where.channelId;
+        const tally = await this.Tally.findOne({
+            where
+        });
+        if (!tally) return null;
+        tally.description = Buffer.from(tally.description, 'base64').toString();
+        return tally;
+    },
+
+    async getTallies(channelId, serverId, isGlobal) {
+        const where = {
+            channelId,
+            serverId,
+            isGlobal
+        };
+        if (isGlobal === true) delete where.channelId;
+        const tallies = await this.Tally.findAll({
+            where
+        });
+        for (const tally of tallies) {
+            tally.description = Buffer.from(tally.description, 'base64').toString();
+        }
+        return tallies;
+    },
+
+    async setTallyDescription(channelId, serverId, isGlobal, name, description) {
+        const tally = await this.getTally(
+            channelId,
+            serverId,
+            isGlobal,
+            name
+        );
+        if (!tally) throw new Error('could not find tally to set description');
+        tally.description = Buffer.from(description).toString('base64');
+        await tally.save();
+    },
+
+    async updateTally(channelId, serverId, isGlobal, name, updateObj) {
+        const tally = await this.getTally(
+            channelId,
+            serverId,
+            isGlobal,
+            name
+        );
+        if (!tally) throw new Error(`could not find tally to update`);
+        return await tally.update(updateObj);
+    },
+
+    async deleteTally(channelId, serverId, isGlobal, name) {
+        const tally = await this.getTally(
+            channelId,
+            serverId,
+            isGlobal,
+            name
+        );
+        if (!tally) throw new Error(`could not find tally to delete`);
+        return await tally.destroy();
     },
 
     async createTimer(name: string, description: string) {
@@ -381,6 +479,7 @@ export default {
             tally.save();
             console.log(`Assigned channel [${channel.id}] to server [${server.id}]`);
         }
+        await this.encodeTallyDescriptions();
     },
 
     async getUnnormalizedTallies() {
@@ -398,5 +497,20 @@ export default {
             }
         });
         return tallies;
+    },
+
+    async encodeTallyDescriptions() {
+        const Tally = this.Tally;
+        const tallies = await Tally.findAll({
+            where: {
+                base64Encoded: false
+            }
+        });
+        for (const tally of tallies) {
+            const description = tally.description;
+            tally.description = Buffer.from(description).toString('base64');
+            tally.base64Encoded = true;
+            await tally.save();
+        }
     }
 }

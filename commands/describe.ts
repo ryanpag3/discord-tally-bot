@@ -1,10 +1,8 @@
 // change description for tally
-import {
-    Message
-} from "discord.js";
+import { Message } from 'discord.js';
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
-import help from "./help";
+import help from './help';
 
 const Tally = DB.Tally;
 
@@ -19,63 +17,56 @@ export default async (message: Message) => {
 
     console.log('Setting description of [' + name + ']');
 
-    const where = {
-        name: name,
-        channelId: message.channel.id,
-        serverIs: message.guild.id,
-        isGlobal: isGlobal
-    };
-    if (isGlobal) delete where.channelId;
+    try {
+        await DB.setTallyDescription(message.channel.id, message.guild.id, isGlobal, name, description);
 
-    await Tally.update({
-        description: description
-    }, {
-        returning: true,
-        where: where
-    });
+        const tally = await DB.getTally(message.channel.id, message.guild.id, isGlobal, name);
 
-
-    const tally: any = await Tally.findOne({
-        where: where
-    });
-
-    if (!tally) {
-        const msg = {
-            description: `
+        if (!tally) {
+            const msg = {
+                description: `
             Could not find [${isGlobal ? 'G' : 'C'}] **${name}** to update.\nupdate attempted by **${message.author.toString()}**
             `
+            };
+            helper.finalize(message);
+            message.channel.send(helper.buildRichMsg(msg));
+            return;
         }
+
+        const phrases = [
+            'Make up your mind already.',
+            'Snip snap snip snap!',
+            'Welcome to the dark side...',
+            `Typo alert!`,
+            `Insert sardonic response here.`
+        ];
+
+        const msgObj = {
+            title: `_\"${helper.getRandomPhrase(phrases)}\"_`,
+            fields: [
+                {
+                    title: `Tally`,
+                    value: `[${isGlobal ? 'G' : 'C'}] ${tally.name}`
+                },
+                {
+                    title: `Updated Description`,
+                    value: tally.description
+                },
+                {
+                    title: `Updated by`,
+                    value: message.author.toString()
+                }
+            ]
+        };
+
+        helper.finalize(message);
+
+        message.channel.send(helper.buildRichMsg(msgObj));
+    } catch (e) {
+        const msg = {
+            description: `Failed to set description for ${name}. Reason: ${e}\nBlame ${message.author.toString()}`
+        };
         helper.finalize(message);
         message.channel.send(helper.buildRichMsg(msg));
-        return;
     }
-
-    const phrases = [
-        'Make up your mind already.',
-        'Snip snap snip snap!',
-        'Welcome to the dark side...',
-        `Typo alert!`,
-        `Insert sardonic response here.`
-    ];
-
-    const msgObj = {
-        title: `_\"${helper.getRandomPhrase(phrases)}\"_`,
-        fields: [{
-                title: `Tally`,
-                value: `[${isGlobal ? 'G' : 'C'}] ${tally.name}`
-            },
-            {
-                title: `Updated Description`,
-                value: tally.description
-            },
-            {
-                title: `Updated by`,
-                value: message.author.toString()
-            }
-        ]
-    }
-
-    helper.finalize(message);
-
-    message.channel.send(helper.buildRichMsg(msgObj));
-}
+};

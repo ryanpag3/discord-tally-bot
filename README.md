@@ -33,7 +33,7 @@ All relevent tally commands can be either used for channel tallies or global tal
 
 `!tb global [name]` - Set a **channel** tally to be globally scoped.
 
-`!tb channel -g [name]` - Set a **global** tally to be channel scoped.
+`!tb channel [name]` - Set a **global** tally to be channel scoped.
 
 For example, if I wanted to bump a **global** tally named *test*, I would issue this command
 

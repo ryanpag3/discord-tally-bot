@@ -39,14 +39,7 @@ blame **${message.author.toString()}**
         message.channel.send(helper.buildRichMsg(msg));
     } catch (e) {
         const msg = {
-            description: `
-${e}
-            
-<<<<<<< HEAD
-            Blame **${message.author.toString()}**
-=======
-Blame **${message.author.toString()}**
->>>>>>> 93e341fae1dd142f9630e8272740e063f13336c7
+            description: `${e}\n\nBlame **${message.author.toString()}**
             `
         }
         helper.finalize(message);

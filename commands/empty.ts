@@ -1,68 +1,56 @@
-import {
-    Message
-} from "discord.js";
+import { Message } from "discord.js";
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
 
-const Tally = DB.Tally;
-const phrases = [
-    ``
-];
-
-export default (message: Message) => {
+export default async (message: Message) => {
     const isGlobal = helper.isGlobalTallyMessage(message);
     let content = helper.removePrefixCommand(message.content, 2);
     let cArr = content.split(' ');
     if (isGlobal) cArr.shift(); // -g
     let tallyId = cArr.shift();
 
-    console.log(`Deleting tally [${isGlobal ? 'G' : 'C'}] [' + ${tallyId} + ']`);
+    console.log(`Emptying tally [${isGlobal ? 'G' : 'C'}] [${tallyId}]`);
 
-    const where = {
-        name: tallyId,
-        channelId: message.channel.id,
-        serverId: message.guild.id,
-        isGlobal: isGlobal
-    };
-    if (isGlobal) delete where.channelId;
+    try {
+        const tally = await DB.getTally(
+            message.channel.id,
+            message.guild.id,
+            isGlobal,
+            tallyId
+        );
 
-    Tally.findOne({
-            where: where
-        })
-        .then((record: any) => {
-            if (!record) {
-                throw `I could ould not find Tally with name: [${isGlobal ? 'G' : 'C'}]` + tallyId;
+        if (!tally) {
+            throw `I could ould not find Tally with name: [${isGlobal ? 'G' : 'C'}]` + tallyId;
+        }
+
+        await DB.updateTally(
+            message.channel.id,
+            message.guild.id,
+            isGlobal,
+            tallyId,
+            {
+                count: 0
             }
-            return record;
-        })
-        .then((record: any) => {
-            return Tally.update({
-                    count: 0
-                }, {
-                    where: where
-                })
-                .then(() => record);
-        })
-        .then((record) => {
-            const msg = {
-                description: `
-                [${isGlobal ? 'G' : 'C'}] **${tallyId}** has been emptied by **${message.author.toString()}**.
-                `
-            }
+        );
 
-            helper.finalize(message);
+        const msg = {
+            description: `
+            [${isGlobal ? 'G' : 'C'}] **${tallyId}** has been set to 0 by **${message.author.toString()}**.
+            `
+        }
 
-            message.channel.send(helper.buildRichMsg(msg));
-        })
-        .catch((err) => {
-            const msg = {
-                description: `I couldn't empty [${isGlobal ? 'G' : 'C'}] **${tallyId}** because ${err}.
-                \nempty attempted by **${message.author.toString()}**
-                `
-            }
+        helper.finalize(message);
 
-            helper.finalize(message);
+        message.channel.send(helper.buildRichMsg(msg));
+    } catch (e) {
+        const msg = {
+            description: `I couldn't empty [${isGlobal ? 'G' : 'C'}] **${tallyId}** because ${e}.
+            \nempty attempted by **${message.author.toString()}**
+            `
+        }
 
-            message.channel.send(helper.buildRichMsg(msg));
-        });
+        helper.finalize(message);
+
+        message.channel.send(helper.buildRichMsg(msg));
+    }
 }

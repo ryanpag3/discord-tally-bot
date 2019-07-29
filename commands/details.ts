@@ -1,13 +1,9 @@
 // query for tally, print details
-import {
-    Message
-} from "discord.js";
+import { Message } from "discord.js";
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
 
-const Tally = DB.Tally;
-
-export default (message: Message) => {
+export default async (message: Message) => {
     const isGlobal = helper.isGlobalTallyMessage(message);
     let msg = message.content.split(' ');
     msg.shift(); // rm prefix
@@ -17,50 +13,45 @@ export default (message: Message) => {
 
     console.log(`Giving ${name} details for channel ${message.channel.id}`);
 
-    const where = {
-        channelId: message.channel.id,
-        serverId: message.guild.id,
-        isGlobal: isGlobal,
-        name: name
-    };
+    try {
+        const tally = await DB.getTally(
+            message.channel.id,
+            message.guild.id,
+            isGlobal,
+            name
+        );
 
-    if (isGlobal) delete where.channelId;
+        if (!tally) throw new Error(`Could not find tally ${name}.`);
 
-    Tally.findOne({
-        where: where
-    })
-        .then((record: any) => {
-            const msg = {
-                title: `[${isGlobal ? 'G' : 'C'}] **${record.name}**`,
-                description: ``,
-                color: '#42f4e2',
-                fields: [
-                    {
-                        title: `Description`,
-                        value: record.description == '' ? 'No description.' : record.description
-                    },
-                    {
-                        title: `Count`,
-                        value: `${record.count}`
-                    }, 
-                    {
-                        title: `Requested by`,
-                        value: message.author.toString()
-                    }
-                ]
-            }
+        const msg = {
+            title: `[${isGlobal ? 'G' : 'C'}] **${tally.name}**`,
+            description: ``,
+            color: '#42f4e2',
+            fields: [
+                {
+                    title: `Description`,
+                    value: tally.description == '' ? 'No description.' : tally.description
+                },
+                {
+                    title: `Count`,
+                    value: `${tally.count}`
+                }, 
+                {
+                    title: `Requested by`,
+                    value: message.author.toString()
+                }
+            ]
+        }
 
-            helper.finalize(message);
+        helper.finalize(message);
 
-            message.channel.send(helper.buildRichMsg(msg));
-        })
-        .catch((err) => {
-            const msg = {
-                description: `Could not find [${isGlobal ? 'G' : 'C'}] ${name}'s details.\nattempted by **${message.author.toString()}**.
-                `
-            }
+        message.channel.send(helper.buildRichMsg(msg));
+    } catch (e) {
+        const msg = {
+            description: `Could not find [${isGlobal ? 'G' : 'C'}] ${name}'s details.\n${e}\nAttempted by **${message.author.toString()}**.`
+        };
 
-            helper.finalize(message);
-            message.channel.send(helper.buildRichMsg(msg));
-        });
+        helper.finalize(message);
+        message.channel.send(helper.buildRichMsg(msg));
+    }
 }

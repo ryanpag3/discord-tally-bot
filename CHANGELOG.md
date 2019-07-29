@@ -3,10 +3,12 @@ All notable changes to this project will be documented in this file.
 
 ## **1.2.1**
 ### Added
+- Emoji's and foreign characters are now supported for descriptions! 📣📣📣📣‼‼‼‼‼
 - You can now delete announcements.
 
 ### Fixed
-- 
+- `!tb channel` no longer requires `-g` to be provided
+- `!tb channel` will now properly set the tally to the channel that the command is run in
 
 ## **1.2**
 ### Added

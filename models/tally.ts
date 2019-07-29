@@ -10,10 +10,14 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
         },
         channelId: DataTypes.STRING,
         serverId: DataTypes.STRING,
-        description: DataTypes.STRING,
+        description: DataTypes.STRING(5000),
         count: DataTypes.BIGINT,
         keyword: DataTypes.STRING,
-        isGlobal: DataTypes.BOOLEAN
+        isGlobal: DataTypes.BOOLEAN,
+        base64Encoded: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        }
     }, {
         timestamps: false,
         indexes: [{

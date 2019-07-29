@@ -52,15 +52,22 @@ export default async (message: Message) => {
 
     try {
         console.log('Adding tally [' + tallyId + ']');
-        await Tally.create({
-            name: tallyId,
-            channelId: message.channel.id,
-            serverId: message.guild.id,
-            description: tallyDescription,
-            count: 0,
-            keyword: null,
-            isGlobal: isGlobal
-        });
+        await DB.createTally(
+            message.channel.id,
+            message.guild.id,
+            isGlobal,
+            tallyId,
+            tallyDescription
+        )
+        // await Tally.create({
+        //     name: tallyId,
+        //     channelId: message.channel.id,
+        //     serverId: message.guild.id,
+        //     description: Buffer.from(tallyDescription).toString('base64'),
+        //     count: 0,
+        //     keyword: null,
+        //     isGlobal: isGlobal
+        // });
         const description = '\n' + (tallyDescription || 'no description');
         const successMsg = {
             title: `_"${helper.getRandomPhrase(phrases)}"_`,

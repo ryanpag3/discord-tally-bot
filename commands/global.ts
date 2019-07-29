@@ -7,37 +7,39 @@ import DB from '../util/db';
 const Tally = DB.Tally;
 
 export default async (message: Message) => {
-    const isGlobal = helper.isGlobalTallyMessage(message);
     const msg = message.content.split(' ');
     msg.shift(); // prefix
     msg.shift(); // command
-    if (isGlobal) msg.shift(); // -g
     const tallyName = msg.shift();
 
-    const where = {
-        name: tallyName,
-        channelId: message.channel.id,
-        serverId: message.guild.id,
-        isGlobal: isGlobal
-    };
-    if (isGlobal) delete where.channelId;
-
     try {
-        await Tally.update({
-            isGlobal: true
-        }, {
-            where: where 
-        });
-        const tally: any = await Tally.findOne({
-            where: where
-        });
+        await DB.updateTally(
+            message.channel.id,
+            message.guild.id,
+            false,
+            tallyName,
+            {
+                isGlobal: true
+            }
+        );
+
+        const isGlobal = true;
+        const tally = await DB.getTally(
+            message.channel.id,
+            message.guild.id,
+            true,
+            tallyName
+        );       
         if (!tally) throw `Tally could not be found with name **${tallyName}**`;
         const richEmbed = {
-            description: `[${isGlobal ? 'G' : 'C'}] **${tally.name}** has been set to global scope.\n\nYou can revert this with \`!tb channel -g ${tallyName}\`\n\nblame ${message.author.toString()}`
+            description: `[${isGlobal ? 'G' : 'C'}] **${tally.name}** has been set to global scope.\n\nYou can revert this with \`!tb channel ${tallyName}\`\n\nblame ${message.author.toString()}`
         }
         message.channel.send(helper.buildRichMsg(richEmbed));
     } catch (e) {
-        const error = `There was an error while attempting to set tally to be global. ${e}`;
+        if (e.toString().toLowerCase().includes('validation error')) {
+            e = new Error(`There is already a tally with name ${tallyName} set to be globally scoped.`);
+        }
+        const error = `There was an error while attempting to set tally to be global. \n\n${e}`;
         const rich = {
             description: error + `\n\nBlame ${message.author.toString()}`
         };

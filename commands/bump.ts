@@ -1,81 +1,73 @@
-import {
-    Message
-} from "discord.js";
+import { Message } from 'discord.js';
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
-import {
-    increaseTotalBumpCount
-} from '../util/counter';
+import { increaseTotalBumpCount } from '../util/counter';
 
-const Tally = DB.Tally;
+const USER_EMOJIS = [
+    ':spy:', ':upside_down:', ':poop:', ':ghost:', ':astonished:', ':pray:', ':fist:',
+    ':tongue:', ':santa:', ':crown:', ':right_fist:'
+]
 
-export default (message: Message) => {
+export default async (message: Message) => {
     const isGlobal = helper.isGlobalTallyMessage(message);
     const msg = message.content.split(' ');
     msg.shift(); // rm prefix
     msg.shift(); // rm command
-    if (isGlobal) msg.shift(); // -g
-    let tallyName = msg.shift();
-    let bumpAmt: number = Number.parseInt(msg.shift());
+    if (isGlobal) msg.shift() // -g
+    let name = msg.shift();
+    let bumpAmount: number = Number.parseInt(msg.shift());
 
-    console.log(`Bumping [${tallyName} | Global: ${isGlobal}] by ${bumpAmt || 1}`);
+    console.log(`Bumping [${name} | Global: ${isGlobal}] by ${bumpAmount || 1}`);
 
-    const where = {
-        name: tallyName,
-        channelId: message.channel.id,
-        serverId: message.guild.id,
-        isGlobal: isGlobal
-    };
-    if (isGlobal) delete where.channelId;
+    try {
+        const tally = await DB.getTally(
+            message.channel.id,
+            message.guild.id,
+            isGlobal,
+            name
+        );
+    
+        if (!tally) {
+            throw 'I couldn\'t find it. Check your spelling? :thinking:';
+        }
 
-    Tally.findOne({
-            where: where
-        })
-        .then((record: any) => {
-            if (!record) {
-                throw 'I couldn\'t find it. Check your spelling? :thinking:';
+        const amount = bumpAmount ? bumpAmount : 1;
+        const previous = tally.count;
+        // tally.count += amount;
+        // await tally.save();
+
+        await DB.updateTally(
+            message.channel.id,
+            message.guild.id,
+            isGlobal,
+            name,
+            {
+                count: tally.count += amount
             }
-            return record;
-        })
-        .then((record: any) => {
-            const amt: number = bumpAmt ? bumpAmt : 1;
-            return Tally.update({
-                    count: record.count + amt
-                }, {
-                    returning: true,
-                    where: where
-                })
-                .then(() => {
-                    record.previous = record.count;
-                    record.count += amt;
-                    return record;
-                });
-        })
-        .then((record) => {
-            const userEmojis = [
-                ':spy:', ':upside_down:', ':poop:', ':ghost:', ':astonished:', ':pray:', ':fist:',
-                ':tongue:', ':santa:', ':crown:', ':right_fist:'
-            ]
-            const description = record.description && record.description != '' ? record.description : undefined;
-            const msg = {
-                description: `
-                [${isGlobal ? 'G' : 'C'}] **${record.name}** | **${record.previous}** >>> **${record.count}** ${(description ? '\n• _' + description + '_' : '')}
+        );
 
-                ${helper.getRandomPhrase(userEmojis)} **${message.author.toString()}**
-                `
-            }
+        const description = tally.description && tally.description != '' ? tally.description : undefined;
+        console.log(description);
+        const msg = {
+            description: `
+            [${isGlobal ? 'G' : 'C'}] **${tally.name}** | **${previous}** >>> **${tally.count}** ${(description ? '\n• _' + description + '_' : '')}
 
+            ${helper.getRandomPhrase(USER_EMOJIS)} **${message.author.toString()}**
+            `
+        }
 
-            increaseTotalBumpCount();
-            helper.finalize(message);
-            message.channel.send(helper.buildRichMsg(msg));
-        })
-        .catch((err) => {
-            const msg = {
-                description: `I couldn't bump ${tallyName} because ${err}
-                bump attempted by **${message.author.toString()}**`
-            }
-            helper.finalize(message);
-            message.channel.send(helper.buildRichMsg(msg));
-        });
+        increaseTotalBumpCount();
+        helper.finalize(message);
+        message.channel.send(helper.buildRichMsg(msg));
+
+    } catch (e) {
+        console.log(e);
+        const msg = {
+            description: `I couldn't bump ${name} because ${e}
+            bump attempted by **${message.author.toString()}**`
+        }
+        helper.finalize(message);
+        message.channel.send(helper.buildRichMsg(msg));
+    }
+
 }
