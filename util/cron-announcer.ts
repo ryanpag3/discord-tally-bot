@@ -96,6 +96,10 @@ export default class Cron {
             }]
         }
         const channel = await Cron.getChannel(channelId);
+        if (channel === null) {
+            announcement.destroy();
+            return;
+        }
         channel.send(helper.buildRichMsg(richEmbed));
     }
 
