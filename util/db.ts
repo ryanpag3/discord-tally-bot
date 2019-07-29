@@ -117,15 +117,7 @@ export default {
                 true,
                 BUMP_COUNTER,
                 'Internal tally for bumps.'
-            )
-            // await this.Tally.create({
-            //     name: BUMP_COUNTER,
-            //     channelId: INTERNAL,
-            //     serverId: INTERNAL,
-            //     description: 'Internal tally for bumps.',
-            //     count: 0,
-            //     isGlobal: true
-            // });
+            );
             console.log('Created internal bump counter.');
         } catch (e) {
             // Throws error if it already exists, which most times it will.
@@ -172,16 +164,7 @@ export default {
                 true,
                 DUMP_COUNTER,
                 'Internal tally for dumps.'
-            )
-
-            // await this.Tally.create({
-            //     name: DUMP_COUNTER,
-            //     channelId: INTERNAL,
-            //     serverId: INTERNAL,
-            //     description: 'Internal tally for dumps.',
-            //     count: 0,
-            //     isGlobal: true
-            // });
+            );
             console.log('Created internal dump counter');
         } catch (e) {
             // Throws error if it already exists, which most times it will.

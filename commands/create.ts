@@ -58,16 +58,8 @@ export default async (message: Message) => {
             isGlobal,
             tallyId,
             tallyDescription
-        )
-        // await Tally.create({
-        //     name: tallyId,
-        //     channelId: message.channel.id,
-        //     serverId: message.guild.id,
-        //     description: Buffer.from(tallyDescription).toString('base64'),
-        //     count: 0,
-        //     keyword: null,
-        //     isGlobal: isGlobal
-        // });
+        );
+        
         const description = '\n' + (tallyDescription || 'no description');
         const successMsg = {
             title: `_"${helper.getRandomPhrase(phrases)}"_`,
