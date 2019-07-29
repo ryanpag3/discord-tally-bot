@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## **1.2.1**
+### Added
+- You can now delete announcements.
+
+### Fixed
+- 
+
 ## **1.2**
 ### Added
 - **Global (a.k.a Server) Tallies** - you can now have globally scoped tallies. See [here](https://github.com/ryanpage42/discord-tally-bot/blob/master/README.md#scoping) for more information.
