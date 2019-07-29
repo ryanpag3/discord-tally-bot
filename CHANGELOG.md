@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - `!tb channel` no longer requires `-g` to be provided
 - `!tb channel` will now properly set the tally to the channel that the command is run in
+- Global and channel tally logic should be more predictable and have improved error messages.
 
 ## **1.2**
 ### Added
