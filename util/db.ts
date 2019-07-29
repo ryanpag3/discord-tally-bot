@@ -272,6 +272,8 @@ export default {
             throw new Error('description cannot be longer than 255 characters.');
         }
 
+
+
         const tally = await this.getTally(
             channelId,
             serverId,
