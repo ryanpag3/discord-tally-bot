@@ -108,6 +108,8 @@ All announcement schedules are run in `America/Los_Angeles` timezone. I have pla
 
 `!tb announce [name] -kill` - Stop an announcement from running.
 
+`!tb announce [name] -delete` - Delete an announcement.
+
 `!tb announce [name] -activate` - Start an announcement. 
 
 ## Timers

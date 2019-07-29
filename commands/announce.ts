@@ -7,33 +7,36 @@ import helper from '../util/cmd-helper';
 import DB from '../util/db';
 import CronAnnouncer from '../util/cron-announcer';
 
-export default (message: Message) => {
+export default async (message: Message) => {
     const msg = message.content.split(' ');
     const announceName = msg[2];
     const subArg = msg[3];
     try {
         switch (subArg) {
             case '-t':
-                setTallyGoal();
+                await setTallyGoal();
                 break;
             case '-d':
-                setDateGoal();
+                await setDateGoal();
                 break;
             case '-kill':
-                killAnnouncement();
+                await killAnnouncement();
                 break;
             case '-activate':
-                activateAnnouncement();
+                await activateAnnouncement();
+                break;
+            case '-delete':
+                await deleteAnnouncement();
                 break;
             default:
-                createAnnouncement();
+                await createAnnouncement();
                 break;
         }
     } catch (e) {
         console.log('Announcement command failed. Reason: ' + e);
         helper.finalize(message);
         const richEmbed = {
-            description: `Announcement command failed. Reason ${e}`
+            description: `Announcement command failed. Reason: ${e}`
         };
         message.channel.send(helper.buildRichMsg(richEmbed));
     }
@@ -122,6 +125,23 @@ export default (message: Message) => {
         message.channel.send(helper.buildRichMsg(richEmbed));
     }
 
+    async function deleteAnnouncement() {
+        console.log(`Deleting announcement for ${message.author.tag}`);
+        try {
+            const res = await DB.deleteAnnounce(message.channel.id, msg[2]);
+            if (res === 0) throw new Error(`no announcement found to delete with name **${msg[2]}**`);
+            const richEmbed = {
+                description: `Announcement **${msg[2]}** deleted. :skull:\n` +
+                `Killed by ${message.author.toString()}`
+            };
+            helper.finalize(message);
+            message.channel.send(helper.buildRichMsg(richEmbed));
+        } catch (e) {
+            console.log(`Failed to delete announcement. Reason: ${e}`);
+            throw e;
+        }
+    }
+
     async function createAnnouncement() {
         console.log(`Creating announcement for ${message.author.tag}`);
         try {
@@ -147,7 +167,7 @@ export default (message: Message) => {
             helper.finalize(message);
             message.channel.send(helper.buildRichMsg(richEmbed));
         } catch (e) {
-            console.log('Failed to create tally. Reason: ' + e);
+            console.log('Failed to create announcement. Reason: ' + e);
         
             helper.finalize(message);
     

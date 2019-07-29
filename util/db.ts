@@ -282,6 +282,13 @@ export default {
         });
     },
 
+    async deleteAnnouncement(channelId, name) {
+        return await this.Announcement.destroy({
+            channelId,
+            name
+        });
+    },
+
     async activateAnnouncement(channelId, name) {
         const announcement = await this.Announcement.findOne({
             where: {
@@ -350,7 +357,7 @@ export default {
     },
 
     async deleteAnnounce(channelId, name) {
-        await this.Announcement.destroy({
+        return await this.Announcement.destroy({
             where: {
                 channelId: channelId,
                 name: name
