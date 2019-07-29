@@ -59,7 +59,7 @@ export default async (message: Message) => {
             tallyId,
             tallyDescription
         );
-        
+
         const description = '\n' + (tallyDescription || 'no description');
         const successMsg = {
             title: `_"${helper.getRandomPhrase(phrases)}"_`,
@@ -87,6 +87,7 @@ export default async (message: Message) => {
                 description: `**${message.author.toString()}**, please try again with a shorter description. Max length is 255 characters including spaces.`
             };
             message.channel.send(helper.buildRichMsg(lengthMsg));
+            return;
         }
         const msg = {
             description: `

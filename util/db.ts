@@ -268,6 +268,10 @@ export default {
     },
 
     async setTallyDescription(channelId, serverId, isGlobal, name, description) {
+        if (description.length > 255) {
+            throw new Error('description cannot be longer than 255 characters.');
+        }
+
         const tally = await this.getTally(
             channelId,
             serverId,
