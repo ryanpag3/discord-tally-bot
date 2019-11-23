@@ -3,9 +3,10 @@ import mysql from 'mysql';
 import Config from '../config.json';
 import PrivateConfig from '../config-private.json';
 import Counter from './counter';
+import Sqlize from './sqlize';
 
 export default class DB {
-    mysqlConn = this.getMysql();
+    mysqlPool;
     sequelize;
     dbName;
 
@@ -21,16 +22,12 @@ export default class DB {
         if (dbName === undefined)
             dbName = Config.database.name;
         this.dbName = dbName;
-        this.sequelize = this.getSequelize(dbName);
+        this.sequelize = new Sqlize(dbName);
         this.initModels();
     }
 
-    /**
-     * Create a connection object to mysql
-     * Note: this does not connect
-     */
-    private getMysql() {
-        return mysql.createConnection({
+    private getMysqlPool() {
+        return mysql.createPool({
             host: PrivateConfig.database.url,
             user: PrivateConfig.database.user,
             password: PrivateConfig.database.password
@@ -61,43 +58,58 @@ export default class DB {
         if (!dbName) {
             dbName = this.dbName;
         }
-        await this.connectMysqlClient();
+        this.createMysqlPool();
         await this.createDatabaseIfNotExists(dbName);
         await this.upsertTables();
         await Counter.init();
     }
 
-    async connectMysqlClient() {
+    createMysqlPool() {
+        this.mysqlPool = this.getMysqlPool();
+    }
+
+    async getMysqlConn(): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.mysqlConn.connect(err => {
+            this.mysqlPool.getConnection((err, conn) => {
                 if (err) return reject(err);
-                resolve();
+                resolve(conn);
             });
         });
     }
 
     async createDatabaseIfNotExists(dbName: string) {
-        return new Promise((resolve, reject) => {
-            this.mysqlConn.query(`CREATE DATABASE IF NOT EXISTS ${dbName}`, (err, result) => {
+        console.log(`attempting to create database ${dbName}`);
+        return new Promise(async (resolve, reject) => {
+            const conn = await this.getMysqlConn();
+            conn.query(`CREATE DATABASE IF NOT EXISTS ${dbName}`, (err, result) => {
                 if (err) return reject(err);
                 if (result.warningCount !== 1) {
                     console.log(`Database ${dbName} has been created`);
                 }
+                conn.release();
                 resolve();
             })
         });
     }
 
-    async dropDatabase(dbName: string) {
+    async dropDatabase(dbName?: string) {
         if (process.env.NODE_ENV === 'production') {
             console.log('dropDatabase called in production. This should not happen.');
             return;
         }
 
-        return new Promise((resolve, reject) => {
-            this.mysqlConn.query('DROP DATABASE ' + dbName, (err, result) => {
+        if (!dbName) {
+            dbName = this.dbName;
+        }
+
+        console.log(`attempting to drop database ${dbName}`);
+
+        return new Promise(async (resolve, reject) => {
+            const conn = await this.getMysqlConn();
+            conn.query('DROP DATABASE ' + dbName, (err, result) => {
                 if (err && err.message.includes('database doesn\'t exist')) return resolve(false);
                 if (err) return reject(err);
+                conn.release();
                 resolve(result.affectedRows > 0);
             });
         })
@@ -105,9 +117,11 @@ export default class DB {
     }
 
     async databaseExists(dbName: string) {
-        return new Promise((resolve, reject) => {
-            this.mysqlConn.query(`SHOW DATABASES LIKE '${dbName}'`, (err, result) => {
+        return new Promise(async (resolve, reject) => {
+            const conn = await this.getMysqlConn();
+            conn.query(`SHOW DATABASES LIKE '${dbName}'`, (err, result) => {
                 if (err) return reject(err);
+                conn.release();
                 resolve(result.length > 0);
             });
         });
@@ -155,6 +169,15 @@ export default class DB {
         await this.Permission.sync({
             alter: true
         });
+    }
+
+    async truncateTables() {
+        await this.Tally.truncate();
+        await this.Timer.truncate();
+        await this.Announcement.truncate();
+        await this.Channel.truncate();
+        await this.Server.truncate();
+        await this.Permission.truncate();
     }
 
     async createTally(channelId: string, serverId: string, isGlobal: boolean, 
