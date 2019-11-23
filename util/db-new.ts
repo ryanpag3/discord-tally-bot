@@ -2,6 +2,7 @@ import Sequelize from 'sequelize';
 import mysql from 'mysql';
 import Config from '../config.json';
 import PrivateConfig from '../config-private.json';
+import Counter from './counter';
 
 export default class DB {
     mysqlConn = this.getMysql();
@@ -63,6 +64,7 @@ export default class DB {
         await this.connectMysqlClient();
         await this.createDatabaseIfNotExists(dbName);
         await this.upsertTables();
+        await Counter.init();
     }
 
     async connectMysqlClient() {
@@ -153,5 +155,34 @@ export default class DB {
         await this.Permission.sync({
             alter: true
         });
+    }
+
+    async createTally(channelId: string, serverId: string, isGlobal: boolean, 
+        name: string, description: string, keyword?: string) {
+            const maxDescriptionLen = 255;
+            if (description.length > maxDescriptionLen) {
+                throw new Error('description cannot be longer than 255 characters, including emojis');
+            }
+
+            await this.Tally.create({
+                channelId,
+                serverId,
+                isGlobal,
+                name,
+                description: Buffer.from(description).toString('base64'),
+                count: 0,
+                keyword: keyword ? keyword : null,
+                base64Encoded: true
+            });
+
+            console.log(`
+            Tally Created
+            -------------
+            channelId: ${channelId}
+            serverId: ${serverId}
+            isGlobal: ${isGlobal}
+            name: ${name}
+            description: ${description}
+            `)
     }
 }

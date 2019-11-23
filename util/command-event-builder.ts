@@ -32,7 +32,6 @@ import channel from '../commands/channel';
 
 export default class CommandEventBuilder {
     static build(emitter: EventEmitter) {
-        console.log(__dirname);
         // test command functionality
         emitter.on(prefix + Commands.TEST, test);
         emitter.on(prefix + Commands.T, test);

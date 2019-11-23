@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize';
 import mysql from 'mysql';
 import chrono from 'chrono-node';
-import * as counter from './counter';
+import Counter from './counter';
 import pConfig from '../config-private.json';
 import config from '../config.json';
 import Tally from '../models/tally';
@@ -51,7 +51,7 @@ export default {
                 if (err) throw err;
                 if (result.warningCount != 1) console.log('Database ' + databaseName + ' has been created.');
                 await this.initTables();
-                counter.init();
+                Counter.init();
             });
         });
     },
