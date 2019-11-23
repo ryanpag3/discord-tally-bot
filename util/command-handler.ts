@@ -8,10 +8,10 @@ export default class CommandHandler {
     private emitter: EventEmitter;
     private bot: Client;
 
-    constructor(emitter: EventEmitter, bot: Client) {
-        this.emitter = emitter;
+    constructor(bot?: any) {
+        this.emitter = new EventEmitter();
         this.bot = bot;
-        CommandEventBuilder.build(emitter);
+        CommandEventBuilder.build(this.emitter);
     }
 
     /**
@@ -20,8 +20,6 @@ export default class CommandHandler {
      */
     async handle(message: Message) {
         const mArr = message.content.split(' ');
-        const command = mArr[0] + ' ' + mArr[1];
-
         const hasPermission = await Permissions.hasPermission(message);
         if (!hasPermission) {
             await message.delete();
@@ -39,6 +37,7 @@ export default class CommandHandler {
             return;
         }
 
+        const command = mArr[0] + ' ' + mArr[1];
         this.emit(command, message);
     }
 
@@ -47,7 +46,7 @@ export default class CommandHandler {
      * @param command - command to run
      * @param message - message command belongs to
      */
-    private emit(command: string, message: Message) {
+    emit(command: string, message: any) {
         // TODO: make more data driven as more added
         if (command == prefix + 'suggest' || command == prefix + 'bug') {
             this.emitter.emit(command, {

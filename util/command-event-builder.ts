@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 import { prefix, status } from '../config.json';
+import Commands from '../static/Commands';
 
 import test from '../commands/test';
 import help from '../commands/help';
@@ -28,10 +29,10 @@ import patchnotes from '../commands/patchnotes';
 import permissions from '../commands/permissions';
 import global from '../commands/global';
 import channel from '../commands/channel';
-import Commands from '../static/Commands.js';
 
 export default class CommandEventBuilder {
     static build(emitter: EventEmitter) {
+        console.log(__dirname);
         // test command functionality
         emitter.on(prefix + Commands.TEST, test);
         emitter.on(prefix + Commands.T, test);

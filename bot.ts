@@ -12,8 +12,7 @@ import CommandHandler from './util/command-handler.js';
 
 
 const bot = new Discord.Client();
-const emitter = new EventEmitter();
-const commandHandler = new CommandHandler(emitter, bot);
+const commandHandler = new CommandHandler(bot);
 
 let dbl;
 if (process.env.NODE_ENV == 'production') // don't POST stats in dev

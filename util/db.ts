@@ -37,32 +37,44 @@ export default {
     Permission: sequelize.import('../models/permission'),
 
     init() {
+        this.initDatabase(config.database.name);
+    },
+
+    initTestDatabase() {
+        this.initDatabase('tallybot_itest_db');
+    },
+
+    initDatabase(databaseName: string) {
         conn.connect(err => {
             if (err) throw err;
-            conn.query('CREATE DATABASE IF NOT EXISTS ' + config.database.name, (err, result) => {
+            conn.query('CREATE DATABASE IF NOT EXISTS ' + databaseName, async (err, result) => {
                 if (err) throw err;
-                if (result.warningCount != 1) console.log('Database ' + config.database.name + ' has been created.');
-
-                this.Tally.sync({
-                    alter: true
-                });
-                this.Timer.sync({
-                    alter: true
-                });
-                this.Announcement.sync({
-                    alter: true
-                });
-                this.Channel.sync({
-                    alter: true
-                });
-                this.Server.sync({
-                    alter: true
-                });
-                this.Permission.sync({
-                    alter: true
-                });
+                if (result.warningCount != 1) console.log('Database ' + databaseName + ' has been created.');
+                await this.initTables();
                 counter.init();
             });
+        });
+    },
+
+    async initTables() {
+        console.log('creating tables');
+        await this.Tally.sync({
+            alter: true
+        });
+        await this.Timer.sync({
+            alter: true
+        });
+        await this.Announcement.sync({
+            alter: true
+        });
+        await this.Channel.sync({
+            alter: true
+        });
+        await this.Server.sync({
+            alter: true
+        });
+        await this.Permission.sync({
+            alter: true
         });
     },
 
