@@ -207,6 +207,7 @@ export default class DB {
             isGlobal: ${isGlobal}
             name: ${name}
             description: ${description}
+            keyword: ${keyword || null}
             `);
 
         return Tally;
@@ -332,5 +333,21 @@ export default class DB {
             }
         });
         return res.length != 0;
+    }
+
+    async bumpKeywordTally(channelId, keyword) {
+        if (keyword === null || keyword === undefined) return;
+        const tallies = await this.Tally.findAll({
+            where: {
+                channelId: channelId,
+                keyword: keyword
+            }
+        });
+        console.log(`bumping ${tallies.length} keyword tallies`);
+        const promises = tallies.map(async tally => {
+            tally.count = tally.count + 1;
+            return tally.save();
+        });
+        await Promise.all(promises);
     }
 }

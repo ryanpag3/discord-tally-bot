@@ -170,6 +170,15 @@ describe('db.ts', function() {
         expect(exists).eqls(false);
     });
 
+    it('.bumpKeywordTally should return false if doesnt exist', async () => {
+        const mName = 'ryan';
+        const kw = 'test';
+        await createTestTally(mName, kw);
+        await db.bumpKeywordTally(CHANNEL_ID, kw);
+        const tally = await db.getTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, mName);
+        expect(tally.count).eqls(1);
+    });
+
     async function createTestTally(name?: string, keyword?: string) {
         return await db.createTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, name || NAME, DESCRIPTION, keyword);
     }
