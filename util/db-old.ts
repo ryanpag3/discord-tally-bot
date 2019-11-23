@@ -318,11 +318,6 @@ export default {
         return await tally.destroy();
     },
 
-    async createTimer(name: string, description: string) {
-        try {
-        } catch (e) {}
-    },
-
     async getKeywords(channelId: string) {
         const res = await this.Tally.findAll({
             where: {

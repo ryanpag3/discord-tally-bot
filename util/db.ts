@@ -20,8 +20,7 @@ export default class DB {
     Permission;
 
     constructor(dbName?: string) {
-        if (dbName === undefined)
-            dbName = Config.database.name;
+        if (dbName === undefined) dbName = Config.database.name;
         this.dbName = dbName;
         this.sequelize = new Sqlize(dbName);
         this.initModels();
@@ -37,7 +36,7 @@ export default class DB {
 
     /**
      * Open a connection and get sequelize object
-     * @param dbName 
+     * @param dbName
      */
     private getSequelize(dbName: string) {
         return new Sequelize({
@@ -57,7 +56,7 @@ export default class DB {
 
     /**
      * Create DB and generate tables for the specified database
-     * @param dbName 
+     * @param dbName
      */
     async initDatabase(dbName?: string) {
         if (!dbName) {
@@ -93,7 +92,7 @@ export default class DB {
                 }
                 conn.release();
                 resolve();
-            })
+            });
         });
     }
 
@@ -111,13 +110,12 @@ export default class DB {
         return new Promise(async (resolve, reject) => {
             const conn = await this.getMysqlConn();
             conn.query('DROP DATABASE ' + dbName, (err, result) => {
-                if (err && err.message.includes('database doesn\'t exist')) return resolve(false);
+                if (err && err.message.includes("database doesn't exist")) return resolve(false);
                 if (err) return reject(err);
                 conn.release();
                 resolve(result.affectedRows > 0);
             });
-        })
-
+        });
     }
 
     async databaseExists(dbName: string) {
@@ -184,25 +182,24 @@ export default class DB {
         await this.Permission.truncate();
     }
 
-    async createTally(channelId: string, serverId: string, isGlobal: boolean, 
-        name: string, description: string, keyword?: string) {
-            const maxDescriptionLen = this.TALLY_DESCRIPTION_MAXLEN;
-            if (description.length > maxDescriptionLen) {
-                throw new Error('description cannot be longer than ' + this.TALLY_DESCRIPTION_MAXLEN + ' characters, including emojis');
-            }
+    async createTally(channelId: string, serverId: string, isGlobal: boolean, name: string, description: string, keyword?: string) {
+        const maxDescriptionLen = this.TALLY_DESCRIPTION_MAXLEN;
+        if (description.length > maxDescriptionLen) {
+            throw new Error('description cannot be longer than ' + this.TALLY_DESCRIPTION_MAXLEN + ' characters, including emojis');
+        }
 
-            const Tally = await this.Tally.create({
-                channelId,
-                serverId,
-                isGlobal,
-                name,
-                description: Buffer.from(description).toString('base64'),
-                count: 0,
-                keyword: keyword ? keyword : null,
-                base64Encoded: true
-            });
+        const Tally = await this.Tally.create({
+            channelId,
+            serverId,
+            isGlobal,
+            name,
+            description: Buffer.from(description).toString('base64'),
+            count: 0,
+            keyword: keyword ? keyword : null,
+            base64Encoded: true
+        });
 
-            console.log(`
+        console.log(`
             Tally Created
             -------------
             channelId: ${channelId}
@@ -210,9 +207,9 @@ export default class DB {
             isGlobal: ${isGlobal}
             name: ${name}
             description: ${description}
-            `)
+            `);
 
-            return Tally;
+        return Tally;
     }
 
     async getTally(channelId, serverId, isGlobal, name) {
@@ -264,12 +261,7 @@ export default class DB {
             throw new Error('description cannot be longer than ' + this.TALLY_DESCRIPTION_MAXLEN + ' characters.');
         }
 
-        const tally = await this.getTally(
-            channelId,
-            serverId,
-            isGlobal,
-            name
-        );
+        const tally = await this.getTally(channelId, serverId, isGlobal, name);
 
         if (!tally) throw new Error('could not find tally to set description');
 
@@ -278,23 +270,13 @@ export default class DB {
     }
 
     async updateTally(channelId, serverId, isGlobal, name, updateObj) {
-        const tally = await this.getTally(
-            channelId,
-            serverId,
-            isGlobal,
-            name
-        );
+        const tally = await this.getTally(channelId, serverId, isGlobal, name);
         if (!tally) throw new Error(`could not find tally to update`);
         return await tally.update(updateObj);
     }
 
     async deleteTally(channelId, serverId, isGlobal, name) {
-        const tally = await this.getTally(
-            channelId,
-            serverId,
-            isGlobal,
-            name
-        );
+        const tally = await this.getTally(channelId, serverId, isGlobal, name);
         if (!tally) throw new Error(`could not find tally to delete`);
         return await tally.destroy();
     }
@@ -325,5 +307,30 @@ export default class DB {
         } catch (e) {
             console.log(`Error while getting count for ${name}: ${e}`);
         }
+    }
+
+    async getKeywords(channelId: string) {
+        const res = await this.Tally.findAll({
+            where: {
+                channelId: channelId
+            }
+        });
+        return res
+            .filter(tally => {
+                return tally != null;
+            })
+            .map(tally => {
+                return tally.keyword;
+            });
+    }
+
+    async keywordExists(channelId: string, key: string) {
+        const res = await this.Tally.findAll({
+            where: {
+                channelId: channelId,
+                keyword: key
+            }
+        });
+        return res.length != 0;
     }
 }

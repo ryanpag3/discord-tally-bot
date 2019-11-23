@@ -137,10 +137,40 @@ describe('db.ts', function() {
         };
         await db.deleteTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME, up);
         const tally = await db.getTally(CHANNEL_ID, up.serverId, IS_GLOBAL, NAME);
-        expect(tally).to.exist;
+        expect(tally).to.not.exist;
     });
 
-    async function createTestTally(name?: string) {
-        return await db.createTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, name || NAME, DESCRIPTION);
+    it('.deleteTally should throw an error if tally doesnt exist', async () => {
+        let err;
+        try {
+            await db.deleteTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME);
+        } catch (e) {
+            err = e;
+        }
+        expect(err).to.not.be.undefined;
+    });
+
+    it('.getKeywords should get all keywords for a channel', async () => {
+        const kw = 'test';
+        await createTestTally(null, kw);
+        const keywords = await db.getKeywords(CHANNEL_ID);
+        expect(keywords[0]).eqls(kw);
+    });
+
+    it('.keywordExists should return true if exists', async () => {
+        const kw = 'test';
+        await createTestTally(null, kw);
+        const exists = await db.keywordExists(CHANNEL_ID, kw);
+        expect(exists).eqls(true);
+    });
+
+    it('.keywordExists should return false if doesnt exist', async () => {
+        const kw = 'test';
+        const exists = await db.keywordExists(CHANNEL_ID, kw);
+        expect(exists).eqls(false);
+    });
+
+    async function createTestTally(name?: string, keyword?: string) {
+        return await db.createTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, name || NAME, DESCRIPTION, keyword);
     }
 });
