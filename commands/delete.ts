@@ -4,7 +4,8 @@ import {
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
 
-const Tally = DB.Tally;
+const db = new DB();
+const Tally = db.Tally;
 
 export default async (message: Message) => {
     const isGlobal = helper.isGlobalTallyMessage(message);
@@ -21,7 +22,7 @@ export default async (message: Message) => {
     console.log('Deleting tally [' + tallyId + ']');
 
     try {
-        await DB.deleteTally(
+        await db.deleteTally(
             message.channel.id,
             message.guild.id,
             isGlobal,

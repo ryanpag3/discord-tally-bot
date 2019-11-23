@@ -8,6 +8,7 @@ import DB from '../util/db';
 import CronAnnouncer from '../util/cron-announcer';
 
 export default async (message: Message) => {
+    const db = new DB();
     const msg = message.content.split(' ');
     const announceName = msg[2];
     const subArg = msg[3];
@@ -48,7 +49,7 @@ export default async (message: Message) => {
         
         if (!goalCount) throw new Error(`Goal count is required to set tally goal.`);
 
-        await DB.setAnnounceTallyGoal(channelId, announceName, goalName, goalCount);
+        await db.setAnnounceTallyGoal(channelId, announceName, goalName, goalCount);
 
         const richEmbed = {
             title: `:trumpet: Announcement Tally Goal Set! :trumpet:`,
@@ -81,7 +82,7 @@ export default async (message: Message) => {
             console.log(date);
         }
 
-        await DB.setAnnounceDate(message.channel.id, announceName, datePattern);
+        await db.setAnnounceDate(message.channel.id, announceName, datePattern);
 
         CronAnnouncer.createCronJob(announceName, message.channel.id, date || datePattern);
 
@@ -111,11 +112,11 @@ export default async (message: Message) => {
     }
 
     async function activateAnnouncement() {
-        const announce: any = await DB.Announcement.findOne({ where: {
+        const announce: any = await db.Announcement.findOne({ where: {
             channelId: message.channel.id, 
             name: announceName
         }});
-        DB.activateAnnouncement(message.channel.id, announceName);
+        db.activateAnnouncement(message.channel.id, announceName);
         if (!announce) return;
         CronAnnouncer.createCronJob(announceName, message.channel.id, announce.datePattern);
         helper.finalize(message);
@@ -128,7 +129,7 @@ export default async (message: Message) => {
     async function deleteAnnouncement() {
         console.log(`Deleting announcement for ${message.author.tag}`);
         try {
-            const res = await DB.deleteAnnounce(message.channel.id, msg[2]);
+            const res = await db.deleteAnnounce(message.channel.id, msg[2]);
             if (res === 0) throw new Error(`no announcement found to delete with name **${msg[2]}**`);
             const richEmbed = {
                 description: `Announcement **${msg[2]}** deleted. :skull:\n` +
@@ -146,7 +147,7 @@ export default async (message: Message) => {
         console.log(`Creating announcement for ${message.author.tag}`);
         try {
             const noDescription = 'no description.';
-            await DB.upsertAnnouncement(message.channel.id, msg[2], msg[3] || noDescription);
+            await db.upsertAnnouncement(message.channel.id, msg[2], msg[3] || noDescription);
             const richEmbed = {
                 title: `:trumpet: Announcement Created! :trumpet:`,
                 fields: [

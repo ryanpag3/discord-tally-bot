@@ -5,6 +5,7 @@ import helper from '../util/cmd-helper';
 import DB from '../util/db';
 
 export default (message: Message) => {
+    const db = new DB();
     const msg = message.content.split(' ');
     const subArg = msg[2];
     try {
@@ -24,7 +25,7 @@ export default (message: Message) => {
 
     async function enable() {
         console.log(`Enabling patch announcements for ${message.channel.id}`);
-        const server: any = await DB.Server.findOne({
+        const server: any = await db.Server.findOne({
             where: {
                 id: message.guild.id
             }
@@ -36,7 +37,7 @@ export default (message: Message) => {
 
     async function disable() {
         console.log(`Disabling patch announcements for ${message.channel.id}`);
-        const server: any = await DB.Server.findOne({
+        const server: any = await db.Server.findOne({
             where: {
                 id: message.guild.id
             }

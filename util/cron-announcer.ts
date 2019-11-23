@@ -16,7 +16,8 @@ export default class Cron {
      * TODO: scale to multi-node
      */
     static async initCronJobs() {
-        const announcements: any = await DB.Announcement.findAll({
+        const db = new DB();
+        const announcements: any = await db.Announcement.findAll({
             where: {
                 active: true
             }
@@ -53,9 +54,10 @@ export default class Cron {
     }
 
     static async destroyCronJob(announceName, channelId) {
+        const db = new DB();
         if (!cronCache[announceName]) return;
         console.log(`Destroying cron job for ${announceName}`);
-        const announce: any = await DB.Announcement.findOne({ where :{
+        const announce: any = await db.Announcement.findOne({ where :{
             channelId: channelId,
             name: announceName
         }});
@@ -71,8 +73,9 @@ export default class Cron {
      * run an announcement 
      */
     static async announce(announceName, channelId) {
+        const db = new DB();
         console.log(`announcing ${announceName} for ${channelId}`);
-        const announcement: any = await DB.Announcement.findOne({
+        const announcement: any = await db.Announcement.findOne({
             where: {
                 name: announceName,
                 channelId: channelId

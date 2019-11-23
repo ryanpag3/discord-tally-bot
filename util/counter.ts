@@ -1,28 +1,4 @@
-import DB from './db-new';
-
-/**
- * initialize internal tallies to the database
- */
-// export const init = async () => {
-//     await initBumpCounter();
-//     await initDumpCounter();
-// }
-
-// const initBumpCounter = async () => {
-//    // return await db.createBumpCounter();
-// }
-
-// export const increaseTotalBumpCount = async () => {
-//     // return await db.increaseBumpCounter();
-// }
-
-// const initDumpCounter = async () => {
-//     // return await db.createDumpCounter();
-// }
-
-// export const increaseTotalDumpCount = async () => {
-//     // return await db.increaseDumpCounter();
-// }
+import DB from './db';
 
 export default class Counter {
     static BUMP_COUNTER = 'BUMP_COUNTER';
@@ -35,15 +11,15 @@ export default class Counter {
     }
 
     static async initBumpCounter() {
-
+        return await Counter.initCounter(Counter.BUMP_COUNTER);
     }
 
     static async initDumpCounter() {
-
+        return await Counter.initCounter(Counter.DUMP_COUNTER);
     }
 
     static async initCounter(name) {
-        const db = new DB()
+        const db = new DB();
         const Tally = db.Tally;
         const existingCounter = await Tally.findOne({
             where: {
@@ -52,15 +28,16 @@ export default class Counter {
                 serverId: null
             }
         });
-        
+
         if (existingCounter) {
             return this.overwriteServerId(existingCounter);
         }
 
         try {
-            
+            await db.createTally(Counter.INTERNAL, Counter.INTERNAL, true, name, 'Internal tally for ' + name);
         } catch (e) {
-
+            if (!e.message.includes('Validation error'))
+                console.log(e);
         }
     }
 
@@ -71,10 +48,58 @@ export default class Counter {
     }
 
     static async bumpTotalBumps() {
-
+        return await this.bumpTotal(Counter.BUMP_COUNTER);
     }
 
     static async bumpTotalDumps() {
+        return await this.bumpTotal(Counter.DUMP_COUNTER);
+    }
 
+    private static async bumpTotal(name) {
+        try {
+            const db = new DB();
+            const tally = db.Tally.findOne({
+                where: {
+                    name,
+                    channelId: Counter.INTERNAL,
+                    serverId: Counter.INTERNAL
+                }
+            });
+            tally.count++;
+            await tally.save();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async getCount(name: string, channelId: string) {
+        try {
+            const db = new DB();
+            let tally = await db.Tally.findOne({
+                where: {
+                    name: name,
+                    channelId: channelId
+                }
+            });
+            return tally.count;
+        } catch (e) {
+            console.log(`Error while getting count for ${name}: ${e}`);
+        }
+    }
+
+    async getDumpCount() {
+        try {
+            return await this.getCount(Counter.DUMP_COUNTER, Counter.INTERNAL);
+        } catch (e) {
+            console.log(`Error while getting dump count ${e}`);
+        }
+    }
+
+    async getBumpCount() {
+        try {
+            return await this.getCount(Counter.BUMP_COUNTER, Counter.INTERNAL);
+        } catch (e) {
+            console.log('Error while getting bump count: ' + e);
+        }
     }
 }

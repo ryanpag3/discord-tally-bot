@@ -4,9 +4,10 @@ import {
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
 
-const Tally = DB.Tally;
-const Timer = DB.Timer;
-const Announcement = DB.Announcement;
+const db = new DB();
+const Tally = db.Tally;
+const Timer = db.Timer;
+const Announcement = db.Announcement;
 
 export default (message: Message) => {
     console.log('Deleting all tallies.');

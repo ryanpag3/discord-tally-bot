@@ -1,250 +1,219 @@
 import Sequelize from 'sequelize';
 import mysql from 'mysql';
-import chrono from 'chrono-node';
+import Config from '../config.json';
+import PrivateConfig from '../config-private.json';
 import Counter from './counter';
-import pConfig from '../config-private.json';
-import config from '../config.json';
-import Tally from '../models/tally';
-import Timer from '../models/timer';
-import server from '../models/server';
+import Sqlize from './sqlize';
 
-const sequelize = new Sequelize({
-    host: pConfig.database.url,
-    database: config.database.name,
-    username: pConfig.database.user,
-    password: pConfig.database.password,
-    dialect: config.database.dialect,
-    operatorsAliases: false,
-    logging: false
-});
+export default class DB {
+    private TALLY_DESCRIPTION_MAXLEN = 255;
+    mysqlPool;
+    sequelize;
+    dbName;
 
-const conn = mysql.createConnection({
-    host: pConfig.database.url,
-    user: pConfig.database.user,
-    password: pConfig.database.password
-});
+    // tables
+    Tally;
+    Timer;
+    Announcement;
+    Channel;
+    Server;
+    Permission;
 
-const BUMP_COUNTER = 'BUMP_COUNTER';
-const DUMP_COUNTER = 'DUMP_COUNTER';
-const INTERNAL = 'INTERNAL';
+    constructor(dbName?: string) {
+        if (dbName === undefined)
+            dbName = Config.database.name;
+        this.dbName = dbName;
+        this.sequelize = new Sqlize(dbName);
+        this.initModels();
+    }
 
-export default {
-    Tally: sequelize.import('tally', Tally),
-    Timer: sequelize.import('timer', Timer),
-    Announcement: sequelize.import('../models/announcement'),
-    Channel: sequelize.import('../models/channel'),
-    Server: sequelize.import('../models/server'),
-    Permission: sequelize.import('../models/permission'),
+    private getMysqlPool() {
+        return mysql.createPool({
+            host: PrivateConfig.database.url,
+            user: PrivateConfig.database.user,
+            password: PrivateConfig.database.password
+        });
+    }
 
-    init() {
-        this.initDatabase(config.database.name);
-    },
+    /**
+     * Open a connection and get sequelize object
+     * @param dbName 
+     */
+    private getSequelize(dbName: string) {
+        return new Sequelize({
+            host: PrivateConfig.database.url,
+            database: dbName,
+            username: PrivateConfig.database.user,
+            password: PrivateConfig.database.password,
+            dialect: Config.database.dialect,
+            operatorsAliases: false,
+            logging: false
+        });
+    }
 
-    initTestDatabase() {
-        this.initDatabase('tallybot_itest_db');
-    },
+    async init() {
+        await this.initDatabase(Config.database.name);
+    }
 
-    initDatabase(databaseName: string) {
-        conn.connect(err => {
-            if (err) throw err;
-            conn.query('CREATE DATABASE IF NOT EXISTS ' + databaseName, async (err, result) => {
-                if (err) throw err;
-                if (result.warningCount != 1) console.log('Database ' + databaseName + ' has been created.');
-                await this.initTables();
-                Counter.init();
+    /**
+     * Create DB and generate tables for the specified database
+     * @param dbName 
+     */
+    async initDatabase(dbName?: string) {
+        if (!dbName) {
+            dbName = this.dbName;
+        }
+        this.createMysqlPool();
+        await this.createDatabaseIfNotExists(dbName);
+        await this.upsertTables();
+        await Counter.init();
+    }
+
+    createMysqlPool() {
+        this.mysqlPool = this.getMysqlPool();
+    }
+
+    async getMysqlConn(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.mysqlPool.getConnection((err, conn) => {
+                if (err) return reject(err);
+                resolve(conn);
             });
         });
-    },
+    }
 
-    async initTables() {
-        console.log('creating tables');
+    async createDatabaseIfNotExists(dbName: string) {
+        console.log(`attempting to create database ${dbName}`);
+        return new Promise(async (resolve, reject) => {
+            const conn = await this.getMysqlConn();
+            conn.query(`CREATE DATABASE IF NOT EXISTS ${dbName}`, (err, result) => {
+                if (err) return reject(err);
+                if (result.warningCount !== 1) {
+                    console.log(`Database ${dbName} has been created`);
+                }
+                conn.release();
+                resolve();
+            })
+        });
+    }
+
+    async dropDatabase(dbName?: string) {
+        if (process.env.NODE_ENV === 'production') {
+            console.log('dropDatabase called in production. This should not happen.');
+            return;
+        }
+
+        if (!dbName) {
+            dbName = this.dbName;
+        }
+
+        console.log(`attempting to drop database ${dbName}`);
+        return new Promise(async (resolve, reject) => {
+            const conn = await this.getMysqlConn();
+            conn.query('DROP DATABASE ' + dbName, (err, result) => {
+                if (err && err.message.includes('database doesn\'t exist')) return resolve(false);
+                if (err) return reject(err);
+                conn.release();
+                resolve(result.affectedRows > 0);
+            });
+        })
+
+    }
+
+    async databaseExists(dbName: string) {
+        return new Promise(async (resolve, reject) => {
+            const conn = await this.getMysqlConn();
+            conn.query(`SHOW DATABASES LIKE '${dbName}'`, (err, result) => {
+                if (err) return reject(err);
+                conn.release();
+                resolve(result.length > 0);
+            });
+        });
+    }
+
+    async getTables() {
+        return await this.sequelize.getQueryInterface().showAllSchemas();
+    }
+
+    /**
+     * Initialize the model objects
+     * TODO: make more data-driven
+     */
+    initModels() {
+        this.Tally = this.sequelize.import('../models/tally');
+        this.Timer = this.sequelize.import('../models/timer');
+        this.Announcement = this.sequelize.import('../models/announcement');
+        this.Channel = this.sequelize.import('../models/channel');
+        this.Server = this.sequelize.import('../models/server');
+        this.Permission = this.sequelize.import('../models/permission');
+    }
+
+    async upsertTables() {
+        console.log('creating and/or altering Tally table');
         await this.Tally.sync({
             alter: true
         });
+        console.log('creating and/or altering Timer table');
         await this.Timer.sync({
             alter: true
         });
+        console.log('creating and/or altering Announcement table');
         await this.Announcement.sync({
             alter: true
         });
+        console.log('creating and/or altering Channel table');
         await this.Channel.sync({
             alter: true
         });
+        console.log('creating and/or altering Server table');
         await this.Server.sync({
             alter: true
         });
+        console.log('creating and/or altering Permission table');
         await this.Permission.sync({
             alter: true
         });
-    },
+    }
 
-    async initServers(servers) {
-        servers.map(async server => {
-            try {
-                await this.Server.upsert({
-                    id: server.id
-                });
-            } catch (e) {
-                console.log(`Failed to upsert Server record on init. Reason: ${e}`);
-            }
-        });
-    },
+    async truncateTables() {
+        await this.Tally.truncate();
+        await this.Timer.truncate();
+        await this.Announcement.truncate();
+        await this.Channel.truncate();
+        await this.Server.truncate();
+        await this.Permission.truncate();
+    }
 
-    async initServer(id) {
-        try {
-            await this.Server.upsert({
-                id: id
-            });
-        } catch (e) {
-            console.log(`Failed to upsert Server record on init. Reason: ${e}`);
-        }
-    },
-
-    async getTallyCount() {
-        return this.Tally.findAll({
-            where: {}
-        }).then(tallies => tallies.length);
-    },
-
-    async createBumpCounter() {
-        try {
-            const oldTally = await this.Tally.findOne({
-                where: {
-                    name: BUMP_COUNTER,
-                    channelId: INTERNAL,
-                    serverId: null
-                }
-            });
-
-            if (oldTally) {
-                oldTally.serverId = INTERNAL;
-                oldTally.isGlobal = true;
-                await oldTally.save();
-                return;
-            }
-            await this.createTally(
-                INTERNAL,
-                INTERNAL,
-                true,
-                BUMP_COUNTER,
-                'Internal tally for bumps.'
-            );
-            console.log('Created internal bump counter.');
-        } catch (e) {
-            // Throws error if it already exists, which most times it will.
-            // console.log(`Error while creating bump counter. ${e}`);
-        }
-    },
-
-    async increaseBumpCounter() {
-        try {
-            let bumpTally = await this.Tally.findOne({
-                where: {
-                    name: BUMP_COUNTER,
-                    channelId: INTERNAL,
-                    serverId: INTERNAL
-                }
-            });
-            bumpTally.count++;
-            await bumpTally.save();
-        } catch (e) {
-            console.log(e);
-        }
-    },
-
-    async createDumpCounter() {
-        try {
-            const oldTally = await this.Tally.findOne({
-                where: {
-                    name: DUMP_COUNTER,
-                    channelId: INTERNAL,
-                    serverId: null
-                }
-            });
-
-            if (oldTally) {
-                oldTally.serverId = INTERNAL;
-                oldTally.isGlobal = true;
-                await oldTally.save();
-                return;
+    async createTally(channelId: string, serverId: string, isGlobal: boolean, 
+        name: string, description: string, keyword?: string) {
+            const maxDescriptionLen = this.TALLY_DESCRIPTION_MAXLEN;
+            if (description.length > maxDescriptionLen) {
+                throw new Error('description cannot be longer than ' + this.TALLY_DESCRIPTION_MAXLEN + ' characters, including emojis');
             }
 
-            await this.createTally(
-                INTERNAL,
-                INTERNAL,
-                true,
-                DUMP_COUNTER,
-                'Internal tally for dumps.'
-            );
-            console.log('Created internal dump counter');
-        } catch (e) {
-            // Throws error if it already exists, which most times it will.
-            // console.log(`Error while creating dump counter. ${e}`);
-        }
-    },
-
-    async increaseDumpCounter() {
-        try {
-            let dumpTally = await this.Tally.findOne({
-                where: {
-                    name: DUMP_COUNTER,
-                    channelId: INTERNAL,
-                    serverId: INTERNAL
-                }
+            const Tally = await this.Tally.create({
+                channelId,
+                serverId,
+                isGlobal,
+                name,
+                description: Buffer.from(description).toString('base64'),
+                count: 0,
+                keyword: keyword ? keyword : null,
+                base64Encoded: true
             });
-            dumpTally.count++;
-            await dumpTally.save();
-        } catch (e) {
-            console.log(e);
-        }
-    },
 
-    async getCount(name: string, channelId: string) {
-        try {
-            let tally = await this.Tally.findOne({
-                where: {
-                    name: name,
-                    channelId: channelId
-                }
-            });
-            return tally.count;
-        } catch (e) {
-            console.log(`Error while getting count for ${name}: ${e}`);
-        }
-    },
+            console.log(`
+            Tally Created
+            -------------
+            channelId: ${channelId}
+            serverId: ${serverId}
+            isGlobal: ${isGlobal}
+            name: ${name}
+            description: ${description}
+            `)
 
-    async getDumpCount() {
-        try {
-            return await this.getCount(DUMP_COUNTER, INTERNAL);
-        } catch (e) {
-            console.log(`Error while getting dump count ${e}`);
-        }
-    },
-
-    async getBumpCount() {
-        try {
-            return await this.getCount(BUMP_COUNTER, INTERNAL);
-        } catch (e) {
-            console.log('Error while getting bump count: ' + e);
-        }
-    },
-
-    async createTally(channelId, serverId, isGlobal, name, description, keyword?) {
-        if (description.length > 255) {
-            throw new Error('description cannot be longer than 255 characters.');
-        }
-
-        await this.Tally.create({
-            channelId,
-            serverId,
-            isGlobal,
-            name,
-            description: Buffer.from(description).toString('base64'),
-            count: 0,
-            keyword: keyword ? keyword : null,
-            base64Encoded: true
-        });
-    },
+            return Tally;
+    }
 
     async getTally(channelId, serverId, isGlobal, name) {
         const where = {
@@ -260,7 +229,7 @@ export default {
         if (!tally) return null;
         tally.description = Buffer.from(tally.description, 'base64').toString();
         return tally;
-    },
+    }
 
     async getTallies(channelId, serverId, isGlobal) {
         const where = {
@@ -276,14 +245,24 @@ export default {
             tally.description = Buffer.from(tally.description, 'base64').toString();
         }
         return tallies;
-    },
+    }
+
+    async initServers(servers: any) {
+        servers.map(async server => {
+            try {
+                await this.Server.upsert({
+                    id: server.id
+                });
+            } catch (e) {
+                console.log(`Failed to upsert Server record on init. Reason: ${e}`);
+            }
+        });
+    }
 
     async setTallyDescription(channelId, serverId, isGlobal, name, description) {
-        if (description.length > 255) {
-            throw new Error('description cannot be longer than 255 characters.');
+        if (description.length > this.TALLY_DESCRIPTION_MAXLEN) {
+            throw new Error('description cannot be longer than ' + this.TALLY_DESCRIPTION_MAXLEN + ' characters.');
         }
-
-
 
         const tally = await this.getTally(
             channelId,
@@ -291,10 +270,12 @@ export default {
             isGlobal,
             name
         );
+
         if (!tally) throw new Error('could not find tally to set description');
+
         tally.description = Buffer.from(description).toString('base64');
         await tally.save();
-    },
+    }
 
     async updateTally(channelId, serverId, isGlobal, name, updateObj) {
         const tally = await this.getTally(
@@ -305,7 +286,7 @@ export default {
         );
         if (!tally) throw new Error(`could not find tally to update`);
         return await tally.update(updateObj);
-    },
+    }
 
     async deleteTally(channelId, serverId, isGlobal, name) {
         const tally = await this.getTally(
@@ -316,202 +297,33 @@ export default {
         );
         if (!tally) throw new Error(`could not find tally to delete`);
         return await tally.destroy();
-    },
+    }
 
-    async createTimer(name: string, description: string) {
+    async initServer(id: string) {
         try {
-        } catch (e) {}
-    },
-
-    async getKeywords(channelId: string) {
-        const res = await this.Tally.findAll({
-            where: {
-                channelId: channelId
-            }
-        });
-        return res
-            .filter(tally => {
-                return tally != null;
-            })
-            .map(tally => {
-                return tally.keyword;
-            });
-    },
-
-    async keywordExists(channelId: string, key: string) {
-        const res = await this.Tally.findAll({
-            where: {
-                channelId: channelId,
-                keyword: key
-            }
-        });
-        return res.length != 0;
-    },
-
-    async bumpKeywordTally(channelId, keyword) {
-        if (keyword === null || keyword === undefined) return;
-        const tallies = await this.Tally.findAll({
-            where: {
-                channelId: channelId,
-                keyword: keyword
-            }
-        });
-        tallies.map(tally => {
-            tally.count = tally.count + 1;
-            tally.save();
-        });
-    },
-
-    async createAnnouncement(channelId, name, description) {
-        return await this.Announcement.create({
-            channelId: channelId,
-            name: name,
-            description: description
-        });
-    },
-
-    async upsertAnnouncement(channelId, name, description) {
-        return await this.Announcement.upsert({
-            channelId: channelId,
-            name: name,
-            description: description
-        });
-    },
-
-    async deleteAnnouncement(channelId, name) {
-        return await this.Announcement.destroy({
-            channelId,
-            name
-        });
-    },
-
-    async activateAnnouncement(channelId, name) {
-        const announcement = await this.Announcement.findOne({
-            where: {
-                channelId: channelId,
-                name: name
-            }
-        });
-        if (!announcement) throw new Error('No announcement found to update.');
-        announcement.active = true;
-        await announcement.save();
-    },
-
-    async setAnnounceName(channelId, name, newName) {
-        const announcement = await this.Announcement.findOne({
-            where: {
-                channelId: channelId,
-                name: name
-            }
-        });
-        if (!announcement) throw new Error('No announcement found to update.');
-        announcement.name = newName;
-        await announcement.save();
-    },
-
-    async setAnnounceDesc(channelId, name, description) {
-        const announcement = await this.Announcement.findOne({
-            where: {
-                channelId: channelId,
-                name: name
-            }
-        });
-        if (!announcement) throw new Error('No announcement found to update.');
-        announcement.description = description;
-        await announcement.save();
-    },
-
-    async setAnnounceTallyGoal(channelId, name, tallyName, tallyGoal) {
-        const announcement = await this.Announcement.findOne({
-            where: {
-                channelId: channelId,
-                name: name
-            }
-        });
-        if (!announcement) throw new Error('No announcement found to update.');
-        announcement.announcementRan = null;
-        announcement.dateQuery = null;
-        announcement.date = null;
-        announcement.tallyGoal = tallyGoal;
-        announcement.tallyName = tallyName;
-        await announcement.save();
-    },
-
-    async setAnnounceDate(channelId, name, dateStr) {
-        const announcement = await this.Announcement.findOne({
-            where: {
-                channelId: channelId,
-                name: name
-            }
-        });
-        if (!announcement) throw new Error('No announcement found to update.');
-        announcement.announcementRan = null;
-        announcement.datePattern = dateStr;
-        announcement.tallyGoal = null;
-        announcement.tallyName = null;
-        await announcement.save();
-    },
-
-    async deleteAnnounce(channelId, name) {
-        return await this.Announcement.destroy({
-            where: {
-                channelId: channelId,
-                name: name
-            }
-        });
-    },
-
-    /**
-     * normalize tallies by adding their serverId to any tally that belonds to a channel
-     * @param channels
-     */
-    async normalizeTallies(channels) {
-        const tallies = await this.getUnnormalizedTallies();
-        if (tallies.length > 0) console.log(`Normalizing tally schemas for ${tallies.length} tallies.`);
-        for (let tally of tallies) {
-            const channel = channels.get(tally.channelId);
-            if (!channel) continue;
-            const server = channel.guild;
-            tally.serverId = server.id;
-            tally.isGlobal = false;
-            tally.save();
-            console.log(`Assigned channel [${channel.id}] to server [${server.id}]`);
-        }
-        await this.encodeTallyDescriptions();
-    },
-
-    async getUnnormalizedTallies() {
-        const Tally = this.Tally;
-        const tallies = await Tally.findAll({
-            where: {
-                [Sequelize.Op.or]: [
-                    {
-                        serverId: null
-                    },
-                    {
-                        isGlobal: null
-                    }
-                ],
-                channelId: {
-                    [Sequelize.Op.ne]: 'INTERNAL'
-                }
-            }
-        });
-        return tallies;
-    },
-
-    async encodeTallyDescriptions() {
-        const Tally = this.Tally;
-        const tallies = await Tally.findAll({
-            where: {
-                base64Encoded: false
-            }
-        });
-        for (const tally of tallies) {
-            const description = tally.description;
-            tally.description = Buffer.from(description).toString('base64');
-            tally.base64Encoded = true;
-            await tally.save();
+            await this.Server.upsert({ id });
+        } catch (e) {
+            console.log(`Failed to upsert Server record on init. Reason: ${e}`);
         }
     }
-};
+
+    async getTallyCount() {
+        return this.Tally.findAll({
+            where: {}
+        }).then(tallies => tallies.length);
+    }
+
+    async getCount(name: string, channelId: string) {
+        try {
+            let tally = await this.Tally.findOne({
+                where: {
+                    name: name,
+                    channelId: channelId
+                }
+            });
+            return tally.count;
+        } catch (e) {
+            console.log(`Error while getting count for ${name}: ${e}`);
+        }
+    }
+}

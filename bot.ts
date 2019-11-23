@@ -3,7 +3,7 @@ import DBL from 'dblapi.js';
 import { EventEmitter } from 'events';
 import { prefix, status } from './config.json';
 import { token, dbots_token } from './config-private.json';
-import db from './util/db';
+import DB from './util/db';
 import CronAnnouncer from './util/cron-announcer';
 import keywordUtil from './util/keyword-util';
 import Commands from './static/Commands';
@@ -18,6 +18,7 @@ let dbl;
 if (process.env.NODE_ENV == 'production') // don't POST stats in dev
     dbl = new DBL(dbots_token, bot);
 
+const db = new DB();
 db.init();
 
 bot.on('ready', async () => {

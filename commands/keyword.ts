@@ -3,9 +3,9 @@ import {
 } from "discord.js";
 import cmdHelper from "../util/cmd-helper";
 import DB from '../util/db';
-import db from "../util/db";
 
-const Tally = DB.Tally;
+const db = new DB();
+const Tally = db.Tally;
 
 // register listener
 // create tally like normal
@@ -35,7 +35,7 @@ export default async (message: Message) => {
     }
 
     try {
-        await DB.createTally(
+        await db.createTally(
             message.channel.id,
             message.guild.id,
             isGlobal,

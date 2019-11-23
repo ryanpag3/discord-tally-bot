@@ -18,9 +18,10 @@ export default async (message: Message) => {
     console.log('Setting description of [' + name + ']');
 
     try {
-        await DB.setTallyDescription(message.channel.id, message.guild.id, isGlobal, name, description);
+        const db = new DB();
+        await db.setTallyDescription(message.channel.id, message.guild.id, isGlobal, name, description);
 
-        const tally = await DB.getTally(message.channel.id, message.guild.id, isGlobal, name);
+        const tally = await db.getTally(message.channel.id, message.guild.id, isGlobal, name);
 
         if (!tally) {
             const msg = {

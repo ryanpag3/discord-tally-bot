@@ -12,6 +12,7 @@ export default class Sqlize {
     constructor(dbName: string) {
         if (!Sqlize.instance || Sqlize.dbName !== dbName) {
             Sqlize.instance = this.getSequelize(dbName);
+            Sqlize.dbName = dbName;
         }
         return Sqlize.instance; 
     }

@@ -4,6 +4,7 @@ import DB from '../util/db';
 import helper from '../util/cmd-helper';
 
 export default async (message: Message) => {
+    const db = new DB();
     const isGlobal = helper.isGlobalTallyMessage(message);
     let msg = message.content.split(' ');
     msg.shift(); // rm prefix
@@ -14,7 +15,7 @@ export default async (message: Message) => {
     console.log(`Giving ${name} details for channel ${message.channel.id}`);
 
     try {
-        const tally = await DB.getTally(
+        const tally = await db.getTally(
             message.channel.id,
             message.guild.id,
             isGlobal,

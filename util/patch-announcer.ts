@@ -7,7 +7,8 @@ export default class PatchAnnouncer {
 
     static async announcePatch(msg: any) {
         try {
-            const server: any = await DB.Server.findOne({
+            const db = new DB();
+            const server: any = await db.Server.findOne({
                 where: {
                     id: msg.guild.id,
                     patchNotesEnabled: true

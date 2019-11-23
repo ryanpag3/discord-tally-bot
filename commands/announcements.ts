@@ -5,7 +5,8 @@ import DB from '../util/db';
 import helper from '../util/cmd-helper';
 import cmdHelper from "../util/cmd-helper";
 
-const Announcement = DB.Announcement;
+const db = new DB();
+const Announcement = db.Announcement;
 
 export default (message: Message) => {
     let msg = message.content.split(' ');

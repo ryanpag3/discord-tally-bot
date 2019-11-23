@@ -1,7 +1,7 @@
 import { Message } from 'discord.js';
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
-import { increaseTotalBumpCount } from '../util/counter';
+import Counter from '../util/counter';
 
 const USER_EMOJIS = [
     ':spy:', ':upside_down:', ':poop:', ':ghost:', ':astonished:', ':pray:', ':fist:',
@@ -56,7 +56,7 @@ export default async (message: Message) => {
             `
         }
 
-        increaseTotalBumpCount();
+        Counter.bumpTotalBumps();
         helper.finalize(message);
         message.channel.send(helper.buildRichMsg(msg));
 

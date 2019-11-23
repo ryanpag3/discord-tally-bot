@@ -4,10 +4,10 @@ import DB from '../util/db';
 
 export default async (message: Message) => {
     console.log('Running timezone command for channel [' + message.channel.id + ']');
-
+    const db = new DB();
     const msgSplit = message.content.split(' ');
     try {
-        await DB.Channel.upsert({
+        await db.Channel.upsert({
             id: message.channel.id,
             timezone: msgSplit[2]
         })
