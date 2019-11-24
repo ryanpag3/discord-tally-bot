@@ -1,12 +1,10 @@
 import Discord, { Message } from 'discord.js';
 import DBL from 'dblapi.js';
-import { EventEmitter } from 'events';
 import { prefix, status } from './config.json';
 import { token, dbots_token } from './config-private.json';
 import DB from './util/db';
 import CronAnnouncer from './util/cron-announcer';
 import keywordUtil from './util/keyword-util';
-import Commands from './static/Commands';
 import cmdHelper from './util/cmd-helper';
 import CommandHandler from './util/command-handler.js';
 import Counter from './util/counter';

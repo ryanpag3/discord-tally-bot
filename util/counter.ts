@@ -30,7 +30,7 @@ export default class Counter {
         });
 
         if (existingCounter) {
-            return this.overwriteServerId(existingCounter);
+            return await this.overwriteServerId(existingCounter);
         }
 
         try {

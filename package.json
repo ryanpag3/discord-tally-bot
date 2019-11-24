@@ -7,8 +7,7 @@
     "build": "tsc",
     "start": "tsc && node -r source-map-support/register dist/bot.js",
     "start-w": "nodemon -e \".ts\" --exec \"tsc && node -r source-map-support/register dist/bot.js || true\"",
-    "test": "mocha -r ts-node/register **/*.test.ts",
-    "testt": "nodemon --exec \"ts-mocha --recursive --exit **/*.test.ts || true\""
+    "test": "ts-mocha --recursive --exit ./**/*.test.ts"
   },
   "repository": {
     "type": "git",

@@ -12,12 +12,17 @@ describe('db.ts', function() {
     const db = new DB(DB_NAME);
 
     before(async () => {
+        console.log('doh');
         await db.initDatabase();
     });
 
     afterEach(async () => {
         await db.truncateTables();
     });
+
+    after(async () => {
+        await db.dropDatabase();
+    })
 
     it('.initDatabase should create a database with tables', async () => {
         await db.dropDatabase();

@@ -4,6 +4,7 @@ import Config from '../config.json';
 import PrivateConfig from '../config-private.json';
 import Counter from './counter';
 import Sqlize from './sqlize';
+import Bluebird from 'bluebird';
 
 export default class DB {
     private TALLY_DESCRIPTION_MAXLEN = 255;
@@ -20,10 +21,17 @@ export default class DB {
     Permission;
 
     constructor(dbName?: string) {
-        if (dbName === undefined) dbName = Config.database.name;
+        if (dbName === undefined) dbName = this.getConfiguredDB();
         this.dbName = dbName;
         this.sequelize = new Sqlize(dbName);
         this.initModels();
+    }
+
+    private getConfiguredDB() {
+        if (process.env.TALLY_BOT_DB) {
+            return process.env.TALLY_BOT_DB;
+        }
+        return Config.database.name;
     }
 
     private getMysqlPool() {
@@ -31,22 +39,6 @@ export default class DB {
             host: PrivateConfig.database.url,
             user: PrivateConfig.database.user,
             password: PrivateConfig.database.password
-        });
-    }
-
-    /**
-     * Open a connection and get sequelize object
-     * @param dbName
-     */
-    private getSequelize(dbName: string) {
-        return new Sequelize({
-            host: PrivateConfig.database.url,
-            database: dbName,
-            username: PrivateConfig.database.user,
-            password: PrivateConfig.database.password,
-            dialect: Config.database.dialect,
-            operatorsAliases: false,
-            logging: false
         });
     }
 
@@ -343,7 +335,6 @@ export default class DB {
                 keyword: keyword
             }
         });
-        console.log(`bumping ${tallies.length} keyword tallies`);
         const promises = tallies.map(async tally => {
             tally.count = tally.count + 1;
             return tally.save();

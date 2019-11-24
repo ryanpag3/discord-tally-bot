@@ -34,9 +34,6 @@ export default async (message: Message) => {
 
         const amount = bumpAmount ? bumpAmount : 1;
         const previous = tally.count;
-        // tally.count += amount;
-        // await tally.save();
-
         await db.updateTally(
             message.channel.id,
             message.guild.id,
@@ -48,7 +45,6 @@ export default async (message: Message) => {
         );
 
         const description = tally.description && tally.description != '' ? tally.description : undefined;
-        console.log(description);
         const msg = {
             description: `
             [${isGlobal ? 'G' : 'C'}] **${tally.name}** | **${previous}** >>> **${tally.count}** ${(description ? '\n• _' + description + '_' : '')}
