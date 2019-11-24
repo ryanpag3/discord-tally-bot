@@ -75,7 +75,7 @@ describe('bump command', function() {
         const commandsAmt = 50;
         for (let i = 0; i < commandsAmt; i++) {
             commandHandler.emit(command, fakeMessage);
-            await Bluebird.delay(20);
+            await Bluebird.delay(50);
         }
         await Bluebird.delay(100);
         const tally = await db.getTally(channelId, serverId, false, TALLY_NAME);
