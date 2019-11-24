@@ -12,7 +12,6 @@ describe('db.ts', function() {
     const db = new DB(DB_NAME);
 
     before(async () => {
-        console.log('doh');
         await db.initDatabase();
     });
 

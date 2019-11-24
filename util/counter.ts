@@ -58,6 +58,7 @@ export default class Counter {
     private static async bumpTotal(name) {
         try {
             const db = new DB();
+            console.log(db.dbName);
             const tally = await db.Tally.findOne({
                 where: {
                     name,
