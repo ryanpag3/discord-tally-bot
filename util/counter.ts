@@ -58,7 +58,7 @@ export default class Counter {
     private static async bumpTotal(name) {
         try {
             const db = new DB();
-            const tally = db.Tally.findOne({
+            const tally = await db.Tally.findOne({
                 where: {
                     name,
                     channelId: Counter.INTERNAL,
@@ -72,7 +72,7 @@ export default class Counter {
         }
     }
 
-    async getCount(name: string, channelId: string) {
+    static async getCount(name: string, channelId: string) {
         try {
             const db = new DB();
             let tally = await db.Tally.findOne({
@@ -87,7 +87,7 @@ export default class Counter {
         }
     }
 
-    async getDumpCount() {
+    static async getDumpCount() {
         try {
             return await this.getCount(Counter.DUMP_COUNTER, Counter.INTERNAL);
         } catch (e) {
@@ -95,7 +95,7 @@ export default class Counter {
         }
     }
 
-    async getBumpCount() {
+    static async getBumpCount() {
         try {
             return await this.getCount(Counter.BUMP_COUNTER, Counter.INTERNAL);
         } catch (e) {

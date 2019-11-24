@@ -9,6 +9,7 @@ const USER_EMOJIS = [
 ]
 
 export default async (message: Message) => {
+    const db = new DB();
     const isGlobal = helper.isGlobalTallyMessage(message);
     const msg = message.content.split(' ');
     msg.shift(); // rm prefix
@@ -20,7 +21,7 @@ export default async (message: Message) => {
     console.log(`Bumping [${name} | Global: ${isGlobal}] by ${bumpAmount || 1}`);
 
     try {
-        const tally = await DB.getTally(
+        const tally = await db.getTally(
             message.channel.id,
             message.guild.id,
             isGlobal,
@@ -36,7 +37,7 @@ export default async (message: Message) => {
         // tally.count += amount;
         // await tally.save();
 
-        await DB.updateTally(
+        await db.updateTally(
             message.channel.id,
             message.guild.id,
             isGlobal,

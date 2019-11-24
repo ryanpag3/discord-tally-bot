@@ -4,8 +4,6 @@ import DB from '../util/db';
 import helper from '../util/cmd-helper';
 import help from './help';
 
-const Tally = DB.Tally;
-
 export default async (message: Message) => {
     const isGlobal = helper.isGlobalTallyMessage(message);
     const msg = message.content.split(' ');

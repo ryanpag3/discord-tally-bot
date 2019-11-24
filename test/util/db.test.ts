@@ -135,7 +135,7 @@ describe('db.ts', function() {
         const up = {
             serverId: '1234'
         };
-        await db.deleteTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME, up);
+        await db.deleteTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME);
         const tally = await db.getTally(CHANNEL_ID, up.serverId, IS_GLOBAL, NAME);
         expect(tally).to.not.exist;
     });

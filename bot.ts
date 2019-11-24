@@ -9,6 +9,7 @@ import keywordUtil from './util/keyword-util';
 import Commands from './static/Commands';
 import cmdHelper from './util/cmd-helper';
 import CommandHandler from './util/command-handler.js';
+import Counter from './util/counter';
 
 
 const bot = new Discord.Client();
@@ -90,11 +91,11 @@ const startBroadcasting = () => {
             bot.user.setActivity(`${tallyCnt} total tallies managed.`);
         },
         async () => {
-            const bumpCnt = await db.getBumpCount();
+            const bumpCnt = await Counter.getBumpCount();
             bot.user.setActivity(`${bumpCnt} total bumps.`);
         },
         async () => {
-            const dumpCnt = await db.getDumpCount();
+            const dumpCnt = await Counter.getDumpCount();
             bot.user.setActivity(`${dumpCnt} total dumps.`);
         }
     ];

@@ -467,4 +467,58 @@ export default class DB {
             }
         });
     }
+
+    /**
+     * normalize tallies by adding their serverId to any tally that belonds to a channel
+     * @param channels
+     */
+    async normalizeTallies(channels) {
+        const tallies = await this.getUnnormalizedTallies();
+        if (tallies.length > 0) console.log(`Normalizing tally schemas for ${tallies.length} tallies.`);
+        for (let tally of tallies) {
+            const channel = channels.get(tally.channelId);
+            if (!channel) continue;
+            const server = channel.guild;
+            tally.serverId = server.id;
+            tally.isGlobal = false;
+            tally.save();
+            console.log(`Assigned channel [${channel.id}] to server [${server.id}]`);
+        }
+        await this.encodeTallyDescriptions();
+    }
+
+    async getUnnormalizedTallies() {
+        const Tally = this.Tally;
+        const tallies = await Tally.findAll({
+            where: {
+                [Sequelize.Op.or]: [
+                    {
+                        serverId: null
+                    },
+                    {
+                        isGlobal: null
+                    }
+                ],
+                channelId: {
+                    [Sequelize.Op.ne]: 'INTERNAL'
+                }
+            }
+        });
+        return tallies;
+    }
+
+    async encodeTallyDescriptions() {
+        const Tally = this.Tally;
+        const tallies = await Tally.findAll({
+            where: {
+                base64Encoded: false
+            }
+        });
+        for (const tally of tallies) {
+            const description = tally.description;
+            tally.description = Buffer.from(description).toString('base64');
+            tally.base64Encoded = true;
+            await tally.save();
+        }
+    }
 }
