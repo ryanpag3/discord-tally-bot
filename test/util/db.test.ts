@@ -170,7 +170,7 @@ describe('db.ts', function() {
         expect(exists).eqls(false);
     });
 
-    it('.bumpKeywordTally should return false if doesnt exist', async () => {
+    it('.bumpKeywordTally should increase valid tally', async () => {
         const mName = 'ryan';
         const kw = 'test';
         await createTestTally(mName, kw);
@@ -178,6 +178,194 @@ describe('db.ts', function() {
         const tally = await db.getTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, mName);
         expect(tally.count).eqls(1);
     });
+
+    it('.bumpKeywordTally should not increase invalid tally', async () => {
+        const mName = 'ryan';
+        const kw = 'test';
+        await createTestTally(mName, kw + 'a');
+        await db.bumpKeywordTally(CHANNEL_ID, kw);
+        const tally = await db.getTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, mName);
+        expect(tally.count).eqls(0);
+    });
+
+    it('.createAnnouncement should create a valid announcement', async () => {
+        await createTestAnnouncement();
+        const announce = await db.Announcement.findOne({
+            where: {
+                channelId: CHANNEL_ID,
+                name: NAME
+            }
+        });
+        expect(announce).to.not.be.null;
+    });
+
+    it('.upsertAnnouncement should create a valid announcement', async () => {
+        await db.upsertAnnouncement(CHANNEL_ID, NAME, DESCRIPTION);
+        const announce = await db.Announcement.findOne({
+            where: {
+                channelId: CHANNEL_ID,
+                name: NAME
+            }
+        });
+        expect(announce).to.not.be.null;
+    });
+
+    it('.upsertAnnouncement should update a valid announcement', async () => {
+        await createTestAnnouncement();
+        await db.upsertAnnouncement(CHANNEL_ID, NAME, 'description changed');
+        const announce = await db.Announcement.findOne({
+            where: {
+                channelId: CHANNEL_ID,
+                name: NAME
+            }
+        });
+        expect(announce.description).eqls('description changed');
+        const announces = await db.Announcement.findAll();
+        expect(announces.length).eqls(1);
+    });
+
+    it('.deleteAnnouncement should delete a valid announcement', async () => {
+        await createTestAnnouncement();
+        await db.deleteAnnouncement(CHANNEL_ID, NAME);
+        const announce = await db.Announcement.findOne({
+            where: {
+                channelId: CHANNEL_ID,
+                name: NAME
+            }
+        });
+        expect(announce).to.be.null;
+    });
+
+    it('.activateAnnouncement should activate a valid announcement', async () => {
+        await createTestAnnouncement();
+        await db.activateAnnouncement(CHANNEL_ID, NAME);
+        const announce = await db.Announcement.findOne({
+            where: {
+                channelId: CHANNEL_ID,
+                name: NAME
+            }
+        });
+        expect(announce.active).to.be.true;
+    });
+
+    it('.activateAnnouncement should throw an error if announcement doesnt exist', async () => {
+        let err;
+        try {
+            await db.activateAnnouncement(CHANNEL_ID, NAME);
+        } catch (e) {
+            err = e;
+        }
+        expect(err).to.not.be.undefined;
+    });
+
+    it('.setAnnounceName should update a valid announcement', async () => {
+        await createTestAnnouncement();
+        await db.setAnnounceName(CHANNEL_ID, NAME, 'newname');
+        const announce = await db.Announcement.findOne({
+            where: {
+                channelId: CHANNEL_ID,
+                name: 'newname'
+            }
+        });
+        expect(announce.name).eqls('newname');
+        const announces = await db.Announcement.findAll();
+        expect(announces.length).eqls(1);
+    });
+
+    it('.setAnnounceName should throw an error if announcement doesnt exist', async () => {
+        let err;
+        try {
+            await db.setAnnounceName(CHANNEL_ID, NAME, '');
+        } catch (e) {
+            err = e;
+        }
+        expect(err).to.not.be.undefined;
+    });
+
+    it('.setAnnounceDesc should update a valid announcement', async () => {
+        await createTestAnnouncement();
+        await db.setAnnounceDesc(CHANNEL_ID, NAME, 'new desc');
+        const announce = await db.Announcement.findOne({
+            where: {
+                channelId: CHANNEL_ID,
+                name: NAME
+            }
+        });
+        expect(announce.description).eqls('new desc');
+        const announces = await db.Announcement.findAll();
+        expect(announces.length).eqls(1);
+    });
+
+    it('.setAnnounceDesc should throw an error if announcement doesnt exist', async () => {
+        let err;
+        try {
+            await db.setAnnounceDesc(CHANNEL_ID, NAME, '');
+        } catch (e) {
+            err = e;
+        }
+        expect(err).to.not.be.undefined;
+    });
+
+    it('.setAnnounceTallyGoal should update a valid announcement', async () => {
+        await createTestAnnouncement();
+        await db.setAnnounceTallyGoal(CHANNEL_ID, NAME, 'test', '100');
+        const announce = await db.Announcement.findOne({
+            where: {
+                channelId: CHANNEL_ID,
+                name: NAME
+            }
+        });
+        expect(announce.tallyName).eqls('test');
+        expect(announce.tallyGoal).eqls(100);
+    });
+
+    it('.setAnnounceTallyGoal should throw an error if announcement doesnt exist', async () => {
+        let err;
+        try {
+            await db.setAnnounceTallyGoal(CHANNEL_ID, NAME, '', '');
+        } catch (e) {
+            err = e;
+        }
+        expect(err).to.not.be.undefined;
+    });
+
+    it('.setAnnounceDate should update a valid announcement', async () => {
+        await createTestAnnouncement();
+        await db.setAnnounceDate(CHANNEL_ID, NAME, '* * * * *');
+        const announce = await db.Announcement.findOne({
+            where: {
+                channelId: CHANNEL_ID,
+                name: NAME
+            }
+        });
+        expect(announce.datePattern).eqls('* * * * *');
+    });
+
+    it('.setAnnounceDate should throw an error if announcement doesnt exist', async () => {
+        let err;
+        try {
+            await db.setAnnounceDate(CHANNEL_ID, NAME, '');
+        } catch (e) {
+            err = e;
+        }
+        expect(err).to.not.be.undefined;
+    });
+
+    it('.deleteAnnounce should delete a valid announcement', async () => {
+        await createTestAnnouncement();
+        await db.deleteAnnounce(CHANNEL_ID, NAME);
+        const announce = await db.Announcement.findOne({
+            where: {
+                channelId: CHANNEL_ID,
+                name: NAME
+            }
+        });
+        expect(announce).eqls(null);
+    });
+
+    async function createTestAnnouncement(name?: string, description?: string) {
+        return await db.createAnnouncement(CHANNEL_ID, name || NAME, description || DESCRIPTION);
+    }
 
     async function createTestTally(name?: string, keyword?: string) {
         return await db.createTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, name || NAME, DESCRIPTION, keyword);

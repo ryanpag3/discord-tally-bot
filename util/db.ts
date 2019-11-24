@@ -350,4 +350,121 @@ export default class DB {
         });
         await Promise.all(promises);
     }
+
+    async createAnnouncement(channelId, name, description) {
+        const announce = await this.Announcement.create({
+            channelId: channelId,
+            name: name,
+            description: description
+        });
+        console.log(`
+            Created Announcement
+            --------------------
+            channelId: ${channelId}
+            name: ${name}
+            description: ${description}
+        `);
+        return announce;
+    }
+
+    async upsertAnnouncement(channelId, name, description) {
+        const announce = await this.Announcement.upsert({
+            channelId: channelId,
+            name: name,
+            description: description
+        });
+        console.log(`
+            Upserted Announcement
+            --------------------
+            channelId: ${channelId}
+            name: ${name}
+            description: ${description}
+        `);
+        return announce;
+    }
+
+    async deleteAnnouncement(channelId, name) {
+        return await this.Announcement.destroy({
+            where: {
+                channelId,
+                name
+            }
+        });
+    }
+
+    async activateAnnouncement(channelId, name) {
+        const announcement = await this.Announcement.findOne({
+            where: {
+                channelId: channelId,
+                name: name
+            }
+        });
+        if (!announcement) throw new Error('No announcement found to update.');
+        announcement.active = true;
+        await announcement.save();
+    }
+
+    async setAnnounceName(channelId, name, newName) {
+        const announcement = await this.Announcement.findOne({
+            where: {
+                channelId: channelId,
+                name: name
+            }
+        });
+        if (!announcement) throw new Error('No announcement found to update.');
+        announcement.name = newName;
+        await announcement.save();
+    }
+
+    async setAnnounceDesc(channelId, name, description) {
+        const announcement = await this.Announcement.findOne({
+            where: {
+                channelId: channelId,
+                name: name
+            }
+        });
+        if (!announcement) throw new Error('No announcement found to update.');
+        announcement.description = description;
+        await announcement.save();
+    }
+
+    async setAnnounceTallyGoal(channelId, name, tallyName, tallyGoal) {
+        const announcement = await this.Announcement.findOne({
+            where: {
+                channelId: channelId,
+                name: name
+            }
+        });
+        if (!announcement) throw new Error('No announcement found to update.');
+        announcement.announcementRan = null;
+        announcement.dateQuery = null;
+        announcement.date = null;
+        announcement.tallyGoal = tallyGoal;
+        announcement.tallyName = tallyName;
+        await announcement.save();
+    }
+
+    async setAnnounceDate(channelId, name, dateStr) {
+        const announcement = await this.Announcement.findOne({
+            where: {
+                channelId: channelId,
+                name: name
+            }
+        });
+        if (!announcement) throw new Error('No announcement found to update.');
+        announcement.announcementRan = null;
+        announcement.datePattern = dateStr;
+        announcement.tallyGoal = null;
+        announcement.tallyName = null;
+        await announcement.save();
+    }
+
+    async deleteAnnounce(channelId, name) {
+        return await this.Announcement.destroy({
+            where: {
+                channelId: channelId,
+                name: name
+            }
+        });
+    }
 }
