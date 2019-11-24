@@ -5,6 +5,7 @@ import DB from '../../util/db';
 import Bluebird = require('bluebird');
 import Counter from '../../util/counter';
 import TestHelper from '../test-helper';
+import bump from '../../commands/bump';
 
 describe('bump command', function() {
     TestHelper.exportDBEnvironmentVar();
@@ -83,4 +84,11 @@ describe('bump command', function() {
         const newCount = await Counter.getBumpCount();
         expect(count).to.be.lessThan(newCount);
     });
+
+    it('should run directly', async function() {
+        const command = `!tb bump`;
+        fakeMessage.content = command + ' ' + TALLY_NAME;
+        await bump(fakeMessage);
+        expect(fakeMessage.channel.send.getCall(0).lastArg.description).contains('I couldn\'t find it');
+    })
 });

@@ -5,7 +5,7 @@
     "main": "dist/bot.js",
     "scripts": {
         "build": "tsc",
-        "coverage": "nyc mocha",
+        "coverage": "nyc mocha --recursive --exit ./**/*.test.ts",
         "start": "tsc && node -r source-map-support/register dist/bot.js",
         "start-w": "nodemon -e \".ts\" --exec \"tsc && node -r source-map-support/register dist/bot.js || true\"",
         "test": "export TALLY_BOT_DB=\"tallybot_test_db\"; ts-mocha --recursive --exit ./**/*.test.ts"
@@ -53,11 +53,6 @@
             "**/*.tsx"
         ],
         "exclude": [
-            "**/*.test.ts",
-            "**/static",
-            "**/model",
-            "**/server.ts",
-            "**/app.ts"
         ],
         "extension": [
             ".ts",
