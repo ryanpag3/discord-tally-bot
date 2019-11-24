@@ -5,7 +5,7 @@
   "main": "dist/bot.js",
   "scripts": {
     "build": "tsc",
-    "start": "tsc && node -r source-map-support/register dist/bot.js",
+    "start": "node -r source-map-support/register dist/bot.js",
     "start-w": "nodemon -e \".ts\" --exec \"tsc && node -r source-map-support/register dist/bot.js || true\"",
     "test": "export TALLY_BOT_DB=\"tallybot_test_db\"; ts-mocha --recursive --exit ./**/*.test.ts"
   },

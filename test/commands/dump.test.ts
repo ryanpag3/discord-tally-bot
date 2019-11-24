@@ -1,8 +1,8 @@
 import { expect } from 'chai';
-import DB from '../util/db';
-import TestHelper from './test-helper';
-import CommandHandler from '../util/command-handler';
-import Counter from '../util/counter';
+import DB from '../../util/db';
+import TestHelper from '../test-helper';
+import CommandHandler from '../../util/command-handler';
+import Counter from '../../util/counter';
 import Bluebird = require('bluebird');
 
 describe('dump command', function() {

@@ -1,10 +1,10 @@
 import sinon from 'sinon';
 import { expect } from 'chai';
-import CommandHandler from '../util/command-handler';
-import DB from '../util/db';
+import CommandHandler from '../../util/command-handler';
+import DB from '../../util/db';
 import Bluebird = require('bluebird');
-import Counter from '../util/counter';
-import TestHelper from './test-helper';
+import Counter from '../../util/counter';
+import TestHelper from '../test-helper';
 
 describe('bump command', function() {
     TestHelper.exportDBEnvironmentVar();
