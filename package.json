@@ -7,7 +7,7 @@
     "build": "tsc",
     "start": "tsc && node -r source-map-support/register dist/bot.js",
     "start-w": "nodemon -e \".ts\" --exec \"tsc && node -r source-map-support/register dist/bot.js || true\"",
-    "test": "ts-mocha --recursive --exit ./**/*.test.ts"
+    "test": "export TALLY_BOT_DB=\"tallybot_test_db\"; ts-mocha --recursive --exit ./**/*.test.ts"
   },
   "repository": {
     "type": "git",

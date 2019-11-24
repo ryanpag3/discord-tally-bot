@@ -9,6 +9,8 @@ const USER_EMOJIS = [
 ]
 
 export default async (message: Message) => {
+    console.log('wasssss ' + process.env.TALLY_BOT_DB);
+
     const db = new DB();
     const isGlobal = helper.isGlobalTallyMessage(message);
     const msg = message.content.split(' ');
@@ -57,6 +59,7 @@ export default async (message: Message) => {
         helper.finalize(message);
         message.channel.send(helper.buildRichMsg(msg));
     } catch (e) {
+        console.log(e);
         const failMsg = {
             description: `I couldn't dump **${tallyName}** because ${e}
             dump attempted by ${message.author.toString()}`
