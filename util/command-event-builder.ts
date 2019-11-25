@@ -32,98 +32,103 @@ import channel from '../commands/channel';
 
 export default class CommandEventBuilder {
     static build(emitter: EventEmitter) {
-        // test command functionality
-        emitter.on(prefix + Commands.TEST, test);
-        emitter.on(prefix + Commands.T, test);
+        try {
+            // test command functionality
+            emitter.on(prefix + Commands.TEST, test);
+            emitter.on(prefix + Commands.T, test);
 
-        // give help
-        emitter.on(prefix + Commands.HELP, help);
-        emitter.on(prefix + Commands.H, help);
+            // give help
+            emitter.on(prefix + Commands.HELP, help);
+            emitter.on(prefix + Commands.H, help);
 
-        // show existing tallies
-        emitter.on(prefix + Commands.SHOW, show);
+            // show existing tallies
+            emitter.on(prefix + Commands.SHOW, show);
 
-        // create new tally
-        emitter.on(prefix + Commands.CREATE, create);
-        emitter.on(prefix + Commands.ADD, create);
+            // create new tally
+            emitter.on(prefix + Commands.CREATE, create);
+            emitter.on(prefix + Commands.ADD, create);
 
-        // set a tally to be global
-        emitter.on(prefix + Commands.GLOBAL, global);
+            // set a tally to be global
+            emitter.on(prefix + Commands.GLOBAL, global);
 
-        // set a tally to be channel-specific
-        emitter.on(prefix + Commands.CHANNEL, channel);
+            // set a tally to be channel-specific
+            emitter.on(prefix + Commands.CHANNEL, channel);
 
-        // create a keyword tally
-        emitter.on(prefix + Commands.KEYWORD, keyword);
-        emitter.on(prefix + Commands.KW, keyword);
+            // create a keyword tally
+            emitter.on(prefix + Commands.KEYWORD, keyword);
+            emitter.on(prefix + Commands.KW, keyword);
 
-        // delete a tally
-        emitter.on(prefix + Commands.DELETE, del);
-        emitter.on(prefix + Commands.RM, del);
+            // delete a tally
+            emitter.on(prefix + Commands.DELETE, del);
+            emitter.on(prefix + Commands.RM, del);
 
-        // bump a tally's count up
-        emitter.on(prefix + Commands.BUMP, bump);
+            // bump a tally's count up
+            emitter.on(prefix + Commands.BUMP, bump);
 
-        // dump a tally's count down
-        emitter.on(prefix + Commands.DUMP, dump);
+            // dump a tally's count down
+            emitter.on(prefix + Commands.DUMP, dump);
 
-        // set a tally to 0
-        emitter.on(prefix + Commands.EMPTY, empty);
+            // set a tally to 0
+            emitter.on(prefix + Commands.EMPTY, empty);
 
-        // set a tally to an amount
-        emitter.on(prefix + Commands.SET, set);
+            // set a tally to an amount
+            emitter.on(prefix + Commands.SET, set);
 
-        // get tally details
-        emitter.on(prefix + Commands.DETAILS, details);
-        emitter.on(prefix + Commands.GET, details);
+            // get tally details
+            emitter.on(prefix + Commands.DETAILS, details);
+            emitter.on(prefix + Commands.GET, details);
 
-        // set tally description
-        emitter.on(prefix + Commands.DESCRIBE, describe);
-        emitter.on(prefix + Commands.UPDATE, describe);
+            // set tally description
+            emitter.on(prefix + Commands.DESCRIBE, describe);
+            emitter.on(prefix + Commands.UPDATE, describe);
 
-        // create a timer
-        emitter.on(prefix + Commands.TIMER, timer);
+            // create a timer
+            emitter.on(prefix + Commands.TIMER, timer);
 
-        // start a timer
-        emitter.on(prefix + Commands.START, start);
+            // start a timer
+            emitter.on(prefix + Commands.START, start);
 
-        // stop a timer
-        emitter.on(prefix + Commands.STOP, stop);
+            // stop a timer
+            emitter.on(prefix + Commands.STOP, stop);
 
-        // reset a timer
-        emitter.on(prefix + Commands.RESET, reset);
+            // reset a timer
+            emitter.on(prefix + Commands.RESET, reset);
 
-        // show all timers
-        emitter.on(prefix + Commands.TIMERS, timers);
+            // show all timers
+            emitter.on(prefix + Commands.TIMERS, timers);
 
-        // make a suggestion
-        emitter.on(prefix + Commands.SUGGEST, suggest);
+            // make a suggestion
+            emitter.on(prefix + Commands.SUGGEST, suggest);
 
-        // report a bug
-        emitter.on(prefix + Commands.BUG, bug);
-        emitter.on(prefix + Commands.REPORT, bug);
+            // report a bug
+            emitter.on(prefix + Commands.BUG, bug);
+            emitter.on(prefix + Commands.REPORT, bug);
 
-        // manage announcements
-        emitter.on(prefix + Commands.ANNOUNCE, announce);
-        emitter.on(prefix + Commands.A, announce);
+            // manage announcements
+            emitter.on(prefix + Commands.ANNOUNCE, announce);
+            emitter.on(prefix + Commands.A, announce);
 
-        // show announcements
-        emitter.on(prefix + Commands.ANNOUNCEMENTS, announcements);
+            // show announcements
+            emitter.on(prefix + Commands.ANNOUNCEMENTS, announcements);
 
-        // set channel timezone
-        // emitter.on(prefix + 'timezone', timezone);
+            // set channel timezone
+            // emitter.on(prefix + 'timezone', timezone);
 
-        // enable/disable patch notes alerts
-        emitter.on(prefix + Commands.PATCHNOTES, patchnotes);
+            // enable/disable patch notes alerts
+            emitter.on(prefix + Commands.PATCHNOTES, patchnotes);
 
-        // show permissions
-        emitter.on(prefix + Commands.PERMISSIONS, permissions);
+            // show permissions
+            emitter.on(prefix + Commands.PERMISSIONS, permissions);
 
-        /**
-         * The following commands are only exposed when bot is run without `production` flag
-         */
-        if (process.env.NODE_ENV != 'production') {
-            emitter.on(prefix + Commands.RMALL, rmall);
+            /**
+             * The following commands are only exposed when bot is run without `production` flag
+             */
+            if (process.env.NODE_ENV != 'production') {
+                emitter.on(prefix + Commands.RMALL, rmall);
+            }
+        } catch (e) {
+            console.log('Error occured while handling command event');
+            console.log(e);
         }
     }
 }
