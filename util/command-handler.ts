@@ -14,6 +14,13 @@ export default class CommandHandler {
         CommandEventBuilder.build(this.emitter);
     }
 
+    async setOnError() {
+        this.emitter.on('error', (err) => {
+            console.log('error from emitter');
+            console.log(err);
+        });
+    }
+
     /**
      * This is the top-level entrypoint for running bot business logic.
      * @param message - discord.js message object
