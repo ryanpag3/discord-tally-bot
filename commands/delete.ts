@@ -4,10 +4,9 @@ import {
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
 
-const db = new DB();
-const Tally = db.Tally;
 
 export default async (message: Message) => {
+    const db = new DB();
     const isGlobal = helper.isGlobalTallyMessage(message);
     let content = helper.removePrefixCommand(message.content, 2);
     let cArr = content.split(' ');

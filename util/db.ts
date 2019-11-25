@@ -4,7 +4,6 @@ import Config from '../config.json';
 import PrivateConfig from '../config-private.json';
 import Counter from './counter';
 import Sqlize from './sqlize';
-import Bluebird from 'bluebird';
 
 export default class DB {
     private TALLY_DESCRIPTION_MAXLEN = 255;
@@ -28,10 +27,8 @@ export default class DB {
     }
 
     private getConfiguredDB() {
-        if (process.env.TALLY_BOT_DB) {
-            return process.env.TALLY_BOT_DB;
-        }
-        return Config.database.name;
+        if (process.env.TEST_ENV)
+        return Config.test.database.name;
     }
 
     private getMysqlPool() {

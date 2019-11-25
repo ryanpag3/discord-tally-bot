@@ -8,7 +8,7 @@
         "coverage": "nyc mocha --recursive --exit ./**/*.test.ts",
         "start": "tsc && node -r source-map-support/register dist/bot.js",
         "start-w": "nodemon -e \".ts\" --exec \"tsc && node -r source-map-support/register dist/bot.js || true\"",
-        "test": "export TALLY_BOT_DB=\"tallybot_test_db\"; ts-mocha --recursive --exit ./**/*.test.ts"
+        "test": "export TEST_ENV=\"1\" && ts-mocha --recursive --exit ./**/*.test.ts"
     },
     "repository": {
         "type": "git",

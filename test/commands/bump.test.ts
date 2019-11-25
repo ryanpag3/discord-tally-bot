@@ -84,11 +84,4 @@ describe('bump command', function() {
         const newCount = await Counter.getBumpCount();
         expect(count).to.be.lessThan(newCount);
     });
-
-    it('should run directly', async function() {
-        const command = `!tb bump`;
-        fakeMessage.content = command + ' ' + TALLY_NAME;
-        await bump(fakeMessage);
-        expect(fakeMessage.channel.send.getCall(0).lastArg.description).contains('I couldn\'t find it');
-    })
 });

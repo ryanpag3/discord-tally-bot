@@ -2,14 +2,13 @@ import { expect, assert } from 'chai';
 import DB from '../../util/db';
 
 describe('db.ts', function() {
-    const DB_NAME = 'tallybot_automated_test_db';
     const CHANNEL_ID = 'oh-hi-mark';
     const SERVER_ID = 'youre-tearing-me-apart';
     const IS_GLOBAL = false;
     const NAME = 'tommy';
     const DESCRIPTION = 'OH HAI MARK!';
 
-    const db = new DB(DB_NAME);
+    const db = new DB();
 
     before(async () => {
         await db.initDatabase();
@@ -26,7 +25,7 @@ describe('db.ts', function() {
     it('.initDatabase should create a database with tables', async () => {
         await db.dropDatabase();
         await db.initDatabase();
-        const exists = await db.databaseExists(DB_NAME);
+        const exists = await db.databaseExists(db.dbName);
         expect(exists).to.be.true;
         const tables = await db.getTables();
         expect(tables.length).to.be.greaterThan(0);

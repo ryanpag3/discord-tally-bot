@@ -14,11 +14,23 @@ export default class TestHelper {
                 id: '1'
             },
             author: 'Ryan Page',
-            delete: sinon.fake()
+            delete: sinon.fake(),
+            getLastChannelCall: null,
+            getChannelId: null,
+            getGuildId: null
         };
 
         message['getLastChannelCall'] = (field: string) => {
+            if (!field) throw new Error('field required');
             return message.channel.send.getCall(0).lastArg[field];
+        }
+
+        message['getChannelId'] = () => {
+            return message.channel.id;
+        }
+
+        message['getGuildId'] = () => {
+            return message.guild.id;
         }
 
         return message;

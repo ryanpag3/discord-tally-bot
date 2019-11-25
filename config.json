@@ -10,5 +10,10 @@
     },
     "delete_timeout" : 1250,
     "announce_check_interval" : 60000,
-    "announce_check_interval_dev" : 10000
+    "announce_check_interval_dev" : 10000,
+    "test": {
+        "database": {
+            "name": "tallybot_test_db"
+        }
+    }
 }

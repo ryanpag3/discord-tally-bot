@@ -21,7 +21,7 @@ export default async (message: Message) => {
         );
 
         if (!tally) {
-            throw `I could ould not find Tally with name: [${isGlobal ? 'G' : 'C'}]` + tallyId;
+            throw `I could not find Tally with name: [${isGlobal ? 'G' : 'C'}]` + tallyId;
         }
 
         await db.updateTally(
