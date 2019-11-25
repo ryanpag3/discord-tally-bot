@@ -29,7 +29,7 @@ describe('create command', function() {
     it('should create a tally', async function() {
         const fakeMsg = TestHelper.getFakeMessage();
         fakeMsg['content'] = '!tb add ' + TALLY_NAME;
-        await create(fakeMsg);
+        await create(fakeMsg as any);
         const tally = await db.getTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME);
         expect(tally).to.exist;
     });
@@ -39,7 +39,7 @@ describe('create command', function() {
         const fakeMessage = TestHelper.getFakeMessage();
         fakeMessage.content = command + ' ' + TALLY_NAME;
         await db.createTally(fakeMessage.getChannelId(), fakeMessage.getGuildId(), false, TALLY_NAME, '');
-        await create(fakeMessage);
+        await create(fakeMessage as any);
         expect(fakeMessage.getLastChannelCall('description')).contains('already exists'); 
     });
 });

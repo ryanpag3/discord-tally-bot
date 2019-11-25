@@ -1,11 +1,12 @@
+import Bluebird from 'bluebird';
 import { expect } from 'chai';
 import empty from '../../commands/empty';
 import TestHelper from '../test-helper';
 import DB from '../../util/db';
 import Counter from '../../util/counter';
-import Bluebird = require('bluebird');
+import describeCmd from '../../commands/describe';
 
-describe('empty command', function() {
+describe('describe command', function() {
     const TALLY_NAME = 'empty-test';
     const db = new DB();
 
@@ -27,24 +28,22 @@ describe('empty command', function() {
         TestHelper.resetDBEnvVar();
     });
 
-    it('should set a tallys count to 0', async function() {
+    it('should update the description of a valid tally', async function() {
         const fakeMsg = TestHelper.getFakeMessage();
-        fakeMsg['content'] = '!tb empty ' + TALLY_NAME;
-        await db.createTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, '');
-        await db.updateTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, {
-            count: 100
-        });
-        await empty(fakeMsg as any);
-        await Bluebird.delay(10);
-        const tally = await db.getTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME);
-        expect(tally.count).eqls(0);
+        const desc = 'newdesc';
+        fakeMsg['content'] = `!tb describe ${TALLY_NAME} ${desc}`;
+        const tally = await db.createTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, '');
+        await describeCmd(fakeMsg as any);
+        console.log(fakeMsg.getLastChannelCall('description'));
+        await tally.reload();
+        expect(tally.description).not.eqls('');
     });
 
     it('should respond with a warning if tally doesnt exist', async function() {
-        const command = `!tb bump`;
+        const command = `!tb describe ${TALLY_NAME} doesnt matter`;
         const fakeMessage = TestHelper.getFakeMessage();
         fakeMessage.content = command + ' ' + TALLY_NAME;
-        await empty(fakeMessage as any);
-        expect(fakeMessage.channel.send.getCall(0).lastArg.description).contains('I could not find'); 
+        await describeCmd(fakeMessage as any);
+        expect(fakeMessage.channel.send.getCall(0).lastArg.description).contains('could not find'); 
     });
 });

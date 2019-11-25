@@ -24,5 +24,5 @@ export default async (params) => {
     }
 
     Channel.send(helper.buildRichMsg(richEmbed));
-    message.channel.send(`Bug report has been sent to ${bot.channels.get(channelId).toString()}.`);
+    message.channel.send(`Bug report has been sent.`);
 }

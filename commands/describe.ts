@@ -27,6 +27,7 @@ export default async (message: Message) => {
             Could not find [${isGlobal ? 'G' : 'C'}] **${name}** to update.\nupdate attempted by **${message.author.toString()}**
             `
             };
+            console.log(msg);
             helper.finalize(message);
             message.channel.send(helper.buildRichMsg(msg));
             return;
@@ -60,6 +61,7 @@ export default async (message: Message) => {
 
         helper.finalize(message);
 
+        console.log(msgObj);
         message.channel.send(helper.buildRichMsg(msgObj));
     } catch (e) {
         const msg = {

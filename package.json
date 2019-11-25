@@ -5,7 +5,7 @@
     "main": "dist/bot.js",
     "scripts": {
         "build": "tsc",
-        "coverage": "nyc mocha --recursive --exit ./**/*.test.ts",
+        "coverage": "export TEST_ENV=\"1\" && nyc mocha --recursive --exit ./**/*.test.ts",
         "start": "tsc && node -r source-map-support/register dist/bot.js",
         "start-w": "nodemon -e \".ts\" --exec \"tsc && node -r source-map-support/register dist/bot.js || true\"",
         "test": "export TEST_ENV=\"1\" && ts-mocha --recursive --exit ./**/*.test.ts"

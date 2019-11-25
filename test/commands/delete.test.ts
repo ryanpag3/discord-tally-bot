@@ -29,7 +29,7 @@ describe('delete command', function() {
         let fakeMessage = TestHelper.getFakeMessage();
         fakeMessage.content = '!tb rm ' + TALLY_NAME;
         const tally = await db.createTally(fakeMessage.getChannelId(), fakeMessage.getGuildId(), false, TALLY_NAME, '');
-        await runDelete(fakeMessage);
+        await runDelete(fakeMessage as any);
     });
 
 });
