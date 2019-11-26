@@ -99,6 +99,12 @@ export default class Cron {
             }]
         }
         const channel = await Cron.getChannel(channelId);
+        if (channel === null) {
+            await announcement.destroy();
+            cronCache[announceName].stop();
+            delete cronCache[announceName];
+            return;
+        }
         channel.send(helper.buildRichMsg(richEmbed));
     }
 
