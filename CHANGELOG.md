@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## **1.3**
+### Added
+
+### Fixed
+- Database code has been completely refactored to improve performance.
+
 ## **1.2.1**
 ### Added
 - Emoji's and foreign characters are now supported for descriptions! 📣📣📣📣‼‼‼‼‼

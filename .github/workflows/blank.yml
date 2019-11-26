@@ -1,0 +1,27 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:7
+        env:
+          MYSQL_ROOT_PASSWORD: adminadmin
+        ports:
+          - 3306:3306
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup environment
+      run: |
+        curl -sL https://deb.nodesource.com/setup_10.x | bash -
+        apt-get install -y nodejs
+        npm i -g yarn
+    - name: Run tests
+      run: |
+        yarn test
