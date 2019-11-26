@@ -48,33 +48,4 @@ describe('patchnotes command', function() {
         await server.reload();
         expect(server.patchNotesEnabled).to.be.true;
     });
-
-    // it('should respond with a warning if a tally name isnt provided', async function() {
-    //     const fakeMsg = TestHelper.getFakeMessage();
-    //     fakeMsg.content = `!tb kw`;
-    //     await patchnotes(fakeMsg as any);
-    //     expect(fakeMsg.channel.send.getCall(0).lastArg.description).contains('name must be provided'); 
-    // });
-
-    // it('should respond with a warning if a tally keyword isnt provided', async function() {
-    //     const fakeMsg = TestHelper.getFakeMessage();
-    //     fakeMsg.content = `!tb kw ${TALLY_NAME}`;
-    //     await patchnotes(fakeMsg as any);
-    //     expect(fakeMsg.channel.send.getCall(0).lastArg.description).contains('keyword must be provided'); 
-    // });
-
-    // it('should respond with a warning if a keywords are incorrectly formatted', async function() {
-    //     const fakeMsg = TestHelper.getFakeMessage();
-    //     fakeMsg.content = `!tb kw ${TALLY_NAME} ${KEYWORD},,`;
-    //     await patchnotes(fakeMsg as any);
-    //     expect(fakeMsg.channel.send.getCall(0).lastArg.description).contains('cannot be empty'); 
-    // });
-
-    // it('should respond with a warning if tally already exists', async function() {
-    //     const fakeMsg = TestHelper.getFakeMessage();
-    //     fakeMsg.content = `!tb kw ${TALLY_NAME} ${KEYWORD}`;
-    //     await db.createTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, '');
-    //     await patchnotes(fakeMsg as any);
-    //     expect(fakeMsg.channel.send.getCall(0).lastArg.description).contains('already exists'); 
-    // });
 });
