@@ -27,6 +27,7 @@ jobs:
         npm i -g yarn
         npm i -g ts-mocha
         npm i -g mocha
+        npm i -g typescript
     - name: Run tests
       run: |
         yarn test
