@@ -22,7 +22,7 @@ export default class TestHelper {
         };
 
         message['getLastChannelCall'] = (field: string) => {
-            if (!field) throw new Error('field required');
+            if (!field) return JSON.stringify(message.channel.send.getCall(0).lastArg);
             return message.channel.send.getCall(0).lastArg[field];
         }
 
