@@ -26,6 +26,7 @@ jobs:
         export PATH=~/.npm-global/bin:$PATH
         npm i -g yarn
         npm i -g ts-mocha
+        npm i -g mocha
     - name: Run tests
       run: |
         yarn test
