@@ -25,7 +25,6 @@ jobs:
         npm config set prefix '~/.npm-global'
         export PATH=~/.npm-global/bin:$PATH
         npm i -g yarn
-        npm i -g ts-mocha
     - name: Run tests
       run: |
         yarn test
