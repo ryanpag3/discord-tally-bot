@@ -7,7 +7,7 @@
         "build": "tsc",
         "coverage": "export TEST_ENV=\"1\" && nyc mocha --recursive --exit ./**/*.test.ts",
         "start": "tsc && node -r source-map-support/register dist/bot.js",
-        "start-w": "nodemon -e \".ts\" --exec \"tsc && node -r source-map-support/register dist/bot.js || true\"",
+        "start-w": "nodemon -e \".ts\" --exec \"tsc && node -r dotenv/config -r source-map-support/register dist/bot.js || true\"",
         "test": "export TEST_ENV=\"1\" && ts-mocha --recursive --exit ./**/*.test.ts"
     },
     "repository": {
@@ -24,6 +24,7 @@
         "cron-parser": "^2.7.3",
         "dblapi.js": "^2.3.0",
         "discord.js": "^11.4.2",
+        "dotenv": "^8.2.0",
         "erlpack": "github:discordapp/erlpack",
         "later": "^1.2.0",
         "moment-timezone": "^0.5.23",
@@ -52,8 +53,7 @@
             "**/*.ts",
             "**/*.tsx"
         ],
-        "exclude": [
-        ],
+        "exclude": [],
         "extension": [
             ".ts",
             ".tsx"

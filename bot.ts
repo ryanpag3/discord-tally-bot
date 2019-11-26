@@ -1,7 +1,7 @@
 import Discord, { Message } from 'discord.js';
 import DBL from 'dblapi.js';
-import { prefix, status } from './config.json';
-import { token, dbots_token } from './config-private.json';
+import Config from './config';
+import ConfigPrivate from './config-private';
 import DB from './util/db';
 import CronAnnouncer from './util/cron-announcer';
 import keywordUtil from './util/keyword-util';
@@ -15,7 +15,7 @@ const commandHandler = new CommandHandler(bot);
 
 let dbl;
 if (process.env.NODE_ENV == 'production') // don't POST stats in dev
-    dbl = new DBL(dbots_token, bot);
+    dbl = new DBL(ConfigPrivate.dbots_token, bot);
 
 const db = new DB();
 db.init();
@@ -39,7 +39,7 @@ bot.on('message', async (message: Message) => {
             return;
         }
 
-        const startsWithPrefix = message.content.startsWith(prefix);
+        const startsWithPrefix = message.content.startsWith(Config.prefix);
         if (!startsWithPrefix) {
             keywordUtil.bumpKeywordTallies(message);
             return;
@@ -65,7 +65,7 @@ bot.on('message', async (message: Message) => {
 /**
  * INIT
  */
-bot.login(token);
+bot.login(ConfigPrivate.token);
 
 /**
  * start status broadcasting
@@ -103,6 +103,6 @@ const startBroadcasting = () => {
         if (i == statusGenerators.length) i = 0;
         statusGenerators[i]();
         i++;
-    }, process.env.NODE_ENV == 'production' ? status.interval : status.interval_dev);
+    }, process.env.NODE_ENV == 'production' ? Config.status.interval : Config.status.interval_dev);
 }
 

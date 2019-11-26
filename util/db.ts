@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize';
 import mysql from 'mysql';
-import Config from '../config.json';
-import PrivateConfig from '../config-private.json';
+import Config from '../config';
+import PrivateConfig from '../config-private';
 import Counter from './counter';
 import Sqlize from './sqlize';
 
@@ -28,7 +28,8 @@ export default class DB {
 
     private getConfiguredDB() {
         if (process.env.TEST_ENV)
-        return Config.test.database.name;
+            return Config.test.database.name;
+        return Config.database.name;
     }
 
     private getMysqlPool() {

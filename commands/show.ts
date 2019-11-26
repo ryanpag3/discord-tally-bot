@@ -1,8 +1,6 @@
 import {
     Message
 } from "discord.js";
-import { table } from 'table';
-import { prefix } from '../config.json';
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
 import cmdHelper from "../util/cmd-helper";

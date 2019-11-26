@@ -1,7 +1,7 @@
 import { Message, Client } from 'discord.js';
 import Permissions from './permissions';
 import { EventEmitter } from 'events';
-import { prefix, status } from '../config.json';
+import Config from '../config';
 import CommandEventBuilder from './command-event-builder';
 
 export default class CommandHandler {
@@ -55,7 +55,7 @@ export default class CommandHandler {
      */
     emit(command: string, message: any) {
         // TODO: make more data driven as more added
-        if (command == prefix + 'suggest' || command == prefix + 'bug') {
+        if (command == Config.prefix + 'suggest' || command == Config.prefix + 'bug') {
             this.emitter.emit(command, {
                 message: message,
                 bot: this.bot

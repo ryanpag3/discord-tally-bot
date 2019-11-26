@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { prefix, status } from '../config.json';
+import Config from '../config';
 import Commands from '../static/Commands';
 
 import test from '../commands/test';
@@ -34,97 +34,97 @@ export default class CommandEventBuilder {
     static build(emitter: EventEmitter) {
         try {
             // test command functionality
-            emitter.on(prefix + Commands.TEST, test);
-            emitter.on(prefix + Commands.T, test);
+            emitter.on(Config.prefix + Commands.TEST, test);
+            emitter.on(Config.prefix + Commands.T, test);
 
             // give help
-            emitter.on(prefix + Commands.HELP, help);
-            emitter.on(prefix + Commands.H, help);
+            emitter.on(Config.prefix + Commands.HELP, help);
+            emitter.on(Config.prefix + Commands.H, help);
 
             // show existing tallies
-            emitter.on(prefix + Commands.SHOW, show);
+            emitter.on(Config.prefix + Commands.SHOW, show);
 
             // create new tally
-            emitter.on(prefix + Commands.CREATE, create);
-            emitter.on(prefix + Commands.ADD, create);
+            emitter.on(Config.prefix + Commands.CREATE, create);
+            emitter.on(Config.prefix + Commands.ADD, create);
 
             // set a tally to be global
-            emitter.on(prefix + Commands.GLOBAL, global);
+            emitter.on(Config.prefix + Commands.GLOBAL, global);
 
             // set a tally to be channel-specific
-            emitter.on(prefix + Commands.CHANNEL, channel);
+            emitter.on(Config.prefix + Commands.CHANNEL, channel);
 
             // create a keyword tally
-            emitter.on(prefix + Commands.KEYWORD, keyword);
-            emitter.on(prefix + Commands.KW, keyword);
+            emitter.on(Config.prefix + Commands.KEYWORD, keyword);
+            emitter.on(Config.prefix + Commands.KW, keyword);
 
             // delete a tally
-            emitter.on(prefix + Commands.DELETE, del);
-            emitter.on(prefix + Commands.RM, del);
+            emitter.on(Config.prefix + Commands.DELETE, del);
+            emitter.on(Config.prefix + Commands.RM, del);
 
             // bump a tally's count up
-            emitter.on(prefix + Commands.BUMP, bump);
+            emitter.on(Config.prefix + Commands.BUMP, bump);
 
             // dump a tally's count down
-            emitter.on(prefix + Commands.DUMP, dump);
+            emitter.on(Config.prefix + Commands.DUMP, dump);
 
             // set a tally to 0
-            emitter.on(prefix + Commands.EMPTY, empty);
+            emitter.on(Config.prefix + Commands.EMPTY, empty);
 
             // set a tally to an amount
-            emitter.on(prefix + Commands.SET, set);
+            emitter.on(Config.prefix + Commands.SET, set);
 
             // get tally details
-            emitter.on(prefix + Commands.DETAILS, details);
-            emitter.on(prefix + Commands.GET, details);
+            emitter.on(Config.prefix + Commands.DETAILS, details);
+            emitter.on(Config.prefix + Commands.GET, details);
 
             // set tally description
-            emitter.on(prefix + Commands.DESCRIBE, describe);
-            emitter.on(prefix + Commands.UPDATE, describe);
+            emitter.on(Config.prefix + Commands.DESCRIBE, describe);
+            emitter.on(Config.prefix + Commands.UPDATE, describe);
 
             // create a timer
-            emitter.on(prefix + Commands.TIMER, timer);
+            emitter.on(Config.prefix + Commands.TIMER, timer);
 
             // start a timer
-            emitter.on(prefix + Commands.START, start);
+            emitter.on(Config.prefix + Commands.START, start);
 
             // stop a timer
-            emitter.on(prefix + Commands.STOP, stop);
+            emitter.on(Config.prefix + Commands.STOP, stop);
 
             // reset a timer
-            emitter.on(prefix + Commands.RESET, reset);
+            emitter.on(Config.prefix + Commands.RESET, reset);
 
             // show all timers
-            emitter.on(prefix + Commands.TIMERS, timers);
+            emitter.on(Config.prefix + Commands.TIMERS, timers);
 
             // make a suggestion
-            emitter.on(prefix + Commands.SUGGEST, suggest);
+            emitter.on(Config.prefix + Commands.SUGGEST, suggest);
 
             // report a bug
-            emitter.on(prefix + Commands.BUG, bug);
-            emitter.on(prefix + Commands.REPORT, bug);
+            emitter.on(Config.prefix + Commands.BUG, bug);
+            emitter.on(Config.prefix + Commands.REPORT, bug);
 
             // manage announcements
-            emitter.on(prefix + Commands.ANNOUNCE, announce);
-            emitter.on(prefix + Commands.A, announce);
+            emitter.on(Config.prefix + Commands.ANNOUNCE, announce);
+            emitter.on(Config.prefix + Commands.A, announce);
 
             // show announcements
-            emitter.on(prefix + Commands.ANNOUNCEMENTS, announcements);
+            emitter.on(Config.prefix + Commands.ANNOUNCEMENTS, announcements);
 
             // set channel timezone
-            // emitter.on(prefix + 'timezone', timezone);
+            // emitter.on(Config.prefix + 'timezone', timezone);
 
             // enable/disable patch notes alerts
-            emitter.on(prefix + Commands.PATCHNOTES, patchnotes);
+            emitter.on(Config.prefix + Commands.PATCHNOTES, patchnotes);
 
             // show permissions
-            emitter.on(prefix + Commands.PERMISSIONS, permissions);
+            emitter.on(Config.prefix + Commands.PERMISSIONS, permissions);
 
             /**
              * The following commands are only exposed when bot is run without `production` flag
              */
             if (process.env.NODE_ENV != 'production') {
-                emitter.on(prefix + Commands.RMALL, rmall);
+                emitter.on(Config.prefix + Commands.RMALL, rmall);
             }
         } catch (e) {
             console.log('Error occured while handling command event');

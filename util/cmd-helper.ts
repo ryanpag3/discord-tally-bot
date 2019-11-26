@@ -1,5 +1,5 @@
 import Discord from 'discord.js';
-import config from '../config.json';
+import config from '../config';
 import PatchAnnouncer from './patch-announcer';
 
 export default {

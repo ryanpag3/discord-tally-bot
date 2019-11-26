@@ -1,6 +1,6 @@
 import Sequelize from 'sequelize';
-import PrivateConfig from '../config-private.json';
-import Config from '../config.json';
+import PrivateConfig from '../config-private';
+import Config from '../config';
 
 /**
  * This maintains the singleton sequelize client

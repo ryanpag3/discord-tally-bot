@@ -144,7 +144,7 @@ Command files are located in `./commands`. If you would like to add one you will
 2. import script in `bot.ts` in the appropriate section, adding a short comment on what it does
 3. initialize script by adding an event listener using the `emitter.on(prefix + command)` pattern
 
-## Example config-private.json
+## Example config-private
 ```
 {
     "token": "TOKEN_HERE",

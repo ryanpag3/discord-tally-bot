@@ -1,5 +1,5 @@
 import helper from '../util/cmd-helper';
-import pConfig from '../config-private.json';
+import pConfig from '../config-private';
 
 export default async (params) => {
     const message = params.message;
