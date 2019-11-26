@@ -34,6 +34,7 @@ export default class DB {
     private getMysqlPool() {
         return mysql.createPool({
             host: PrivateConfig.database.url,
+            port: PrivateConfig.database.port,
             user: PrivateConfig.database.user,
             password: PrivateConfig.database.password
         });

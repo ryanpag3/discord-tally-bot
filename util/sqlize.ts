@@ -24,6 +24,7 @@ export default class Sqlize {
             database: dbName,
             username: PrivateConfig.database.user,
             password: PrivateConfig.database.password,
+            port: PrivateConfig.database.port,
             dialect: Config.database.dialect,
             operatorsAliases: false,
             logging: false,
