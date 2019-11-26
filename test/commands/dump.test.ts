@@ -70,7 +70,7 @@ describe('dump command', function() {
         const command = `!tb dump`;
         fakeMessage.content = command + ' ' + TALLY_NAME;
         const count = await Counter.getDumpCount();
-        const commandsAmt = 50;
+        const commandsAmt = 10;
         for (let i = 0; i < commandsAmt; i++) {
             commandHandler.emit(command, fakeMessage);
             await Bluebird.delay(50);

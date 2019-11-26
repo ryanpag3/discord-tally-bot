@@ -4,15 +4,15 @@ import {
 import helper from '../util/cmd-helper';
 import DB from '../util/db';
 
-export default (message: Message) => {
+export default async (message: Message) => {
     const db = new DB();
     const msg = message.content.split(' ');
     const subArg = msg[2];
     try {
         if (subArg == '-on') {
-            enable();
+            await enable();
         } else if (subArg == '-off') {
-            disable();
+            await disable();
         }
         const richEmbed = {
             description: `Update alert settings saved.`
@@ -20,7 +20,7 @@ export default (message: Message) => {
         helper.finalize(message);
         message.channel.send(helper.buildRichMsg(richEmbed));
     } catch (e) {
-
+        console.log(`error while updating patchnotes settings for server ${e}`);
     }
 
     async function enable() {
@@ -31,7 +31,7 @@ export default (message: Message) => {
             }
         });
         if (!server) return;
-        server.patchNotesEnables = true;
+        server.patchNotesEnabled = true;
         await server.save();
     }
 
@@ -43,7 +43,7 @@ export default (message: Message) => {
             }
         });
         if (!server) return;
-        server.patchNotesEnables = false;
+        server.patchNotesEnabled = false;
         await server.save();
     }
 }

@@ -69,7 +69,7 @@ export default async (message: Message) => {
         }));
         console.log(`keyword tally  [${isGlobal ? 'G' : 'C'}] ${name} created.`);
     } catch (e) {
-        if (e.toString().toLowerCase().indexOf('uniqueconstrainterror') != -1) e = 'tally alread exists';
+        if (e.toString().toLowerCase().indexOf('uniqueconstrainterror') != -1) e = 'tally already exists';
         if (e.toString().toLowerCase().indexOf('incorrect string value') != -1) e = 'non-valid characters provided.';
         const err = `Failed to create keyword tally. Reason: ${e}`;
         console.log(err);
