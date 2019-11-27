@@ -28,7 +28,7 @@ jobs:
         npm i -g ts-mocha
         npm i -g mocha
         npm i -g typescript
-        yarn upgrade
+        rm yarn.lock
         yarn install
     - name: Run tests
       run: |
