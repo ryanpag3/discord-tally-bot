@@ -19,7 +19,7 @@ jobs:
     - name: Setup environment
       run: |
         curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
-        sudo apt-get install -y nodejs make build-essential libkrb5-dev
+        sudo apt-get install -y nodejs make build-essential libkrb5-dev gcc
         mkdir ~/.npm-global
         npm config set prefix '~/.npm-global'
         export PATH=~/.npm-global/bin:$PATH
