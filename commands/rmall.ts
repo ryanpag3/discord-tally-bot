@@ -9,9 +9,9 @@ const Tally = db.Tally;
 const Timer = db.Timer;
 const Announcement = db.Announcement;
 
-export default (message: Message) => {
+export default async (message: Message) => {
     console.log('Deleting all tallies.');
-    Tally.destroy({
+    await Tally.destroy({
         where: {
             channelId: message.channel.id
         }
