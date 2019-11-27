@@ -23,6 +23,8 @@ jobs:
         mkdir ~/.npm-global
         npm config set prefix '~/.npm-global'
         export PATH=~/.npm-global/bin:$PATH
+        npm i -g n
+        sudo n 10
         npm i -g node-gyp
         npm i -g yarn
         npm i -g ts-mocha
