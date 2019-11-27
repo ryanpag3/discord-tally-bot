@@ -73,7 +73,7 @@ export default class DB {
     }
 
     async createDatabaseIfNotExists(dbName: string) {
-        console.log(`attempting to create database ${dbName}`);
+        console.log(`attempting to create database ${dbName} ${PrivateConfig.database.user} ${PrivateConfig.database.password}`);
         return new Promise(async (resolve, reject) => {
             const conn = await this.getMysqlConn();
             conn.query(`CREATE DATABASE IF NOT EXISTS ${dbName}`, (err, result) => {
