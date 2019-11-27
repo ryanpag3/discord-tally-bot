@@ -40,6 +40,7 @@ jobs:
         DATABASE_URL: ${{ secrets.DATABASE_URL }}
         DATABASE_USER: ${{ secrets.DATABASE_USER }}
         DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+        DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
         SUGGEST_CHANNEL: ${{ secrets.SUGGEST_CHANNEL }}
         TEST_SUGGEST_CHANNEL: ${{ secrets.TEST_SUGGEST_CHANNEL }}
         BUGS_CHANNEL: ${{ secrets.BUGS_CHANNEL }}
