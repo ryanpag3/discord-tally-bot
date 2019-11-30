@@ -34,7 +34,6 @@ describe('describe command', function() {
         fakeMsg['content'] = `!tb describe ${TALLY_NAME} ${desc}`;
         const tally = await db.createTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, '');
         await describeCmd(fakeMsg as any);
-        console.log(fakeMsg.getLastChannelCall('description'));
         await tally.reload();
         expect(tally.description).not.eqls('');
     });

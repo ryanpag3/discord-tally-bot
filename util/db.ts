@@ -302,10 +302,11 @@ export default class DB {
         }
     }
 
-    async getKeywords(channelId: string) {
+    async getKeywords(channelId: string, serverId: string) {
         const res = await this.Tally.findAll({
             where: {
-                channelId: channelId
+                channelId: channelId,
+                serverId
             }
         });
         return res
@@ -315,6 +316,16 @@ export default class DB {
             .map(tally => {
                 return tally.keyword;
             });
+    }
+
+    async getGlobalKeywords(serverId: string) {
+        const tallies = await this.Tally.findAll({
+            where: {
+                serverId,
+                isGlobal: true
+            }
+        });
+        return tallies.filter(t => t.keyword !== null).map(t => t.keyword);
     }
 
     async keywordExists(channelId: string, key: string) {
@@ -327,17 +338,27 @@ export default class DB {
         return res.length != 0;
     }
 
-    async handleKeywordTally(channelId, keyword) {
+    async handleKeywordTally(serverId, keyword, channelId?) {
         if (keyword === null || keyword === undefined) return;
+
+        const where = {
+            serverId,
+            keyword
+        };
+        if (channelId) where['channelId'] = channelId;
+
         const tallies = await this.Tally.findAll({
-            where: {
-                channelId: channelId,
-                keyword: keyword
-            }
+            where
         });
+
         const promises = tallies.map(async tally => {
-            if (tally.bumpOnKeyword === false) tally.count = tally.count - 1;
-            else tally.count = tally.count + 1;
+            if (tally.bumpOnKeyword === false) {
+                console.log(`keyword bump for tally ${tally.name}`)
+                tally.count = tally.count - 1;
+            } else {
+                console.log(`keyword dump for tally ${tally.name}`)
+                tally.count = tally.count + 1;
+            }
             return tally.save();
         });
         await Promise.all(promises);

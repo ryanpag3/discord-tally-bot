@@ -157,7 +157,7 @@ describe('db.ts', function() {
     it('.getKeywords should get all keywords for a channel', async () => {
         const kw = 'test';
         await createTestTally(null, kw);
-        const keywords = await db.getKeywords(CHANNEL_ID);
+        const keywords = await db.getKeywords(CHANNEL_ID, SERVER_ID);
         expect(keywords[0]).eqls(kw);
     });
 
@@ -178,7 +178,7 @@ describe('db.ts', function() {
         const mName = 'ryan';
         const kw = 'test';
         await createTestTally(mName, kw);
-        await db.handleKeywordTally(CHANNEL_ID, kw);
+        await db.handleKeywordTally(SERVER_ID, kw, CHANNEL_ID);
         const tally = await db.getTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, mName);
         expect(tally.count).eqls(1);
     });

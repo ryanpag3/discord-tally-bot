@@ -32,8 +32,6 @@ bot.on('ready', async () => {
 });
 
 bot.on('message', async (message: Message) => {
-    let command;
-
     try {
         if (message.channel.type == 'dm') {
             return;
@@ -48,12 +46,12 @@ bot.on('message', async (message: Message) => {
         if (isBot) return;
 
         db.initServer(message.guild.id);
-        commandHandler.handle(message);
+        await commandHandler.handle(message);
     } catch (e) {
         console.log(`Error while inbounding message: ` + e);
         if (e.toString().includes('invalid command')) {
             const richEmbed = {
-                description: `Invalid command used: **${command}**`
+                description: `Invalid command used.`
             };
             message.channel.send(cmdHelper.buildRichMsg(richEmbed));
         }
