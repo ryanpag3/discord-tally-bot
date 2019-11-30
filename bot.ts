@@ -34,6 +34,7 @@ bot.on('ready', async () => {
 bot.on('message', async (message: Message) => {
     try {
         if (message.channel.type == 'dm') {
+            console.log(`PM received: ${message.content}`)
             return;
         }
 
