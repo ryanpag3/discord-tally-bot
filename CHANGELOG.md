@@ -1,11 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## **1.3**
+## **1.2.2**
 ### Added
-
+- Added fix for global tallies not being triggered by global keywords
+- Added the ability to dump on keyword
+- Added command for resetting all tallies to 0
 ### Fixed
-- Database code has been completely refactored to improve performance.
+- Database code has been completely rewritten to improve performance.
 
 ## **1.2.1**
 ### Added

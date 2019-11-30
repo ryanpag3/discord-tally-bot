@@ -1,14 +1,15 @@
 {
     "name": "discord-tally-bot",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "description": "A discord bot for tallying things.",
     "main": "dist/bot.js",
     "scripts": {
         "build": "tsc",
-        "coverage": "export TEST_ENV=\"1\" && nyc mocha --recursive --exit ./**/*.test.ts",
+        "coverage": "export TEST_ENV=\"1\" && nyc mocha -r dotenv/config --recursive --exit ./**/*.test.ts",
         "start": "tsc && node -r source-map-support/register dist/bot.js",
         "start-w": "nodemon -e \".ts\" --exec \"tsc && node -r dotenv/config -r source-map-support/register dist/bot.js || true\"",
-        "test": "export TEST_ENV=\"1\" && ts-mocha -r dotenv/config --recursive --exit ./**/*.test.ts"
+        "test": "export TEST_ENV=\"1\" && ts-mocha -r dotenv/config --recursive --exit ./**/*.test.ts",
+        "testp": "export TEST_ENV=\"1\" && ts-mocha -r dotenv/config --recursive --exit "
     },
     "repository": {
         "type": "git",

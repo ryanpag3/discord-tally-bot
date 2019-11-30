@@ -135,7 +135,8 @@ export default class Permissions {
     }
 
     static isValidCommand(command) {
-        return Commands[command.toUpperCase()] != undefined || command == '-role';
+        
+        return Commands[command.toUpperCase().replace('-', '_')] != undefined || command == '-role';
     }
 
     static getRoleId(roles, targetRoleName) {

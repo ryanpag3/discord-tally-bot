@@ -11,6 +11,7 @@ import del from '../commands/delete';
 import bump from '../commands/bump';
 import dump from '../commands/dump';
 import empty from '../commands/empty';
+import emptyAll from '../commands/empty-all';
 import set from '../commands/set';
 import rmall from '../commands/rmall';
 import details from '../commands/details';
@@ -69,6 +70,9 @@ export default class CommandEventBuilder {
 
             // set a tally to 0
             emitter.on(Config.prefix + Commands.EMPTY, empty);
+
+            // empty all tallies to 0
+            emitter.on(Config.prefix + Commands.EMPTY_ALL, emptyAll);
 
             // set a tally to an amount
             emitter.on(Config.prefix + Commands.SET, set);

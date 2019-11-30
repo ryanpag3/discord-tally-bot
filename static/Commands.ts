@@ -16,6 +16,7 @@ export default {
     DETAILS: 'details',
     DUMP: 'dump',
     EMPTY: 'empty',
+    EMPTY_ALL: 'empty-all',
     GLOBAL: 'global',
     GET: 'get',
     H: 'h',

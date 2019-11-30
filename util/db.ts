@@ -268,6 +268,27 @@ export default class DB {
         return await tally.update(updateObj);
     }
 
+    async updateTallies(serverId: string, update: any, channelId?: string) {
+        const where: any = {
+            serverId,
+            isGlobal: true
+        }
+        if (channelId) {
+            where.isGlobal = false;
+            where.channelId = channelId;
+        }
+
+        await this.Tally.update(update, {
+            where
+        });
+
+        const tallies = await this.Tally.findAll({
+            where
+        });
+        console.log(`${tallies.length} tallies have been updated with ${JSON.stringify(update)}`);
+        return tallies;
+    }
+
     async deleteTally(channelId, serverId, isGlobal, name) {
         const tally = await this.getTally(channelId, serverId, isGlobal, name);
         if (!tally) throw new Error(`could not find tally to delete`);
