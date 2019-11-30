@@ -52,7 +52,9 @@
             "**/*.ts",
             "**/*.tsx"
         ],
-        "exclude": [],
+        "exclude": [
+            "**/*.test.ts"
+        ],
         "extension": [
             ".ts",
             ".tsx"
