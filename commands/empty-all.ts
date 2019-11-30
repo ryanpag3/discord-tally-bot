@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
 import CmdHelper from '../util/cmd-helper';
-import DB from '../util/DB';
+import DB from '../util/db';
 
 /**
  * This command is responsible for setting all tallies to 0
