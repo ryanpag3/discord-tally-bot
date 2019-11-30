@@ -24,7 +24,6 @@ import suggest from '../commands/suggest';
 import bug from '../commands/bug';
 import announce from '../commands/announce';
 import announcements from '../commands/announcements';
-import timezone from '../commands/timezone';
 import patchnotes from '../commands/patchnotes';
 import permissions from '../commands/permissions';
 import global from '../commands/global';
