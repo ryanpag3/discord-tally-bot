@@ -91,6 +91,8 @@ For example, if I wanted to bump a **global** tally named *test*, I would issue 
 
 `!tb empty [name]` - Empty a tally, setting counter to 0.
 
+`!tb empty-all` - Empty all channel or global tallies.
+
 `!tb set [name] [amount]` - set a tally to a specified amount
 
 **note:** I have on my wishlist to write a permissions feature. These most likely will be admin-only once that is complete.
