@@ -23,7 +23,7 @@ export default async (message: Message) => {
             throw `Could not find **${timerName}** to reset.`;
 
         timer.startDate = null;
-        timer.stopDate = null;
+        timer.endDate = null;
         timer.totTime = null;
         await timer.save();
         

@@ -521,4 +521,24 @@ export default class DB {
             await tally.save();
         }
     }
+
+    async getTimer(channelId: string, name: string) {
+        return await this.Timer.findOne({
+            where: {
+                channelId,
+                name
+            }
+        });
+    }
+
+    async createTimer(channelId: string, name: string, description?: string) {
+        return await this.Timer.create({
+            channelId,
+            name,
+            description,
+            startDate: null,
+            endDate: null,
+            totTime: null
+        });
+    }
 }

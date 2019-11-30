@@ -36,7 +36,7 @@ export default async (message: Message) => {
             return processed;
         });
 
-        let description = ':clock1: Here are your timers. :clock1:\n\n';
+        let description = `:clock1: Here are your ${processedTimers.length} timers. :clock1:\n\n`;
         processedTimers.map((timer) => {
             description += `**${timer.name}** ${timer.totalTime || '00:00:00'} | ${helper.truncate(timer.description, 50)}\n`;
         });
