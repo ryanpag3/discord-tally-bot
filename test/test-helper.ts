@@ -37,6 +37,23 @@ export default class TestHelper {
         return message;
     }
 
+    static getFakeBot() {
+        let bot = {
+            channels: [
+                {
+                    id: '1',
+                    send: sinon.fake()
+                }
+            ],
+            getLastCall: (field?: string) => {
+                if (!field) return JSON.stringify(bot.channels[0].send.getCall(0).lastArg);
+                return bot.channels[0].send.getCall(0).lastArg[field];
+            }
+        }
+
+        return bot;
+    }
+
     static exportDBEnvironmentVar() {
         process.env[this.TALLY_BOT_DB] = this.DB_NAME;
     }

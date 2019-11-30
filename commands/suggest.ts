@@ -14,7 +14,12 @@ export default async (params) => {
 
     helper.finalize(message);
 
-    const channelId = process.env.NODE_ENV == 'production' ? pConfig.channels.suggestions : pConfig.test.channels.suggestions;
+    let channelId = process.env.NODE_ENV == 'production' ? pConfig.channels.suggestions : pConfig.test.channels.suggestions;
+    
+    if (params.channelId && process.env.NODE_ENV != 'production') {
+        channelId = params.channelId;
+    }
+    
     const Channel = await bot.channels.find(x => x.id === channelId);
 
     const richEmbed = {
@@ -26,5 +31,5 @@ suggested by **${author.tag}**
     }
 
     Channel.send(helper.buildRichMsg(richEmbed));
-    message.channel.send(`Suggestion has been sent to ${bot.channels.get(channelId).toString()}.`);
+    message.channel.send(`Suggestion has been sent.`);
 }

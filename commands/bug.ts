@@ -10,16 +10,21 @@ export default async (params) => {
     const bugReport = msg.join(' ');
     const bot = params.bot;
 
-    console.log('Reporting bug for user [' + author.tag + ']');
+    console.log('Reporting bug for user [' + author.toString() + '] to ');
 
     helper.finalize(message);
 
-    const channelId = process.env.NODE_ENV == 'production' ? pConfig.channels.bugs : pConfig.test.channels.bugs;
+    let channelId = process.env.NODE_ENV == 'production' ? pConfig.channels.bugs : pConfig.test.channels.bugs;
+    
+    if (params.channelId && process.env.NODE_ENV != 'production') {
+        channelId = params.channelId;
+    }
+
     const Channel = await bot.channels.find(x => x.id === channelId);
 
     const richEmbed = {
         description: `**${new Date().toLocaleDateString()} | ${new Date().toLocaleTimeString()}**
-        reported by by **${author.tag}**
+        reported by by **${author.toString()}**
         \n_${bugReport}_`
     }
 
