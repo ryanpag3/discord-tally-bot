@@ -14,7 +14,8 @@ describe('db.ts', function() {
         await db.initDatabase();
     });
 
-    afterEach(async () => {
+    afterEach(async function() {
+        this.timeout(5000);
         await db.truncateTables();
     });
 
