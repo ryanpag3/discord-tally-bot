@@ -73,7 +73,7 @@ export default class DB {
     }
 
     async createDatabaseIfNotExists(dbName: string) {
-        console.log(`attempting to create database ${dbName} ${PrivateConfig.database.user == 'root'} ${PrivateConfig.database.password == 'adminadmin'}`);
+        console.log(`attempting to create database ${dbName}`);
         return new Promise(async (resolve, reject) => {
             const conn = await this.getMysqlConn();
             conn.query(`CREATE DATABASE IF NOT EXISTS ${dbName}`, (err, result) => {
@@ -173,7 +173,7 @@ export default class DB {
         await this.Permission.truncate();
     }
 
-    async createTally(channelId: string, serverId: string, isGlobal: boolean, name: string, description: string, keyword?: string) {
+    async createTally(channelId: string, serverId: string, isGlobal: boolean, name: string, description: string, keyword?: string, bumpOnKeyword?: boolean) {
         const maxDescriptionLen = this.TALLY_DESCRIPTION_MAXLEN;
         if (description.length > maxDescriptionLen) {
             throw new Error('description cannot be longer than ' + this.TALLY_DESCRIPTION_MAXLEN + ' characters, including emojis');
@@ -187,6 +187,7 @@ export default class DB {
             description: Buffer.from(description).toString('base64'),
             count: 0,
             keyword: keyword ? keyword : null,
+            bumpOnKeyword,
             base64Encoded: true
         });
 
@@ -326,7 +327,7 @@ export default class DB {
         return res.length != 0;
     }
 
-    async bumpKeywordTally(channelId, keyword) {
+    async handleKeywordTally(channelId, keyword) {
         if (keyword === null || keyword === undefined) return;
         const tallies = await this.Tally.findAll({
             where: {
@@ -335,7 +336,8 @@ export default class DB {
             }
         });
         const promises = tallies.map(async tally => {
-            tally.count = tally.count + 1;
+            if (tally.bumpOnKeyword === false) tally.count = tally.count - 1;
+            else tally.count = tally.count + 1;
             return tally.save();
         });
         await Promise.all(promises);

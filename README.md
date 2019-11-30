@@ -67,6 +67,10 @@ For example, if I wanted to bump a **global** tally named *test*, I would issue 
 
 `!tb kw [name] [keyword] [description]` - Same as above.
 
+`!tb keyword dump [name] [keyword] [description]` - Every time the keyword is found, it will dump the tally automatically.
+
+`!tb kw dump [name] [keyword] [description]` - Same as above.
+
 `!tb describe [name] [description]` - Update a tally with a new description.
 
 `!tb update [name] [description]` - Same as above. 

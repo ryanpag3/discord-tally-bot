@@ -13,7 +13,7 @@ export default {
             arr.map(keyword => {
                 if(message.content.includes(keyword)) {
                     console.log(`bumping **${keyword}** tally`);
-                    db.bumpKeywordTally(message.channel.id, commaSeparated);
+                    db.handleKeywordTally(message.channel.id, commaSeparated);
                 }
             });
         });

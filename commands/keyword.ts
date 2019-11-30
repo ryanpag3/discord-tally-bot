@@ -12,10 +12,15 @@ const Tally = db.Tally;
 // send res
 export default async (message: Message) => {
     const isGlobal = cmdHelper.isGlobalTallyMessage(message);
+    let isDump = false;
     let msg = message.content.split(' ');
     msg.shift(); // prefix
-    msg.shift(); // !tb keyword
+    msg.shift(); // keyword
     if (isGlobal) msg.shift(); // -g
+    if (msg[0] === 'dump') {
+        isDump = true;
+        msg.shift();
+    }
     const name = msg.shift();
     const keyword = msg.shift();
     const description = msg.shift() || 'no description';
@@ -41,7 +46,8 @@ export default async (message: Message) => {
             isGlobal,
             name,
             description,
-            keyword
+            keyword,
+            isDump === false // tally boolean is bumpOnKeyword so we negate the flag
         )
 
         let keywordMsg = '';

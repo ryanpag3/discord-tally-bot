@@ -30,7 +30,7 @@ jobs:
         npm i -g ts-mocha
         npm i -g mocha
         npm i -g typescript
-        rm yarn.lock
+        npm i -g dotenv
         yarn install
     - name: Run tests
       run: |

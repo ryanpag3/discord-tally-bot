@@ -178,7 +178,7 @@ describe('db.ts', function() {
         const mName = 'ryan';
         const kw = 'test';
         await createTestTally(mName, kw);
-        await db.bumpKeywordTally(CHANNEL_ID, kw);
+        await db.handleKeywordTally(CHANNEL_ID, kw);
         const tally = await db.getTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, mName);
         expect(tally.count).eqls(1);
     });
@@ -187,7 +187,7 @@ describe('db.ts', function() {
         const mName = 'ryan';
         const kw = 'test';
         await createTestTally(mName, kw + 'a');
-        await db.bumpKeywordTally(CHANNEL_ID, kw);
+        await db.handleKeywordTally(CHANNEL_ID, kw);
         const tally = await db.getTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, mName);
         expect(tally.count).eqls(0);
     });
