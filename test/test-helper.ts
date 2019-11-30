@@ -4,7 +4,7 @@ export default class TestHelper {
     static DB_NAME = 'tallybot_automatedtest_db';
     static TALLY_BOT_DB = 'TALLY_BOT_DB';
 
-    static getFakeMessage() {
+    static getFakeMessage(content?: string) {
         let message = {
             channel: {
                 id: '1',
@@ -15,7 +15,7 @@ export default class TestHelper {
             },
             author: 'Ryan Page',
             delete: sinon.fake(),
-            content: null,
+            content: content || null,
             getLastChannelCall: null,
             getChannelId: null,
             getGuildId: null

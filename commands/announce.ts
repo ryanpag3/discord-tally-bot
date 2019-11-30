@@ -116,7 +116,7 @@ export default async (message: Message) => {
             channelId: message.channel.id, 
             name: announceName
         }});
-        db.activateAnnouncement(message.channel.id, announceName);
+        await db.activateAnnouncement(message.channel.id, announceName);
         if (!announce) return;
         CronAnnouncer.createCronJob(announceName, message.channel.id, announce.datePattern);
         helper.finalize(message);

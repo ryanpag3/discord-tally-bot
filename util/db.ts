@@ -341,6 +341,16 @@ export default class DB {
         await Promise.all(promises);
     }
 
+    async getAnnouncement(channelId: string, name: string) {
+        const announce = await this.Announcement.findOne({
+            where: {
+                channelId,
+                name
+            }
+        });
+        return announce;
+    }
+
     async createAnnouncement(channelId, name, description) {
         const announce = await this.Announcement.create({
             channelId: channelId,
