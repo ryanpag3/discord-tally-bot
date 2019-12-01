@@ -29,6 +29,8 @@ import patchnotes from '../commands/patchnotes';
 import permissions from '../commands/permissions';
 import global from '../commands/global';
 import channel from '../commands/channel';
+import crash from '../commands/crash';
+import Env from './env';
 
 export default class CommandEventBuilder {
     static build(emitter: EventEmitter) {
@@ -126,8 +128,9 @@ export default class CommandEventBuilder {
             /**
              * The following commands are only exposed when bot is run without `production` flag
              */
-            if (process.env.NODE_ENV != 'production') {
+            if (Env.isProduction() === false) {
                 emitter.on(Config.prefix + Commands.RMALL, rmall);
+                emitter.on(Config.prefix + Commands.CRASH, crash);
             }
         } catch (e) {
             console.log('Error occured while handling command event');

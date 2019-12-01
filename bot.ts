@@ -59,6 +59,9 @@ bot.on('message', async (message: Message) => {
     }
 });
 
+process.on('unhandledRejection', (e: any) => {
+    console.error(e);
+})
 
 
 /**

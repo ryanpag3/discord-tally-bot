@@ -10,6 +10,7 @@ export default {
     BUG: 'bug',
     BUMP: 'bump',
     CHANNEL: 'channel',
+    CRASH: 'crash',
     CREATE: 'create',
     DELETE: 'delete',
     DESCRIBE: 'describe',
