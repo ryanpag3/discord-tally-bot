@@ -2,10 +2,11 @@ import {
     Message
 } from 'discord.js';
 import moment from 'moment';
-import db from '../util/db';
+import DB from '../util/db';
 import helper from '../util/cmd-helper';
 import TimerUtil from '../util/timer';
 
+const db = new DB();
 const tUtil = new TimerUtil();
 const Timer = db.Timer;
 
@@ -35,7 +36,7 @@ export default async (message: Message) => {
             return processed;
         });
 
-        let description = ':clock1: Here are your timers. :clock1:\n\n';
+        let description = `:clock1: Here are your ${processedTimers.length} timers. :clock1:\n\n`;
         processedTimers.map((timer) => {
             description += `**${timer.name}** ${timer.totalTime || '00:00:00'} | ${helper.truncate(timer.description, 50)}\n`;
         });

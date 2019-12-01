@@ -4,7 +4,8 @@ import {
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
 
-const Tally = DB.Tally;
+const db = new DB();
+const Tally = db.Tally;
 
 export default async (message: Message) => {
     const isGlobal = helper.isGlobalTallyMessage(message);
@@ -21,7 +22,7 @@ export default async (message: Message) => {
             throw 'ID and/or amount required. Please try again using the correct syntax. :wink:';
         }
 
-        const tally = await DB.getTally(
+        const tally = await db.getTally(
             message.channel.id,
             message.guild.id,
             isGlobal,
@@ -30,7 +31,7 @@ export default async (message: Message) => {
 
         if (!tally) throw `${'**'+name+'**' || 'an empty string'} doesn't exist.`;
 
-        await DB.updateTally(
+        await db.updateTally(
             message.channel.id,
             message.guild.id,
             isGlobal,

@@ -1,13 +1,12 @@
 import {
     Message
 } from "discord.js";
-import { table } from 'table';
-import { prefix } from '../config.json';
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
 import cmdHelper from "../util/cmd-helper";
 
 export default async(message: Message) => {
+    const db = new DB();
     const isGlobal = cmdHelper.isGlobalTallyMessage(message);
     let msg = message.content.split(' ');
     msg.shift(); // prefix
@@ -18,7 +17,7 @@ export default async(message: Message) => {
     console.log(`Showing tallies for channel [${isGlobal ? 'G' : 'C'}] [' + ${message.channel.id} + ']`);
 
     try {
-        let tallies = await DB.getTallies(
+        let tallies = await db.getTallies(
             message.channel.id,
             message.guild.id,
             isGlobal

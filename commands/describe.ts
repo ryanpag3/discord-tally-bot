@@ -4,8 +4,6 @@ import DB from '../util/db';
 import helper from '../util/cmd-helper';
 import help from './help';
 
-const Tally = DB.Tally;
-
 export default async (message: Message) => {
     const isGlobal = helper.isGlobalTallyMessage(message);
     const msg = message.content.split(' ');
@@ -18,9 +16,10 @@ export default async (message: Message) => {
     console.log('Setting description of [' + name + ']');
 
     try {
-        await DB.setTallyDescription(message.channel.id, message.guild.id, isGlobal, name, description);
+        const db = new DB();
+        await db.setTallyDescription(message.channel.id, message.guild.id, isGlobal, name, description);
 
-        const tally = await DB.getTally(message.channel.id, message.guild.id, isGlobal, name);
+        const tally = await db.getTally(message.channel.id, message.guild.id, isGlobal, name);
 
         if (!tally) {
             const msg = {
@@ -28,6 +27,7 @@ export default async (message: Message) => {
             Could not find [${isGlobal ? 'G' : 'C'}] **${name}** to update.\nupdate attempted by **${message.author.toString()}**
             `
             };
+            console.log(msg);
             helper.finalize(message);
             message.channel.send(helper.buildRichMsg(msg));
             return;
@@ -61,6 +61,7 @@ export default async (message: Message) => {
 
         helper.finalize(message);
 
+        console.log(msgObj);
         message.channel.send(helper.buildRichMsg(msgObj));
     } catch (e) {
         const msg = {

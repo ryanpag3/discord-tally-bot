@@ -13,10 +13,11 @@ export default class Permissions {
     }
 
     static async hasPermission(message) {
+        const db = new DB();
         const mArr = message.content.split(' ');
         const isValid = Permissions.isValidCommand(mArr[1]);
         if (!isValid) throw new Error('invalid command');
-        let permission: any = await DB.Permission.findOne({
+        let permission: any = await db.Permission.findOne({
             where: {
                 serverId: message.guild.id,
                 command: mArr[1]
@@ -30,7 +31,7 @@ export default class Permissions {
         // admins can allow other users to set permissions
         let newPermission;
         if (Permissions.isPermissionCommand(mArr)) {
-            newPermission = await DB.Permission.findOne({
+            newPermission = await db.Permission.findOne({
                 where: {
                     serverId: message.guild.id,
                     command: Commands.ROLE
@@ -42,7 +43,8 @@ export default class Permissions {
     }
 
     static async setAllPermissions(message) {
-        const Permission = DB.Permission;
+        const db = new DB();
+        const Permission = db.Permission;
         const mArr = message.content.split(' ');
         try {
             const roles = message.guild.roles.map(role => role.name);
@@ -77,7 +79,8 @@ export default class Permissions {
 
     static async setPermissionRole(message) {
         try {
-            const Permission = DB.Permission;
+            const db = new DB();
+            const Permission = db.Permission;
             const roles = message.guild.roles.map(role => role.name);
             const mArr = message.content.split(' ');
             const rawCommand = mArr[1] == Commands.ROLE ? mArr[1].substr(1) : mArr[1];
@@ -119,7 +122,8 @@ export default class Permissions {
     }
 
     static async getServerPermissions(serverId) {
-        return await DB.Permission.findAll({
+        const db = new DB();
+        return await db.Permission.findAll({
             where: {
                 serverId: serverId
             }
@@ -131,7 +135,8 @@ export default class Permissions {
     }
 
     static isValidCommand(command) {
-        return Commands[command.toUpperCase()] != undefined || command == '-role';
+        
+        return Commands[command.toUpperCase().replace('-', '_')] != undefined || command == '-role';
     }
 
     static getRoleId(roles, targetRoleName) {

@@ -2,12 +2,10 @@ import {
     Message
 } from "discord.js";
 import moment from 'moment';
-import {} from '../config.json';
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
-import help from "./help.js";
 
-const Tally = DB.Tally;
+const db = new DB();
 
 const startDevDate = moment('2018-09-25'); // repo created date
 const now = moment();
@@ -52,7 +50,7 @@ export default async (message: Message) => {
 
     try {
         console.log('Adding tally [' + tallyId + ']');
-        await DB.createTally(
+        await db.createTally(
             message.channel.id,
             message.guild.id,
             isGlobal,

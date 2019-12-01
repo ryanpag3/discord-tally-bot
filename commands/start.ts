@@ -3,11 +3,12 @@ import {
     Message
 } from "discord.js";
 import moment from 'moment';
-import db from '../util/db';
+import DB from '../util/db';
 import helper from '../util/cmd-helper';
 
 // create a timer
 export default async (message: Message) => {
+    const db = new DB();
     let msg = message.content.split(' ');
     msg.shift(); // prefix
     msg.shift(); // command

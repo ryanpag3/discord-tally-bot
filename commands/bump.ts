@@ -1,7 +1,7 @@
 import { Message } from 'discord.js';
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
-import { increaseTotalBumpCount } from '../util/counter';
+import Counter from '../util/counter';
 
 const USER_EMOJIS = [
     ':spy:', ':upside_down:', ':poop:', ':ghost:', ':astonished:', ':pray:', ':fist:',
@@ -9,6 +9,7 @@ const USER_EMOJIS = [
 ]
 
 export default async (message: Message) => {
+    const db = new DB();
     const isGlobal = helper.isGlobalTallyMessage(message);
     const msg = message.content.split(' ');
     msg.shift(); // rm prefix
@@ -20,7 +21,7 @@ export default async (message: Message) => {
     console.log(`Bumping [${name} | Global: ${isGlobal}] by ${bumpAmount || 1}`);
 
     try {
-        const tally = await DB.getTally(
+        const tally = await db.getTally(
             message.channel.id,
             message.guild.id,
             isGlobal,
@@ -33,10 +34,7 @@ export default async (message: Message) => {
 
         const amount = bumpAmount ? bumpAmount : 1;
         const previous = tally.count;
-        // tally.count += amount;
-        // await tally.save();
-
-        await DB.updateTally(
+        await db.updateTally(
             message.channel.id,
             message.guild.id,
             isGlobal,
@@ -47,7 +45,6 @@ export default async (message: Message) => {
         );
 
         const description = tally.description && tally.description != '' ? tally.description : undefined;
-        console.log(description);
         const msg = {
             description: `
             [${isGlobal ? 'G' : 'C'}] **${tally.name}** | **${previous}** >>> **${tally.count}** ${(description ? '\n• _' + description + '_' : '')}
@@ -56,7 +53,7 @@ export default async (message: Message) => {
             `
         }
 
-        increaseTotalBumpCount();
+        Counter.bumpTotalBumps();
         helper.finalize(message);
         message.channel.send(helper.buildRichMsg(msg));
 

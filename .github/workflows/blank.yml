@@ -1,0 +1,47 @@
+name: CICD
+
+on: [push]
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:5
+        env:
+          MYSQL_ROOT_PASSWORD: adminadmin
+        ports:
+          - 3307:3306
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup environment
+      run: |
+        curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+        sudo apt-get install -y nodejs make build-essential libkrb5-dev gcc
+        mkdir ~/.npm-global
+        npm config set prefix '~/.npm-global'
+        export PATH=~/.npm-global/bin:$PATH
+        npm i -g n
+        sudo n 10
+        npm i -g node-gyp
+        npm i -g yarn
+        npm i -g ts-mocha
+        npm i -g mocha
+        npm i -g typescript
+        npm i -g dotenv
+        yarn install
+    - name: Run tests
+      run: |
+        yarn test
+      env:
+        DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        DATABASE_USER: ${{ secrets.DATABASE_USER }}
+        DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+        DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+        SUGGEST_CHANNEL: ${{ secrets.SUGGEST_CHANNEL }}
+        TEST_SUGGEST_CHANNEL: ${{ secrets.TEST_SUGGEST_CHANNEL }}
+        BUGS_CHANNEL: ${{ secrets.BUGS_CHANNEL }}
+        TEST_BUGS_CHANNEL: ${{ secrets.TEST_BUGS_CHANNEL }}

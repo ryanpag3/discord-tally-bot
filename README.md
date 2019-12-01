@@ -67,6 +67,10 @@ For example, if I wanted to bump a **global** tally named *test*, I would issue 
 
 `!tb kw [name] [keyword] [description]` - Same as above.
 
+`!tb keyword dump [name] [keyword] [description]` - Every time the keyword is found, it will dump the tally automatically.
+
+`!tb kw dump [name] [keyword] [description]` - Same as above.
+
 `!tb describe [name] [description]` - Update a tally with a new description.
 
 `!tb update [name] [description]` - Same as above. 
@@ -86,6 +90,8 @@ For example, if I wanted to bump a **global** tally named *test*, I would issue 
 ### Admin
 
 `!tb empty [name]` - Empty a tally, setting counter to 0.
+
+`!tb empty-all` - Empty all channel or global tallies.
 
 `!tb set [name] [amount]` - set a tally to a specified amount
 
@@ -144,7 +150,7 @@ Command files are located in `./commands`. If you would like to add one you will
 2. import script in `bot.ts` in the appropriate section, adding a short comment on what it does
 3. initialize script by adding an event listener using the `emitter.on(prefix + command)` pattern
 
-## Example config-private.json
+## Example config-private
 ```
 {
     "token": "TOKEN_HERE",

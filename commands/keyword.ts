@@ -3,19 +3,24 @@ import {
 } from "discord.js";
 import cmdHelper from "../util/cmd-helper";
 import DB from '../util/db';
-import db from "../util/db";
 
-const Tally = DB.Tally;
+const db = new DB();
+const Tally = db.Tally;
 
 // register listener
 // create tally like normal
 // send res
 export default async (message: Message) => {
     const isGlobal = cmdHelper.isGlobalTallyMessage(message);
+    let isDump = false;
     let msg = message.content.split(' ');
     msg.shift(); // prefix
-    msg.shift(); // !tb keyword
+    msg.shift(); // keyword
     if (isGlobal) msg.shift(); // -g
+    if (msg[0] === 'dump') {
+        isDump = true;
+        msg.shift();
+    }
     const name = msg.shift();
     const keyword = msg.shift();
     const description = msg.shift() || 'no description';
@@ -35,13 +40,14 @@ export default async (message: Message) => {
     }
 
     try {
-        await DB.createTally(
+        await db.createTally(
             message.channel.id,
             message.guild.id,
             isGlobal,
             name,
             description,
-            keyword
+            keyword,
+            isDump === false // tally boolean is bumpOnKeyword so we negate the flag
         )
 
         let keywordMsg = '';
@@ -69,7 +75,7 @@ export default async (message: Message) => {
         }));
         console.log(`keyword tally  [${isGlobal ? 'G' : 'C'}] ${name} created.`);
     } catch (e) {
-        if (e.toString().toLowerCase().indexOf('uniqueconstrainterror') != -1) e = 'tally alread exists';
+        if (e.toString().toLowerCase().indexOf('uniqueconstrainterror') != -1) e = 'tally already exists';
         if (e.toString().toLowerCase().indexOf('incorrect string value') != -1) e = 'non-valid characters provided.';
         const err = `Failed to create keyword tally. Reason: ${e}`;
         console.log(err);

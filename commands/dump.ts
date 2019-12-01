@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import { increaseTotalDumpCount } from '../util/counter';
+import Counter from '../util/counter';
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
 
@@ -9,6 +9,7 @@ const USER_EMOJIS = [
 ]
 
 export default async (message: Message) => {
+    const db = new DB();
     const isGlobal = helper.isGlobalTallyMessage(message);
     const msg = message.content.split(' ');
     msg.shift(); // prefix
@@ -21,7 +22,7 @@ export default async (message: Message) => {
     console.log(`Dumping [${isGlobal ? 'G' : 'C'}] [${tallyName}] by ${dumpAmt || 1}`);
 
     try {
-        const tally = await DB.getTally(
+        const tally = await db.getTally(
             message.channel.id,
             message.guild.id,
             isGlobal,
@@ -34,7 +35,7 @@ export default async (message: Message) => {
         
         const previous = tally.count;
         const amount = dumpAmt ? dumpAmt : 1;
-        await DB.updateTally(
+        await db.updateTally(
             message.channel.id,
             message.guild.id,
             isGlobal,
@@ -52,10 +53,11 @@ export default async (message: Message) => {
             `
         }
 
-        increaseTotalDumpCount();
+        Counter.bumpTotalDumps();
         helper.finalize(message);
         message.channel.send(helper.buildRichMsg(msg));
     } catch (e) {
+        console.log(e);
         const failMsg = {
             description: `I couldn't dump **${tallyName}** because ${e}
             dump attempted by ${message.author.toString()}`

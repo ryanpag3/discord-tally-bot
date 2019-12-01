@@ -3,6 +3,7 @@ import DB from '../util/db';
 import helper from '../util/cmd-helper';
 
 export default async (message: Message) => {
+    const db = new DB();
     const isGlobal = helper.isGlobalTallyMessage(message);
     let content = helper.removePrefixCommand(message.content, 2);
     let cArr = content.split(' ');
@@ -12,7 +13,7 @@ export default async (message: Message) => {
     console.log(`Emptying tally [${isGlobal ? 'G' : 'C'}] [${tallyId}]`);
 
     try {
-        const tally = await DB.getTally(
+        const tally = await db.getTally(
             message.channel.id,
             message.guild.id,
             isGlobal,
@@ -20,10 +21,10 @@ export default async (message: Message) => {
         );
 
         if (!tally) {
-            throw `I could ould not find Tally with name: [${isGlobal ? 'G' : 'C'}]` + tallyId;
+            throw `I could not find Tally with name: [${isGlobal ? 'G' : 'C'}]` + tallyId;
         }
 
-        await DB.updateTally(
+        await db.updateTally(
             message.channel.id,
             message.guild.id,
             isGlobal,

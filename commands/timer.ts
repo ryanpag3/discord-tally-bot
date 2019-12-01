@@ -1,11 +1,12 @@
 import {
     Message
 } from "discord.js";
-import db from '../util/db';
+import DB from '../util/db';
 import helper from '../util/cmd-helper';
 
 // create a timer
 export default async (message: Message) => {
+    const db = new DB();
     let isDelete = false;
     let msg = message.content.split(' ');
     msg.shift(); // prefix

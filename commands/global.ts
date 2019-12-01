@@ -4,7 +4,8 @@ import {
 import helper from '../util/cmd-helper';
 import DB from '../util/db';
 
-const Tally = DB.Tally;
+const db = new DB();
+const Tally = db.Tally;
 
 export default async (message: Message) => {
     const msg = message.content.split(' ');
@@ -13,7 +14,7 @@ export default async (message: Message) => {
     const tallyName = msg.shift();
 
     try {
-        await DB.updateTally(
+        await db.updateTally(
             message.channel.id,
             message.guild.id,
             false,
@@ -24,7 +25,7 @@ export default async (message: Message) => {
         );
 
         const isGlobal = true;
-        const tally = await DB.getTally(
+        const tally = await db.getTally(
             message.channel.id,
             message.guild.id,
             true,
