@@ -3,6 +3,8 @@ services:
   tally-bot:
     image: tally-bot:latest
     network_mode: "host"
+    env_file:
+      - ./.env
     logging:
       driver: "json-file"
       options:

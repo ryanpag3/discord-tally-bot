@@ -5,11 +5,11 @@
     "main": "dist/bot.js",
     "scripts": {
         "build": "tsc",
-        "coverage": "export TEST_ENV=\"1\" && nyc mocha -r dotenv/config --recursive --exit ./**/*.test.ts",
         "start": "tsc && node -r source-map-support/register dist/bot.js",
         "start-w": "nodemon -e \".ts\" --exec \"tsc && node -r dotenv/config -r source-map-support/register dist/bot.js || true\"",
         "test": "export TEST_ENV=\"1\" && ts-mocha -r dotenv/config --recursive --exit ./**/*.test.ts",
-        "testp": "export TEST_ENV=\"1\" && ts-mocha -r dotenv/config --recursive --exit "
+        "coverage": "export TEST_ENV=\"1\" && nyc mocha -r dotenv/config --recursive --exit ./**/*.test.ts",
+        "run-test": "export TEST_ENV=\"1\" && ts-mocha -r dotenv/config --recursive --exit "
     },
     "repository": {
         "type": "git",

@@ -37,10 +37,10 @@ export default class CommandHandler {
         }
 
         if (Permissions.isPermissionCommand(mArr)) {
-            Permissions.setPermissionRole(message);
+            await Permissions.setPermissionRole(message);
             return;
         } else if (Permissions.isGlobalPermissionCommand(mArr)) {
-            Permissions.setAllPermissions(message);
+            await Permissions.setAllPermissions(message);
             return;
         }
 
