@@ -48,7 +48,7 @@ export default {
             .setColor(msg.color || '#5fcca4');
         
         if (!msg.fields)
-            return embed;
+            msg.fields = [];
         
         for (let field of msg.fields) {
             embed.addField(field.title, field.value || '-');
