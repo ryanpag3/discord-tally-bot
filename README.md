@@ -7,6 +7,12 @@ Tallies and timers are kept track of using a name which you specify when you cre
 
 Have fun! Don't forget to provide feedback using GitHub issues.
 
+## Tip Jar
+If you like Tally Bot and would like to see its continued support and development, feel free 
+to send some beer money this way -> https://paypal.me/ryanpage42
+
+This will help offset the cost of running the bot. Thank you 👊
+
 ## Changelog
 [Click here](https://github.com/ryanpage42/discord-tally-bot/blob/master/CHANGELOG.md)
 
@@ -135,7 +141,8 @@ All announcement schedules are run in `America/Los_Angeles` timezone. I have pla
 
 
 
-# Getting Started
+
+# Getting Started For Development
 ## Starting
 1. Install required dependancies with `npm i`
 2. Duplicate `private-config.template.json` to file named `private-config.json`

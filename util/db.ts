@@ -37,7 +37,8 @@ export default class DB {
             host: PrivateConfig.database.url,
             port: PrivateConfig.database.port,
             user: PrivateConfig.database.user,
-            password: PrivateConfig.database.password
+            password: PrivateConfig.database.password,
+            acquireTimeout: 1000000
         });
     }
 
