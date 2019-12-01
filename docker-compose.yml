@@ -1,8 +1,9 @@
 version: '3'
 services:
   tally-bot:
-    image: tally-bot:latest
+    image: ryanpage/internal:tally-bot
     network_mode: "host"
+    restart: always
     env_file:
       - ./.env
     logging:
