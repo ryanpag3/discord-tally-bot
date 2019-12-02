@@ -25,40 +25,76 @@ Cases where `[]` is shown should be replaced in its entirety with the value it r
 ## General
 `!tb` - This is the prefix. All commands should lead with this followed by a space. For example: `!tb show`
 
-`!tb help` - Get a list of commands.
+### **Get Help**
+This will send you back here.
 
-`!tb suggest [suggestion]` - Make a suggestion directly to support channel.
+    !tb help
 
-`!tb bug [bug report]` - Make a bug report directly to the support channel.
+### **Make a Feature Request**
+Want to see somethings added? Just use this command to open a request.
 
-`!tb report [bug report]` - Same as above.
+    !tb suggest [suggestion]
+
+    ---- examples ----
+    !tb suggest Have you tried not sucking?
+
+### **Make a Bug Report**
+Use this to let me know if there is anything messed up with the bot.
+
+    !tb bug [report]
+
+    !tb report [report]
+
+    ---- examples ----
+    !tb bug This bug is broken!
+
+    !tb report It's still broken!
 
 ## Permissions
 On installation, Tally Bot will allow any user to run any command. Admins can set permissions for commands to allow only users with a certain role to run them.
 
-`!tb -role [Role]` - Set all permissions to a specific role. Server administrators can **always** run this.
+### **Set All Permissions**
+Set all permissions to a specific server role. Server administrators can _always_ run this.
 
-`!tb [command] -role [Role]` - Set a specific command's role. Server administrators can **always** run this.
+    !tb -role [Role]
 
-`!tb permissions` - Display all current permissions.
+    ---- examples ----
+    !tb -role MyRole
 
-`!tb -role -role [Role]` - To allow users to grant permission access (global and per command)
+### **Set A Specific Permission**
+Set a permission for a specific command. Server administrators can _always_ run this.
+
+    !tb [command] -role [Role]
+
+    ---- examples ----
+    !tb bump -role MyRole
+
+### **Display Permissions**
+Display all current permissions.
+
+    !tb permissions
+
+    ---- examples ----
+    !tb permissions
+
+### **Granting Permission Admin Access**
+If you would like to grant users the ability to change permission levels, you can run the following. This is rather clunky and I have plans on improving this syntax, but it works. 😉
+
+    !tb -role -role [Role]
+
+    ---- examples ----
+    !tb -role -role MyRole
 
 ## Tallies
 
-### Channel vs Global
+### **Channel vs Global**
 Tallies are defined as *Channel Tallies* when initially created. You will see that identified by **[C]** in the relevant commands. You are also allowed to convert these to *Global Tallies* identified by **[G]**.
 
 All relevent tally commands can be either used for channel tallies or global tallies. Simply add `-g` after the command.
 
-`!tb global [name]` - Set a **channel** tally to be globally scoped.
-
-`!tb channel [name]` - Set a **global** tally to be channel scoped.
-
 For example, if I wanted to bump a **global** tally named *test*, I would issue this command
 
-`!tb bump -g test` 
-
+    !tb bump -g test
 
 ### **Create A Tally**
 Create a tally that has a specified _name_ and _description_. A name is a unique identifier that is used to increase or decrease the tally's _count_. Tally counts can be positive or negative.
@@ -96,11 +132,27 @@ This tally has all the attributes of a regular keyword tally, but will _decrease
     
     !tb kw dump my-kw-tally poisoned,cursed,dead Trigger everytime someone has been poisoned, cursed, or dies.
 
+### **Make a Tally Globally Visible**
+Convert a Tally to be globally scoped. If a tally already exists in the current global scope with the specified _name_ provided, then it will error.
+
+    !tb global [name]
+
+    ---- examples ----
+    !tb global my-tally
+
+### **Make a Tally Channel Visible**
+Convert a Tally to be channel scoped. If a tally already exists in the current global scope with the specified _name_ provided, then it will error.
+
+    !tb channel [name]
+
+    ---- examples ----
+    !tb channel my-tally
+
 ### **Change Tally Description**
 Update a tally's description. Note, this will work on all tally types.
 
     !tb describe [name] [description]
-
+    -or-
     !tb update [name] [description]
 
     ---- examples ----
@@ -112,7 +164,7 @@ Update a tally's description. Note, this will work on all tally types.
 Tallies can be increased by one (default) or by an amount.
 
     !tb bump [name]
-
+    -or-
     !tb bump [name] [amount]
 
     ---- example ----
@@ -124,7 +176,7 @@ Tallies can be increased by one (default) or by an amount.
 Tallies can be decreased by one (default) or by an amount.
 
     !tb dump [name]
-
+    -or-
     !tb dump [name] [amount]
 
     ---- example ----
@@ -165,7 +217,7 @@ Get the details of a created tally.
 Delete a tally. This actually, sincerely, will destroy the record in the database _permanently_. I do have plans to add a restore functionality but it's not implemented yet.
 
     !tb delete [name]
-
+    -or-
     !tb rm [name]
 
     ---- examples ----
@@ -192,40 +244,114 @@ You can also reset all tallies to 0.
 ## Announcements
 All announcement schedules are run in `America/Los_Angeles` timezone. I have plans to do channel specific timezones but it is low priority. Please schedule accordingly!
 
-### General
-`!tb announcements` - List all announcement created in this channel.
+### **Show Announcements**
+List all announcements created for this channel.
 
-### Manage
-`!tb announce [name] [description]` - Create a announcement with a required name and optional description. This can also be used to update the description of an existing announcement.
+    !tb announcements
 
-`!tb announce [name] -t [tally name] [tally goal]` - Set a specified tally amount in which to run the announcement.
+### **Create an Announcement**
+Create an announcement with a _name_ and _description_. This command can also be used to update the description of an existing announcement.
 
-`!tb announce [name] -d [date]` - Set a specified date for when to run the announcement. [See here for help](https://www.w3schools.com/js/js_date_formats.asp)
+    !tb announce [name] [description]
 
-`!tb announce [name] -d [cron]` - Set a valid cron expression to run the announcement. [See here for help](https://crontab.guru/)
+    ---- examples ----
+    !tb announce new-years In the future!
 
-`!tb announce [name] -kill` - Stop an announcement from running.
+### **Set Announcement Tally Goal**
+You can set an announcement to fire when a tally reaches a certain goal.
 
-`!tb announce [name] -delete` - Delete an announcement.
+    !tb announce [name] -t [tally name] [tally goal]
 
-`!tb announce [name] -activate` - Start an announcement. 
+    ---- examples ----
+    !tb announce new-record -t ryan-apm 9001
+
+### **Set an Announcement Date**
+You can also set an announcement to fire on a specific date. [See here for help](https://www.w3schools.com/js/js_date_formats.asp)
+
+    !tb announce [name] -d [date]
+
+    ---- examples ----
+    !tb announce new-years -d 01-01-2042
+
+### **Set an Announcement Cron**
+If you are looking to set a repeating announcement, then you can use cron expressions. [See here for help](https://crontab.guru/)
+
+    !tb announce [name] -d [cron]
+
+    ---- examples ----
+    !tb announce new-years -d 0 0 1 1 *
+
+### **Stop Announcement**
+Stop an announcement from running anymore.
+
+    !tb announce [name] -kill
+
+    ---- examples ----
+    !tb announce new-years -kill
+
+
+### **Delete Announcement**
+Delete an announcement from the database. 
+
+    !tb announce [name] -delete
+
+    ---- examples ----
+    !tb announce new-years -delete
+
+### **Activate Announcement**
+Activate an announcement to be able to run again.
+
+    !tb announce [name] -activate
+
+    ---- examples ----
+    !tb announce new-years -activate
 
 ## Timers
-### General
-`!tb timers` - List all timers created in this channel.
 
-### Manage
-`!tb timer [name] [description]` - Create a timer with a required name and optional description.
+### **List Timers**
+List all timers created in this channel.
 
-`!tb timer rm [name]` - Remove a timer
+    !tb timers 
 
-`!tb start [name]` - Start the timer.
+### **Create a Timer**
+Create a new timer with a _name_ and an optional _description_. 
 
-`!tb stop [name]` - Stop the timer.
+    !tb timer [name] [description]
 
-`!tb reset [name]` - Reset the timer to zero.
+    ---- examples ----
+    !tb timer my-timer It times stuff!
 
+### **Delete a Timer**
+Delete a timer from the database.
 
+    !tb timer rm [name]
+    
+    ---- examples ----
+    !tb timer rm my-timer
+
+### **Start a Timer**
+Start a timer.
+
+    !tb start [name]
+
+    ---- examples ----
+    !tb start my-timer
+
+### **Stop a Timer**
+Stop a timer.
+
+    !tb stop [name]
+
+    ---- examples ----
+    !tb stop my-timer
+
+### **Reset a Timer**
+Reset a timer to 0:00
+
+    !tb reset [name]
+
+    ---- examples ----
+    !tb reset my-timer
 
 
 # Getting Started For Development
