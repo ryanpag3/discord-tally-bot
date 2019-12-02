@@ -1,11 +1,7 @@
-# [TallyBot](https://discordbots.org/bot/494241511714586634)
-**Tally Bot** lets you keep track of stuff. Count points for teams, burps in chat, etc. 
+# [Tally Bot](https://top.gg/bot/494241511714586634)
+Tally Bot is built around keeping track of _stuff_. Like, how many times your coworker is late for a meeting, or how many times your guild wipes at 1%. Whatever you want. It also supports announcing events as well as timing whatever you want. It's highly customizable and 99.99% highly available 24/7.
 
-Track the length of time using timers and see how long it took Billy to make that taco run. 
-
-Tallies and timers are kept track of using a name which you specify when you create it, as well as an optional description. 
-
-Have fun! Don't forget to provide feedback using GitHub issues.
+Have fun! Don't forget to provide feedback using `!tb bug` or `!tb suggest` (see below for more info).
 
 ## Tip Jar
 If you like Tally Bot and would like to see its continued support and development, feel free 
@@ -19,127 +15,377 @@ This will help offset the cost of running the bot. Thank you 👊
 # Commands
 Cases where `[]` is shown should be replaced in its entirety with the value it represents. (i.e `!tb add my-tally` or `!tb rm my-tally`)
 
+- [General Commands](#General)
+  - [Get Help](#get-help)
+  - [Make a Feature Request](#make-a-feature-request)
+  - [Make a Bug Report](#make-a-bug-report)
+- [Permissions](#permissions)
+  - [Set All Permissions](#set-all-permissions)
+  - [Set a Specific Permission](#set-a-specific-permission)
+  - [Display Permissions](#display-permissions)
+  - [Grant Permission Granter](#granting-permission-admin-access)
+- [Tallies](#tallies)
+  - [Channel vs Global](#channel-vs-global)
+  - [Create a Tally](#create-a-tally)
+  - [Create a Keyword Tally](#create-a-keyword-tally)
+  - [Create a Keyword Dump Tally](#create-a-keyword-dump-tally)
+  - [Make Tally Globally Visible](#make-a-tally-globally-visible)
+  - [Make Tally Channel Visible](#make-a-tally-channel-visible)
+  - [Change Tally Description](#change-tally-description)
+  - [Increase Tally](#increase-a-tally)
+  - [Decrease Tally](#decrease-a-tally)
+  - [Set Tally Count](#set-a-tallys-count)
+  - [Show All Tallies](#show-all-tallies)
+  - [Get Tally Details](#get-tally-details)
+  - [Delete Tally](#delete-a-tally)
+  - [Reset Tally](#reset-tally-to-0)
+  - [Reset All Tallies](#reset-all-tallies-to-0)
+- [Announcements](#announcements)
+  - [Create Announcement](#create-an-announcement)
+  - [Set Announcement Tally Goal](#set-announcement-tally-goal)
+  - [Set Announcement Date Goal](#set-an-announcement-date)
+  - [Set Announcement Cron](#set-an-announcement-cron)
+  - [Stop Announcement](#stop-announcement)
+  - [Delete Announcement](#delete-announcement)
+  - [Activate Announcement](#activate-announcement)
+- [Timers](#timers)
+  - [List Timers](#list-timers)
+  - [Create Timer](#create-a-timer)
+  - [Delete a Timer](#delete-a-timer)
+  - [Start a Timer](#start-a-timer)
+  - [Stop a Timer](#stop-a-timer)
+  - [Reset a Timer](#reset-a-timer)
+
+## General
+`!tb` - This is the prefix. All commands should lead with this followed by a space. For example: `!tb show`
+
+### **Get Help**
+This will send you back here.
+
+    !tb help
+
+### **Make a Feature Request**
+Want to see somethings added? Just use this command to open a request.
+
+    !tb suggest [suggestion]
+
+    ---- examples ----
+    !tb suggest Have you tried not sucking?
+
+### **Make a Bug Report**
+Use this to let me know if there is anything messed up with the bot.
+
+    !tb bug [report]
+
+    !tb report [report]
+
+    ---- examples ----
+    !tb bug This bug is broken!
+
+    !tb report It's still broken!
+
 ## Permissions
 On installation, Tally Bot will allow any user to run any command. Admins can set permissions for commands to allow only users with a certain role to run them.
 
-`!tb -role [Role]` - Set all permissions to a specific role. Server administrators can **always** run this.
+### **Set All Permissions**
+Set all permissions to a specific server role. Server administrators can _always_ run this.
 
-`!tb [command] -role [Role]` - Set a specific command's role. Server administrators can **always** run this.
+    !tb -role [Role]
 
-`!tb permissions` - Display all current permissions.
+    ---- examples ----
+    !tb -role MyRole
 
-`!tb -role -role [Role]` - To allow users to grant permission access (global and per command)
+### **Set A Specific Permission**
+Set a permission for a specific command. Server administrators can _always_ run this.
+
+    !tb [command] -role [Role]
+
+    ---- examples ----
+    !tb bump -role MyRole
+
+### **Display Permissions**
+Display all current permissions.
+
+    !tb permissions
+
+    ---- examples ----
+    !tb permissions
+
+### **Granting Permission Admin Access**
+If you would like to grant users the ability to change permission levels, you can run the following. This is rather clunky and I have plans on improving this syntax, but it works. 😉
+
+    !tb -role -role [Role]
+
+    ---- examples ----
+    !tb -role -role MyRole
 
 ## Tallies
 
-### Scoping
+### **Channel vs Global**
 Tallies are defined as *Channel Tallies* when initially created. You will see that identified by **[C]** in the relevant commands. You are also allowed to convert these to *Global Tallies* identified by **[G]**.
 
 All relevent tally commands can be either used for channel tallies or global tallies. Simply add `-g` after the command.
 
-`!tb global [name]` - Set a **channel** tally to be globally scoped.
-
-`!tb channel [name]` - Set a **global** tally to be channel scoped.
-
 For example, if I wanted to bump a **global** tally named *test*, I would issue this command
 
-`!tb bump -g test` 
+    !tb bump -g test
 
-### Basic
+### **Create A Tally**
+Create a tally that has a specified _name_ and _description_. A name is a unique identifier that is used to increase or decrease the tally's _count_. Tally counts can be positive or negative.
 
-`!tb` - This is the prefix. All commands should lead with this followed by a space. For example: `!tb show`
+    !tb create [name] [description]
+    -or-
+    !tb add [name] [description]
 
-`!tb help` - Get a list of commands.
+    ---- examples ----
+    !tb create test-tally My tally that I will count things with.
+    
+    !tb add test-tally My tally that I will count things with.
 
-`!tb show` - List all tallies created in this channel.
+### **Create a Keyword Tally**
+Create a tally that has all the attributes of the above regular tally, but can be configured to increase or decrease based off of a _keyword_. A keyword is a word (or words) that will trigger this event.
 
-`!tb details [name]` - Get details of a tally.
+    !tb keyword [name] [keyword] [description]
+    -or-
+    !tb kw [name] [keyword] [description]
 
-`!tb get [name]` - Same as above.
+    ---- examples ----
+    !tb keyword my-kw-tally poisoned Trigger everytime someone has been poisoned.
+    
+    !tb kw my-kw-tally poisoned,cursed,dead Trigger everytime someone has been poisoned, cursed, or dies.
 
-`!tb suggest [suggestion]` - Make a suggestion directly to support channel.
+### **Create a Keyword Dump Tally**
+This tally has all the attributes of a regular keyword tally, but will _decrease_ the tally when the keyword event is fired.
 
-`!tb bug [bug report]` - Make a bug report directly to the support channel.
+    !tb keyword dump [name] [keyword] [description]
+    -or-
+    !tb kw dump [name] [keyword] [description]
 
-`!tb report [bug report]` - Same as above.
+    ---- examples ----
+    !tb keyword dump my-kw-tally poisoned Trigger everytime someone has been poisoned.
+    
+    !tb kw dump my-kw-tally poisoned,cursed,dead Trigger everytime someone has been poisoned, cursed, or dies.
 
-### Manage
+### **Make a Tally Globally Visible**
+Convert a Tally to be globally scoped. If a tally already exists in the current global scope with the specified _name_ provided, then it will error.
 
-`!tb create [name] [description]` - Add a new tally with a **required** name and _optional_ description.
+    !tb global [name]
 
-`!tb add [name] [description]` - Same as above.
+    ---- examples ----
+    !tb global my-tally
 
-`!tb keyword [name] [keyword] [description]` - Every time the keyword is found, it will bump the tally automatically.
+### **Make a Tally Channel Visible**
+Convert a Tally to be channel scoped. If a tally already exists in the current global scope with the specified _name_ provided, then it will error.
 
-`!tb kw [name] [keyword] [description]` - Same as above.
+    !tb channel [name]
 
-`!tb keyword dump [name] [keyword] [description]` - Every time the keyword is found, it will dump the tally automatically.
+    ---- examples ----
+    !tb channel my-tally
 
-`!tb kw dump [name] [keyword] [description]` - Same as above.
+### **Change Tally Description**
+Update a tally's description. Note, this will work on all tally types.
 
-`!tb describe [name] [description]` - Update a tally with a new description.
+    !tb describe [name] [description]
+    -or-
+    !tb update [name] [description]
 
-`!tb update [name] [description]` - Same as above. 
+    ---- examples ----
+    !tb describe my-tally Wow a brand new tally description!
 
-`!tb delete [name]` - Delete a tally.
+    !tb update my-tally Wow another brand new tally description!!! :)
 
-`!tb rm [name]` - Same as above.
+### **Increase a Tally**
+Tallies can be increased by one (default) or by an amount.
 
-`!tb bump [name]` - Bump a tally's counter.
+    !tb bump [name]
+    -or-
+    !tb bump [name] [amount]
 
-`!tb bump [name] [amount]` - Bump a tally a certain amount.
+    ---- example ----
+    !tb bump my-tally
 
-`!tb dump [name]` - ~~Decrease~~ Dump your tally one point!
+    !tb bump my-tally 100
 
-`!tb dump [name] [amount]` - Dump a tally a certain amount.
+### **Decrease a Tally**
+Tallies can be decreased by one (default) or by an amount.
 
-### Admin
+    !tb dump [name]
+    -or-
+    !tb dump [name] [amount]
 
-`!tb empty [name]` - Empty a tally, setting counter to 0.
+    ---- example ----
+    !tb dump my-tally
 
-`!tb empty-all` - Empty all channel or global tallies.
+    !tb dump my-tally 100
 
-`!tb set [name] [amount]` - set a tally to a specified amount
+### **Set a Tally's Count**
+Manually set a tally to be a specific count.
 
-**note:** I have on my wishlist to write a permissions feature. These most likely will be admin-only once that is complete.
+    !tb set [name] [count]
+
+    ---- examples ----
+    !tb set my-tally 100
+
+
+### **Show All Tallies**
+List all tallies created in this channel.
+
+    !tb show
+
+    ---- examples ----
+    !tb show
+
+### **Get Tally Details**
+Get the details of a created tally.
+
+    !tb details [name]
+     -or-
+    !tb get [name]
+
+    ---- examples ----
+    !tb details my-tally
+
+    !tb get my-tally
+
+### **Delete A Tally**
+Delete a tally. This actually, sincerely, will destroy the record in the database _permanently_. I do have plans to add a restore functionality but it's not implemented yet.
+
+    !tb delete [name]
+    -or-
+    !tb rm [name]
+
+    ---- examples ----
+    !tb delete my-tally
+
+    !tb rm my-tally
+
+### **Reset Tally to 0**
+You can empty a tally and set the value to 0.
+
+    !tb empty [name]
+
+    ---- examples ----
+    !tb empty my-tally
+
+### **Reset All Tallies to 0**
+You can also reset all tallies to 0.
+
+    !tb empty-all
+
+    ---- examples ----
+    !tb empty-all
 
 ## Announcements
 All announcement schedules are run in `America/Los_Angeles` timezone. I have plans to do channel specific timezones but it is low priority. Please schedule accordingly!
 
-### General
-`!tb announcements` - List all announcement created in this channel.
+### **Show Announcements**
+List all announcements created for this channel.
 
-### Manage
-`!tb announce [name] [description]` - Create a announcement with a required name and optional description. This can also be used to update the description of an existing announcement.
+    !tb announcements
 
-`!tb announce [name] -t [tally name] [tally goal]` - Set a specified tally amount in which to run the announcement.
+### **Create an Announcement**
+Create an announcement with a _name_ and _description_. This command can also be used to update the description of an existing announcement.
 
-`!tb announce [name] -d [date]` - Set a specified date for when to run the announcement. [See here for help](https://www.w3schools.com/js/js_date_formats.asp)
+    !tb announce [name] [description]
 
-`!tb announce [name] -d [cron]` - Set a valid cron expression to run the announcement. [See here for help](https://crontab.guru/)
+    ---- examples ----
+    !tb announce new-years In the future!
 
-`!tb announce [name] -kill` - Stop an announcement from running.
+### **Set Announcement Tally Goal**
+You can set an announcement to fire when a tally reaches a certain goal.
 
-`!tb announce [name] -delete` - Delete an announcement.
+    !tb announce [name] -t [tally name] [tally goal]
 
-`!tb announce [name] -activate` - Start an announcement. 
+    ---- examples ----
+    !tb announce new-record -t ryan-apm 9001
+
+### **Set an Announcement Date**
+You can also set an announcement to fire on a specific date. [See here for help](https://www.w3schools.com/js/js_date_formats.asp)
+
+    !tb announce [name] -d [date]
+
+    ---- examples ----
+    !tb announce new-years -d 01-01-2042
+
+### **Set an Announcement Cron**
+If you are looking to set a repeating announcement, then you can use cron expressions. [See here for help](https://crontab.guru/)
+
+    !tb announce [name] -d [cron]
+
+    ---- examples ----
+    !tb announce new-years -d 0 0 1 1 *
+
+### **Stop Announcement**
+Stop an announcement from running anymore.
+
+    !tb announce [name] -kill
+
+    ---- examples ----
+    !tb announce new-years -kill
+
+
+### **Delete Announcement**
+Delete an announcement from the database. 
+
+    !tb announce [name] -delete
+
+    ---- examples ----
+    !tb announce new-years -delete
+
+### **Activate Announcement**
+Activate an announcement to be able to run again.
+
+    !tb announce [name] -activate
+
+    ---- examples ----
+    !tb announce new-years -activate
 
 ## Timers
-### General
-`!tb timers` - List all timers created in this channel.
 
-### Manage
-`!tb timer [name] [description]` - Create a timer with a required name and optional description.
+### **List Timers**
+List all timers created in this channel.
 
-`!tb timer rm [name]` - Remove a timer
+    !tb timers 
 
-`!tb start [name]` - Start the timer.
+### **Create a Timer**
+Create a new timer with a _name_ and an optional _description_. 
 
-`!tb stop [name]` - Stop the timer.
+    !tb timer [name] [description]
 
-`!tb reset [name]` - Reset the timer to zero.
+    ---- examples ----
+    !tb timer my-timer It times stuff!
 
+### **Delete a Timer**
+Delete a timer from the database.
 
+    !tb timer rm [name]
+    
+    ---- examples ----
+    !tb timer rm my-timer
+
+### **Start a Timer**
+Start a timer.
+
+    !tb start [name]
+
+    ---- examples ----
+    !tb start my-timer
+
+### **Stop a Timer**
+Stop a timer.
+
+    !tb stop [name]
+
+    ---- examples ----
+    !tb stop my-timer
+
+### **Reset a Timer**
+Reset a timer to 0:00
+
+    !tb reset [name]
+
+    ---- examples ----
+    !tb reset my-timer
 
 
 # Getting Started For Development

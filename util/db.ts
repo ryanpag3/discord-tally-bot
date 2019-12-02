@@ -375,10 +375,10 @@ export default class DB {
 
         const promises = tallies.map(async tally => {
             if (tally.bumpOnKeyword === false) {
-                console.log(`keyword bump for tally ${tally.name}`)
+                console.log(`keyword dump for tally ${tally.name}`)
                 tally.count = tally.count - 1;
             } else {
-                console.log(`keyword dump for tally ${tally.name}`)
+                console.log(`keyword bump for tally ${tally.name}`)
                 tally.count = tally.count + 1;
             }
             return tally.save();
