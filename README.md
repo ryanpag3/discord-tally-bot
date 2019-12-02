@@ -1,11 +1,7 @@
-# [TallyBot](https://discordbots.org/bot/494241511714586634)
-**Tally Bot** lets you keep track of stuff. Count points for teams, burps in chat, etc. 
+# [Tally Bot](https://top.gg/bot/494241511714586634)
+Tally Bot is built around keeping track of _stuff_. Like, how many times your coworker is late for a meeting, or how many times your guild wipes at 1%. Whatever you want. It also supports announcing events as well as timing whatever you want. It's highly customizable and 99.99% highly available 24/7.
 
-Track the length of time using timers and see how long it took Billy to make that taco run. 
-
-Tallies and timers are kept track of using a name which you specify when you create it, as well as an optional description. 
-
-Have fun! Don't forget to provide feedback using GitHub issues.
+Have fun! Don't forget to provide feedback using `!tb bug` or `!tb suggest` (see below for more info).
 
 ## Tip Jar
 If you like Tally Bot and would like to see its continued support and development, feel free 
@@ -18,6 +14,24 @@ This will help offset the cost of running the bot. Thank you 👊
 
 # Commands
 Cases where `[]` is shown should be replaced in its entirety with the value it represents. (i.e `!tb add my-tally` or `!tb rm my-tally`)
+
+- [General Commands](#General)
+- [Permissions](#Permissions)
+- [Tallies](#Tallis)
+  - [Channel Tally vs. Global Tally](#Scoping)
+  - [Get Tally Info](#Basic)
+  - 
+
+## General
+`!tb` - This is the prefix. All commands should lead with this followed by a space. For example: `!tb show`
+
+`!tb help` - Get a list of commands.
+
+`!tb suggest [suggestion]` - Make a suggestion directly to support channel.
+
+`!tb bug [bug report]` - Make a bug report directly to the support channel.
+
+`!tb report [bug report]` - Same as above.
 
 ## Permissions
 On installation, Tally Bot will allow any user to run any command. Admins can set permissions for commands to allow only users with a certain role to run them.
@@ -32,7 +46,7 @@ On installation, Tally Bot will allow any user to run any command. Admins can se
 
 ## Tallies
 
-### Scoping
+### Channel vs Global
 Tallies are defined as *Channel Tallies* when initially created. You will see that identified by **[C]** in the relevant commands. You are also allowed to convert these to *Global Tallies* identified by **[G]**.
 
 All relevent tally commands can be either used for channel tallies or global tallies. Simply add `-g` after the command.
@@ -45,63 +59,135 @@ For example, if I wanted to bump a **global** tally named *test*, I would issue 
 
 `!tb bump -g test` 
 
-### Basic
 
-`!tb` - This is the prefix. All commands should lead with this followed by a space. For example: `!tb show`
+### **Create A Tally**
+Create a tally that has a specified _name_ and _description_. A name is a unique identifier that is used to increase or decrease the tally's _count_. Tally counts can be positive or negative.
 
-`!tb help` - Get a list of commands.
+    !tb create [name] [description]
+    -or-
+    !tb add [name] [description]
 
-`!tb show` - List all tallies created in this channel.
+    ---- examples ----
+    !tb create test-tally My tally that I will count things with.
+    
+    !tb add test-tally My tally that I will count things with.
 
-`!tb details [name]` - Get details of a tally.
+### **Create a Keyword Tally**
+Create a tally that has all the attributes of the above regular tally, but can be configured to increase or decrease based off of a _keyword_. A keyword is a word (or words) that will trigger this event.
 
-`!tb get [name]` - Same as above.
+    !tb keyword [name] [keyword] [description]
+    -or-
+    !tb kw [name] [keyword] [description]
 
-`!tb suggest [suggestion]` - Make a suggestion directly to support channel.
+    ---- examples ----
+    !tb keyword my-kw-tally poisoned Trigger everytime someone has been poisoned.
+    
+    !tb kw my-kw-tally poisoned,cursed,dead Trigger everytime someone has been poisoned, cursed, or dies.
 
-`!tb bug [bug report]` - Make a bug report directly to the support channel.
+### **Create a Keyword Dump Tally**
+This tally has all the attributes of a regular keyword tally, but will _decrease_ the tally when the keyword event is fired.
 
-`!tb report [bug report]` - Same as above.
+    !tb keyword dump [name] [keyword] [description]
+    -or-
+    !tb kw dump [name] [keyword] [description]
 
-### Manage
+    ---- examples ----
+    !tb keyword dump my-kw-tally poisoned Trigger everytime someone has been poisoned.
+    
+    !tb kw dump my-kw-tally poisoned,cursed,dead Trigger everytime someone has been poisoned, cursed, or dies.
 
-`!tb create [name] [description]` - Add a new tally with a **required** name and _optional_ description.
+### **Change Tally Description**
+Update a tally's description. Note, this will work on all tally types.
 
-`!tb add [name] [description]` - Same as above.
+    !tb describe [name] [description]
 
-`!tb keyword [name] [keyword] [description]` - Every time the keyword is found, it will bump the tally automatically.
+    !tb update [name] [description]
 
-`!tb kw [name] [keyword] [description]` - Same as above.
+    ---- examples ----
+    !tb describe my-tally Wow a brand new tally description!
 
-`!tb keyword dump [name] [keyword] [description]` - Every time the keyword is found, it will dump the tally automatically.
+    !tb update my-tally Wow another brand new tally description!!! :)
 
-`!tb kw dump [name] [keyword] [description]` - Same as above.
+### **Increase a Tally**
+Tallies can be increased by one (default) or by an amount.
 
-`!tb describe [name] [description]` - Update a tally with a new description.
+    !tb bump [name]
 
-`!tb update [name] [description]` - Same as above. 
+    !tb bump [name] [amount]
 
-`!tb delete [name]` - Delete a tally.
+    ---- example ----
+    !tb bump my-tally
 
-`!tb rm [name]` - Same as above.
+    !tb bump my-tally 100
 
-`!tb bump [name]` - Bump a tally's counter.
+### **Decrease a Tally**
+Tallies can be decreased by one (default) or by an amount.
 
-`!tb bump [name] [amount]` - Bump a tally a certain amount.
+    !tb dump [name]
 
-`!tb dump [name]` - ~~Decrease~~ Dump your tally one point!
+    !tb dump [name] [amount]
 
-`!tb dump [name] [amount]` - Dump a tally a certain amount.
+    ---- example ----
+    !tb dump my-tally
 
-### Admin
+    !tb dump my-tally 100
 
-`!tb empty [name]` - Empty a tally, setting counter to 0.
+### **Set a Tally's Count**
+Manually set a tally to be a specific count.
 
-`!tb empty-all` - Empty all channel or global tallies.
+    !tb set [name] [count]
 
-`!tb set [name] [amount]` - set a tally to a specified amount
+    ---- examples ----
+    !tb set my-tally 100
 
-**note:** I have on my wishlist to write a permissions feature. These most likely will be admin-only once that is complete.
+
+### **Show All Tallies**
+List all tallies created in this channel.
+
+    !tb show
+
+    ---- examples ----
+    !tb show
+
+### **Get Tally Details**
+Get the details of a created tally.
+
+    !tb details [name]
+     -or-
+    !tb get [name]
+
+    ---- examples ----
+    !tb details my-tally
+
+    !tb get my-tally
+
+### **Delete A Tally**
+Delete a tally. This actually, sincerely, will destroy the record in the database _permanently_. I do have plans to add a restore functionality but it's not implemented yet.
+
+    !tb delete [name]
+
+    !tb rm [name]
+
+    ---- examples ----
+    !tb delete my-tally
+
+    !tb rm my-tally
+
+### **Reset Tally to 0**
+You can empty a tally and set the value to 0.
+
+    !tb empty [name]
+
+    ---- examples ----
+    !tb empty my-tally
+
+### **Reset All Tallies to 0**
+You can also reset all tallies to 0.
+
+    !tb empty-all
+
+    ---- examples ----
+    !tb empty-all
 
 ## Announcements
 All announcement schedules are run in `America/Los_Angeles` timezone. I have plans to do channel specific timezones but it is low priority. Please schedule accordingly!
