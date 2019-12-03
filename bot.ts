@@ -9,7 +9,6 @@ import cmdHelper from './util/cmd-helper';
 import CommandHandler from './util/command-handler.js';
 import Counter from './util/counter';
 
-
 const bot = new Discord.Client();
 const commandHandler = new CommandHandler(bot);
 
@@ -25,9 +24,6 @@ let inviteCache = {};
 bot.on('ready', async () => {
     console.log(`Tally Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);
     setTimeout(() => startBroadcasting(), 5000);
-
-
-
     CronAnnouncer.setBot({
         bot: bot
     });
@@ -124,4 +120,5 @@ const startBroadcasting = () => {
         i++;
     }, process.env.NODE_ENV == 'production' ? Config.status.interval : Config.status.interval_dev);
 }
+
 

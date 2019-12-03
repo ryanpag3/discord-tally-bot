@@ -2,6 +2,7 @@ import { Message } from 'discord.js';
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
 import Counter from '../util/counter';
+import cmdHelper from '../util/cmd-helper';
 
 const USER_EMOJIS = [
     ':spy:', ':upside_down:', ':poop:', ':ghost:', ':astonished:', ':pray:', ':fist:',
@@ -12,6 +13,7 @@ export default async (message: Message) => {
     const db = new DB();
     const isGlobal = helper.isGlobalTallyMessage(message);
     const msg = message.content.split(' ');
+    const cmd = msg[0] + ' ' + msg[1];
     msg.shift(); // rm prefix
     msg.shift(); // rm command
     if (isGlobal) msg.shift() // -g
@@ -45,17 +47,17 @@ export default async (message: Message) => {
         );
 
         const description = tally.description && tally.description != '' ? tally.description : undefined;
-        const msg = {
-            description: `
-            [${isGlobal ? 'G' : 'C'}] **${tally.name}** | **${previous}** >>> **${tally.count}** ${(description ? '\n• _' + description + '_' : '')}
 
-            ${helper.getRandomPhrase(USER_EMOJIS)} **${message.author.toString()}**
-            `
-        }
+        const richEmbed = cmdHelper.getRichEmbed()
+            .setTitle(`${cmd}`)
+            .setDescription(`
+                ${isGlobal ? '[G]' : '[C]'} ${tally.name} | **${previous}** >>> **${tally.count}** \n\n\`!tb get ${tally.name}\` for tally info.
+            `)
+            .setFooter(`${message.author.username}`);
 
         Counter.bumpTotalBumps();
         helper.finalize(message);
-        message.channel.send(helper.buildRichMsg(msg));
+        message.channel.send(richEmbed);
 
     } catch (e) {
         console.log(e);
