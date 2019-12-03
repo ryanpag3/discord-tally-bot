@@ -1,4 +1,4 @@
-import Discord, { Message } from 'discord.js';
+import Discord, { Message, Guild } from 'discord.js';
 import DBL from 'dblapi.js';
 import Config from './config';
 import ConfigPrivate from './config-private';
@@ -20,9 +20,14 @@ if (process.env.NODE_ENV == 'production') // don't POST stats in dev
 const db = new DB();
 db.init();
 
+let inviteCache = {};
+
 bot.on('ready', async () => {
     console.log(`Tally Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);
     setTimeout(() => startBroadcasting(), 5000);
+
+
+
     CronAnnouncer.setBot({
         bot: bot
     });
@@ -57,6 +62,19 @@ bot.on('message', async (message: Message) => {
             message.channel.send(cmdHelper.buildRichMsg(richEmbed));
         }
     }
+});
+
+bot.on('guildCreate', async (guild: Guild) => {
+    await guild.owner.send(`
+    Thank you for adding Tally Bot to your server. :fist: If you did not add me, then
+    someone has invited me to your server on your behalf.
+
+    For help and commands https://github.com/ryanpag3/discord-tally-bot/blob/master/README.md
+
+    Please take 5 seconds to upvote the bot here https://top.gg/bot/494241511714586634/vote
+
+    I am always looking to improve the bot, please feel free to send feedback!
+    `)
 });
 
 process.on('unhandledRejection', (e: any) => {
