@@ -51,7 +51,7 @@ describe('bump command', function() {
         fakeMessage.content = command + ' ' + TALLY_NAME;
         commandHandler.emit(command, fakeMessage);
         await Bluebird.delay(15);
-        expect(fakeMessage.channel.send.getCall(0).lastArg.description).contains('I couldn\'t find it'); 
+        expect(fakeMessage.channel.send.getCall(0).lastArg.description).contains('Could not find tally'); 
     });
 
     it('should increase the total bump counter', async function() {

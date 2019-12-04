@@ -1,6 +1,7 @@
 import { Message } from 'discord.js';
-import cmdHelper from '../util/cmd-helper';
+import CmdHelper from '../util/cmd-helper';
 import DB from '../util/db';
+import Counter from '../util/counter';
 
 export default class TallyCommon {
     static db = new DB();
@@ -9,7 +10,6 @@ export default class TallyCommon {
      * Execute a bump command
      */
     static async runBump(message: Message) {
-        // log
         return await this.bumpOrDump(true, message);
     }
 
@@ -17,7 +17,6 @@ export default class TallyCommon {
      * Execute a dump command
      */
     static async runDump(message: Message) {
-        // log
         return await this.bumpOrDump(false, message);
     }
 
@@ -25,27 +24,45 @@ export default class TallyCommon {
      * Execute either a bump or dump depending on isBump
      */
     static async bumpOrDump(isBump: boolean, message: Message) {
+        let richEmbed;
         try {
-            const channelId = message.channel.id;
-            const serverId = message.guild.id;
-            const { isGlobal, command, tallyName, amount } = this.unMarshallBumpDump(message);
-            console.log(`${this.getBumpOrDump(isBump, 'ing')} ${tallyName} by ${amount}`);
+            const { isGlobal, command, tallyName, amount, channelId, serverId } = this.unMarshallBumpDump(message);
             const tally = await this.db.getTally(message.channel.id, message.guild.id, isGlobal, tallyName);
-            if (!tally) throw new Error(`Could not find tally to ${this.getBumpOrDump(isBump)}`);
+            if (!tally) throw new Error(`Could not find tally named **${tallyName}**.`);
             const previous = tally.count;
-            await this.updateTallyByAmount(channelId, serverId, isGlobal, tallyName, previous, amount);
+            await this.updateTallyByAmount(isBump, channelId, serverId, isGlobal, tallyName, previous, amount);
             await tally.reload();
+            
             console.log(`
             ${this.getBumpOrDump(isBump, 'ed')} ${tallyName}
             ------------------
             ${previous} >>> ${tally.count}
+            channel ID: ${channelId}
+            server ID: ${serverId}    
+            user: ${message.author.tag}
             `)
+            
+            richEmbed = CmdHelper.getRichEmbed(message.author.username)
+                .setTitle(`${isBump ? ':small_red_triangle:' : ':small_red_triangle_down:'} ${command}`)
+                .setDescription(`${isGlobal ? '[G]' : '[C]'} ${tally.name} | **${previous}** >>> **${tally.count}** \n\n${this.getTallyDescription(tally)}`);
+            
+            if (isBump)
+                await Counter.bumpTotalBumps();
+            else
+                await Counter.bumpTotalDumps();
         } catch (e) {
-            // top-level catch and response
+            console.log(`Error while running bumpOrDump: ` + e);
+            richEmbed = CmdHelper.getRichEmbed(message.author.username)
+                .setTitle(`I could not ${this.getBumpOrDump(isBump)}.`)
+                .setDescription(`${e.message}`);
         }
+
+        if (richEmbed)
+            message.channel.send(richEmbed);
+        CmdHelper.finalize(message);
     }
 
-    static async updateTallyByAmount(channelId: string, 
+    static async updateTallyByAmount(isBump: boolean, channelId: string, 
         serverId: string, isGlobal: boolean, tallyName: string, previousAmount: number, amount: number) {
             await this.db.updateTally(
                 channelId,
@@ -53,7 +70,7 @@ export default class TallyCommon {
                 isGlobal,
                 tallyName,
                 {
-                    count: previousAmount + amount
+                    count: isBump ? previousAmount + amount : previousAmount - amount
                 }
             )
     }
@@ -69,7 +86,7 @@ export default class TallyCommon {
      */
     static unMarshallBumpDump(message: Message) {
         const split = message.content.split(' ');
-        const isGlobal = cmdHelper.isGlobalTallyMessage(message);
+        const isGlobal = CmdHelper.isGlobalTallyMessage(message);
         const command = `${split[0]} ${split[1]}`;
         if (isGlobal) split.splice(2, 1);
         const tallyName = split[2];
@@ -79,7 +96,13 @@ export default class TallyCommon {
             isGlobal,
             command,
             tallyName,
-            amount
+            amount,
+            channelId: message.channel.id,
+            serverId: message.guild.id
         };
+    }
+
+    static getTallyDescription(tally: any) {
+        return tally.description ? CmdHelper.truncate(tally.description, 128) : 'No description.';
     }
 }

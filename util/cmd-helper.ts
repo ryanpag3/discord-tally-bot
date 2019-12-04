@@ -57,10 +57,13 @@ export default {
         return embed;
     },
 
-    getRichEmbed:() => {
-        return new Discord.RichEmbed()
+    getRichEmbed:(username?: string) => {
+        const richEmbed = new Discord.RichEmbed()
             .setTimestamp()
             .setColor('#5fcca4');
+        if (username)
+            richEmbed.setFooter(username);
+        return richEmbed;
     },
 
     /**

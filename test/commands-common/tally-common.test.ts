@@ -12,7 +12,7 @@ describe('tally-common.ts', function() {
     })
 
     beforeEach(async () => {
-        // await Counter.init();
+        await Counter.init();
     });
 
     afterEach(async () => {
@@ -72,10 +72,20 @@ describe('tally-common.ts', function() {
     });
 
     it('should bump a tally', async function() {
-        
         let msg = TestHelper.getFakeMessage();
         msg.content = `!tb bump test`;
-        await db.createTally(msg.getChannelId(), msg.getGuildId(), false, 'test', '');
+        const tally = await db.createTally(msg.getChannelId(), msg.getGuildId(), false, 'test', '');
         await TallyCommon.runBump(msg as any);
+        await tally.reload();
+        expect(tally.count).eqls(1);
+    })
+
+    it('should bump a tally by count', async function() {
+        let msg = TestHelper.getFakeMessage();
+        msg.content = `!tb bump test 100`;
+        const tally = await db.createTally(msg.getChannelId(), msg.getGuildId(), false, 'test', '');
+        await TallyCommon.runBump(msg as any);
+        await tally.reload();
+        expect(tally.count).eqls(100);
     })
 });
