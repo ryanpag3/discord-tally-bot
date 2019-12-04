@@ -35,7 +35,7 @@ export default class PatchAnnouncer {
 
     static sendPatchMsg(channel) {
         const richEmbed = {
-            title: `:camera_with_flash: Tally Bot has been updated to v.${PatchAnnouncer.getCurrentVersion()} while you were gone!`,
+            title: `:camera_with_flash: Tally Bot has been updated to v.${PatchAnnouncer.getCurrentVersion()}`,
             description: `See patch notes here: https://github.com/ryanpage42/discord-tally-bot/blob/master/CHANGELOG.md` +
                 `\nThese alerts will only trigger once per update, per server.` +
                 `\nDisable/Enable alerts with \`!tb patchnotes -off\` and \`!tb patchnotes -on\``

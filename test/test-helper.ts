@@ -13,7 +13,9 @@ export default class TestHelper {
             guild: {
                 id: '1'
             },
-            author: 'Ryan Page',
+            author: {
+                tag: 'Ryan Page'
+            },
             delete: sinon.fake(),
             content: content || null,
             getLastChannelCall: null,
