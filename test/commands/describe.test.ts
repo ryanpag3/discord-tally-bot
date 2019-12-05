@@ -1,6 +1,4 @@
-import Bluebird from 'bluebird';
 import { expect } from 'chai';
-import empty from '../../commands/empty';
 import TestHelper from '../test-helper';
 import DB from '../../util/db';
 import Counter from '../../util/counter';

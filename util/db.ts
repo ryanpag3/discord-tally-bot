@@ -586,4 +586,12 @@ export default class DB {
             totTime: null
         });
     }
+
+    /**
+     * Base 64 a tally description and save it
+     */
+    async saveTally(tally: any) {
+        tally.description = Buffer.from(tally.description).toString('base64');
+        await tally.save();
+    }
 }

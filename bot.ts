@@ -13,7 +13,8 @@ const bot = new Discord.Client();
 const commandHandler = new CommandHandler(bot);
 
 let dbl;
-if (process.env.NODE_ENV == 'production') // don't POST stats in dev
+if (process.env.NODE_ENV == 'production')
+    // don't POST stats in dev
     dbl = new DBL(ConfigPrivate.dbots_token, bot);
 
 const db = new DB();
@@ -22,6 +23,7 @@ db.init();
 let inviteCache = {};
 
 bot.on('ready', async () => {
+    try {
     console.log(`Tally Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);
     setTimeout(() => startBroadcasting(), 5000);
     CronAnnouncer.setBot({
@@ -30,12 +32,15 @@ bot.on('ready', async () => {
     CronAnnouncer.initCronJobs();
     await db.initServers(bot.guilds);
     await db.normalizeTallies(bot.channels);
+} catch (e) {
+    console.log(`An error occured while running post-launch behavior ${e}`)
+    }
 });
 
 bot.on('message', async (message: Message) => {
     try {
         if (message.channel.type == 'dm') {
-            console.log(`PM received: ${message.content}`)
+            console.log(`PM received: ${message.content}`);
             return;
         }
 
@@ -70,12 +75,29 @@ bot.on('guildCreate', async (guild: Guild) => {
     Please take 5 seconds to upvote the bot here https://top.gg/bot/494241511714586634/vote
 
     I am always looking to improve the bot, please feel free to send feedback!
-    `)
+    `);
+});
+
+bot.on('error', function(error) {
+    console.error(`client's WebSocket encountered a connection error: ${JSON.stringify(error)}`);
+});
+
+bot.on('warn', function(info) {
+    console.log(`warn: ${info}`);
+});
+
+bot.on('reconnecting', function(info) {
+    console.log(`reconnecting`);
+});
+
+bot.on('disconnect', function(event) {
+    console.log(`The WebSocket has closed and will no longer attempt to reconnect`);
+    process.exit(1);
 });
 
 process.on('unhandledRejection', (e: any) => {
     console.error(e);
-})
+});
 
 /**
  * INIT
@@ -86,18 +108,17 @@ bot.login(ConfigPrivate.token);
  * start status broadcasting
  */
 const startBroadcasting = () => {
-    if (bot.user == null)
-        process.exit(1);
+    if (bot.user == null) process.exit(1);
 
     const statusGenerators = [
         () => {
             let users = 0;
-            bot.guilds.map(guild => users += guild.members.size);
+            bot.guilds.map(guild => (users += guild.members.size));
             bot.user.setActivity(`Counting things for ${bot.guilds.size} servers and ${users} users.`);
             if (dbl) dbl.postStats(bot.guilds.size);
         },
         () => {
-            bot.user.setActivity(`!tb help for commands.`)
+            bot.user.setActivity(`!tb help for commands.`);
         },
         async () => {
             const tallyCnt = await db.getTallyCount();
@@ -114,11 +135,12 @@ const startBroadcasting = () => {
     ];
 
     let i = 0;
-    setInterval(() => {
-        if (i == statusGenerators.length) i = 0;
-        statusGenerators[i]();
-        i++;
-    }, process.env.NODE_ENV == 'production' ? Config.status.interval : Config.status.interval_dev);
-}
-
-
+    setInterval(
+        () => {
+            if (i == statusGenerators.length) i = 0;
+            statusGenerators[i]();
+            i++;
+        },
+        process.env.NODE_ENV == 'production' ? Config.status.interval : Config.status.interval_dev
+    );
+};

@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import TestHelper from '../test-helper';
 import DB from '../../util/db';
 import Counter from '../../util/counter';
-import set from '../../commands/set';
+import TallyHandler from '../../command-handlers/tally-handler';
 
 describe('set command', function() {
     const TALLY_NAME = 'set-test';
@@ -30,14 +30,14 @@ describe('set command', function() {
         const fakeMsg = TestHelper.getFakeMessage();
         fakeMsg.content = `!tb set ${TALLY_NAME} 100`;
         await db.createTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, 'woop');
-        await set(fakeMsg as any);
+        await TallyHandler.runSet(fakeMsg as any);
         expect(JSON.stringify(fakeMsg.channel.send.getCall(0).lastArg)).contains('woop'); 
     });
 
     it('should respond with a warning if tally doesnt exist', async function() {
         const fakeMessage = TestHelper.getFakeMessage();
         fakeMessage.content = `!tb set ${TALLY_NAME} 42`;
-        await set(fakeMessage as any);
-        expect(fakeMessage.channel.send.getCall(0).lastArg.description).contains('doesn\'t exist'); 
+        await TallyHandler.runSet(fakeMessage as any);
+        expect(fakeMessage.channel.send.getCall(0).lastArg.description).contains('Could not find'); 
     });
 });

@@ -62,7 +62,7 @@ export default {
             .setTimestamp()
             .setColor('#5fcca4');
         if (username)
-            richEmbed.setFooter(username);
+            richEmbed.setFooter(`${username}`);
         return richEmbed;
     },
 
