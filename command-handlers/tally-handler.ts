@@ -83,6 +83,10 @@ export default class TallyHandler {
         return action;
     }
 
+    static getIsGlobalIcon(isGlobal: boolean) {
+        return `[${isGlobal ? 'G' : 'C'}]`;
+    }
+
     /**
      * demarshall bump/dump command into object
      */
@@ -196,7 +200,7 @@ export default class TallyHandler {
             `);
             richEmbed = CmdHelper.getRichEmbed(message.author.username)
                 .setTitle(`:bar_chart: ${command}`)
-                .setDescription(`**name:** ${tallyName}\n\n**description:** ${description}\n\nfor commands: [click here](https://github.com/ryanpag3/discord-tally-bot/blob/master/README.md)`);
+                .setDescription(`**name:** ${TallyHandler.getIsGlobalIcon(isGlobal)} ${tallyName}\n\n**description:** ${description}\n\nfor commands: [click here](https://github.com/ryanpag3/discord-tally-bot/blob/master/README.md)`);
         } catch (e) {
             if (e.toString().toLowerCase().includes('validation error'))
                 e = `Tally already exists.`;
@@ -204,6 +208,44 @@ export default class TallyHandler {
             richEmbed = CmdHelper.getRichEmbed(message.author.username)
                 .setTitle(`:bar_chart: ${command}`)
                 .setDescription(`I could not create **${tallyName}**. Reason: ${e}`);
+        }
+        if (richEmbed) message.channel.send(richEmbed);
+        CmdHelper.finalize(message);
+    }
+
+    static async runDelete(message: Message) {
+        const { isGlobal, command, tallyName, channelId, serverId } = TallyHandler.unMarshall(message);
+        let richEmbed;
+        try {
+            await TallyHandler.db.deleteTally(channelId, serverId, isGlobal, tallyName);
+            richEmbed = CmdHelper.getRichEmbed(message.author.username)
+                .setTitle(`:wastebasket: ${command}`)
+                .setDescription(`${TallyHandler.getIsGlobalIcon(isGlobal)} **${tallyName}** has been destroyed.`);
+        } catch (e) {
+            console.log(e);
+            richEmbed = CmdHelper.getRichEmbed(message.author.username)
+                .setTitle(`:wastebasket: ${command}`)
+                .setDescription(`I could not delete **${tallyName}**. Reason: ${e.message}`);
+        }
+        if (richEmbed) message.channel.send(richEmbed);
+        CmdHelper.finalize(message);
+    }
+
+    static async runDescribe(message: Message) {
+        let richEmbed;
+        const { isGlobal, command, tallyName, channelId, serverId, description } = TallyHandler.unMarshall(message);
+        try {
+            const tally = await TallyHandler.db.getTally(channelId, serverId, isGlobal, tallyName);
+            if (!tally) throw new Error(`Could not find tally with name **${tallyName}**.`);
+            await TallyHandler.db.setTallyDescription(channelId, serverId, isGlobal, tallyName, description);
+            richEmbed = CmdHelper.getRichEmbed(message.author.username)
+                .setTitle(`:pencil2: ${command}`)
+                .setDescription(`${TallyHandler.getIsGlobalIcon(isGlobal)} **${tallyName}'s** description is now\n\n${description}`);
+        } catch (e) {
+            console.log(e);
+            richEmbed = CmdHelper.getRichEmbed(message.author.username)
+                .setTitle(`:pencil2: ${command}`)
+                .setDescription(`I could not describe **${tallyName}**. Reason: ${e.message}`);
         }
         if (richEmbed) message.channel.send(richEmbed);
         CmdHelper.finalize(message);

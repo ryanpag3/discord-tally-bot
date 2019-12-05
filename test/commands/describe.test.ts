@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import TestHelper from '../test-helper';
 import DB from '../../util/db';
 import Counter from '../../util/counter';
-import describeCmd from '../../commands/describe';
+import TallyHandler from '../../command-handlers/tally-handler';
 
 describe('describe command', function() {
     const TALLY_NAME = 'empty-test';
@@ -31,7 +31,7 @@ describe('describe command', function() {
         const desc = 'newdesc';
         fakeMsg['content'] = `!tb describe ${TALLY_NAME} ${desc}`;
         const tally = await db.createTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, '');
-        await describeCmd(fakeMsg as any);
+        await TallyHandler.runDescribe(fakeMsg as any);
         await tally.reload();
         expect(tally.description).not.eqls('');
     });
@@ -40,7 +40,7 @@ describe('describe command', function() {
         const command = `!tb describe ${TALLY_NAME} doesnt matter`;
         const fakeMessage = TestHelper.getFakeMessage();
         fakeMessage.content = command + ' ' + TALLY_NAME;
-        await describeCmd(fakeMessage as any);
+        await TallyHandler.runDescribe(fakeMessage as any);
         expect(fakeMessage.channel.send.getCall(0).lastArg.description).contains('could not find'); 
     });
 });

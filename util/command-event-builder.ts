@@ -6,11 +6,9 @@ import test from '../commands/test';
 import help from '../commands/help';
 import show from '../commands/show';
 import keyword from '../commands/keyword';
-import del from '../commands/delete';
 import emptyAll from '../commands/empty-all';
 import rmall from '../commands/rmall';
 import details from '../commands/details';
-import describe from '../commands/describe';
 import timer from '../commands/timer';
 import start from '../commands/start';
 import stop from '../commands/stop';
@@ -57,8 +55,8 @@ export default class CommandEventBuilder {
             emitter.on(Config.prefix + Commands.KW, keyword);
 
             // delete a tally
-            emitter.on(Config.prefix + Commands.DELETE, del);
-            emitter.on(Config.prefix + Commands.RM, del);
+            emitter.on(Config.prefix + Commands.DELETE, TallyHandler.runDelete);
+            emitter.on(Config.prefix + Commands.RM, TallyHandler.runDelete);
 
             // bump a tally's count up
             emitter.on(Config.prefix + Commands.BUMP, TallyHandler.runBump);
@@ -80,8 +78,8 @@ export default class CommandEventBuilder {
             emitter.on(Config.prefix + Commands.GET, details);
 
             // set tally description
-            emitter.on(Config.prefix + Commands.DESCRIBE, describe);
-            emitter.on(Config.prefix + Commands.UPDATE, describe);
+            emitter.on(Config.prefix + Commands.DESCRIBE, TallyHandler.runDescribe);
+            emitter.on(Config.prefix + Commands.UPDATE, TallyHandler.runDescribe);
 
             // create a timer
             emitter.on(Config.prefix + Commands.TIMER, timer);
