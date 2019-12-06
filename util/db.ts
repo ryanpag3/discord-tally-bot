@@ -269,16 +269,13 @@ export default class DB {
         return await tally.update(updateObj);
     }
 
-    async updateTallies(serverId: string, update: any, channelId?: string) {
+    async updateTallies(serverId: string, channelId: string, isGlobal: boolean, update: any, ) {
         const where: any = {
             serverId,
-            isGlobal: true
+            channelId,
+            isGlobal
         }
-        if (channelId) {
-            where.isGlobal = false;
-            where.channelId = channelId;
-        }
-
+        if (isGlobal) delete where.channelId;
         await this.Tally.update(update, {
             where
         });

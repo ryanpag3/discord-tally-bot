@@ -6,7 +6,6 @@ import test from '../commands/test';
 import help from '../commands/help';
 import show from '../commands/show';
 import keyword from '../commands/keyword';
-import emptyAll from '../commands/empty-all';
 import rmall from '../commands/rmall';
 import details from '../commands/details';
 import timer from '../commands/timer';
@@ -68,7 +67,7 @@ export default class CommandEventBuilder {
             emitter.on(Config.prefix + Commands.EMPTY, TallyHandler.runEmpty);
 
             // empty all tallies to 0
-            emitter.on(Config.prefix + Commands.EMPTY_ALL, emptyAll);
+            emitter.on(Config.prefix + Commands.EMPTY_ALL, TallyHandler.runEmptyAll);
 
             // set a tally to an amount
             emitter.on(Config.prefix + Commands.SET, TallyHandler.runSet);

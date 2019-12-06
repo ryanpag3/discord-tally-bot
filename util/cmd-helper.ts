@@ -112,7 +112,6 @@ export default {
       */
      isGlobalTallyMessage(message) {
         const split = message.content.split(' ');
-        if (split.length < 4 && split[1] !== 'show') return false; // !tb bump -g test
         return split[2] === '-g';
     }
 }

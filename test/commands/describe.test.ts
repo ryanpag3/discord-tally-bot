@@ -41,6 +41,6 @@ describe('describe command', function() {
         const fakeMessage = TestHelper.getFakeMessage();
         fakeMessage.content = command + ' ' + TALLY_NAME;
         await TallyHandler.runDescribe(fakeMessage as any);
-        expect(fakeMessage.channel.send.getCall(0).lastArg.description).contains('could not find'); 
+        expect(fakeMessage.channel.send.getCall(0).lastArg.description).contains('Could not find'); 
     });
 });

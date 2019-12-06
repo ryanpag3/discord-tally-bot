@@ -90,13 +90,13 @@ export default class TallyHandler {
     /**
      * demarshall bump/dump command into object
      */
-    static unMarshall(message: Message, amountRequired: boolean = false) {
+    static unMarshall(message: Message, amountRequired: boolean = false, tallyNameRequired: boolean = true) {
         const split = message.content.split(' ');
         const isGlobal = CmdHelper.isGlobalTallyMessage(message);
         const command = `${split[0]} ${split[1]}`;
         if (isGlobal) split.splice(2, 1);
         const tallyName = split[2];
-        if (!tallyName) throw new Error('Tally name is required.');
+        if (!tallyName && tallyNameRequired) throw new Error('Tally name is required.');
         const amount = split[3] ? Number.parseInt(split[3]) : 1;
         if (amountRequired === true && !split[3]) throw new Error(`Amount is required.`);
         return {
@@ -166,6 +166,24 @@ export default class TallyHandler {
             richEmbed = CmdHelper.getRichEmbed(message.author.username)
                 .setTitle(`:recycle: ${command}`)
                 .setDescription(`I could not empty **${tallyName}**. Reason: ${e}`);
+        }
+        if (richEmbed) message.channel.send(richEmbed);
+        CmdHelper.finalize(message);
+    }
+
+    static async runEmptyAll(message: Message) {
+        const { channelId, serverId, isGlobal, command } = TallyHandler.unMarshall(message, false, false);
+        let richEmbed;
+        try {
+            const tallies = await TallyHandler.db.updateTallies(serverId, channelId, isGlobal, { count: 0 });
+            richEmbed = CmdHelper.getRichEmbed(message.author.username)
+                .setTitle(`:boom: ${command}`)
+                .setDescription(`All ${TallyHandler.getIsGlobalIcon(isGlobal)} tallies set to 0.`);
+        } catch (e) {
+            console.log(e);
+            richEmbed = CmdHelper.getRichEmbed(message.author.username)
+                .setTitle(`:boom: ${command}`)
+                .setDescription(`I could not empty all tallies. Reason: ${e}`);
         }
         if (richEmbed) message.channel.send(richEmbed);
         CmdHelper.finalize(message);
@@ -250,4 +268,6 @@ export default class TallyHandler {
         if (richEmbed) message.channel.send(richEmbed);
         CmdHelper.finalize(message);
     }
+
+
 }
