@@ -4,7 +4,6 @@ import Commands from '../static/Commands';
 
 import test from '../commands/test';
 import help from '../commands/help';
-import show from '../commands/show';
 import keyword from '../commands/keyword';
 import rmall from '../commands/rmall';
 import details from '../commands/details';
@@ -35,7 +34,7 @@ export default class CommandEventBuilder {
             emitter.on(Config.prefix + Commands.H, help);
 
             // show existing tallies
-            emitter.on(Config.prefix + Commands.SHOW, show);
+            emitter.on(Config.prefix + Commands.SHOW, TallyHandler.runShow);
 
             // create new tally
             emitter.on(Config.prefix + Commands.CREATE, TallyHandler.runCreate);
@@ -119,6 +118,7 @@ export default class CommandEventBuilder {
             if (Env.isProduction() === false) {
                 emitter.on(Config.prefix + Commands.RMALL, rmall);
                 emitter.on(Config.prefix + Commands.CRASH, crash);
+                emitter.on(Config.prefix + Commands.GENERATE, TallyHandler.runGenerate);
             }
         } catch (e) {
             console.log('Error occured while handling command event');

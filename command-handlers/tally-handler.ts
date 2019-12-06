@@ -327,4 +327,61 @@ export default class TallyHandler {
         if (richEmbed) message.channel.send(richEmbed);
         CmdHelper.finalize(message);
     }
+
+    static async runShow(message: Message) {
+        const { channelId, serverId, isGlobal, command } = TallyHandler.unMarshall(message, false, false);
+        let richEmbed;
+        try {
+            const limit = 20;
+            const offset = TallyHandler.getShowOffset(message);
+            const count = await TallyHandler.db.getTalliesCount(channelId, serverId, isGlobal);
+            let tallies = await TallyHandler.db.getTallies(channelId, serverId, isGlobal, limit, offset * limit);
+            tallies = TallyHandler.sortByCount(tallies);
+            richEmbed = CmdHelper.getRichEmbed(message.author.username)
+                .setTitle(`:boom: ${command}`)
+                .setDescription(`${TallyHandler.buildTallyShowResults(tallies)}\n\nPage ${offset+1} of ${Math.floor(count / limit) + 1}\n\n\`!tb show ${offset+2}\` for next page.`);
+        } catch (e) {
+            console.log(e);
+            richEmbed = CmdHelper.getRichEmbed(message.author.username)
+                .setTitle(`:boom: ${command}`)
+                .setDescription(`I could not empty all tallies. Reason: ${e}`);
+        }
+        if (richEmbed) message.channel.send(richEmbed);
+        CmdHelper.finalize(message);
+    }
+
+    private static getShowOffset(message: Message) {
+        const split: any[] = message.content.split(' ');
+        return split[2] ? split[2] - 1 : 0;
+    }
+
+    private static sortByCount(tallies: any[]) {
+        return tallies.sort((a, b) => {
+            if (a.count > b.count) return -1;
+            if (a.count < b.count) return 1;
+            return 0;
+        });
+    }
+
+    private static buildTallyShowResults(tallies: any[]) {
+        let str = ``;
+        tallies.map(t => {
+            str += `${TallyHandler.getIsGlobalIcon(t.isGlobal)} **${t.name}** ${t.count} _${CmdHelper.truncate(t.description, 24)}_\n`;
+        });
+        return str;
+    }
+
+    static async runGenerate(message: Message) {
+        const randomstring = require('randomstring');
+        const count = TallyHandler.getShowOffset(message);
+        for (let i = 0; i < count; i++) {
+            await TallyHandler.db.createTally(
+                message.channel.id,
+                message.guild.id,
+                i % 2 === 0,
+                randomstring.generate(24),
+                randomstring.generate(255)
+            );
+        }
+    }
 }

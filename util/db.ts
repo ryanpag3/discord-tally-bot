@@ -222,7 +222,7 @@ export default class DB {
         return tally;
     }
 
-    async getTallies(channelId, serverId, isGlobal) {
+    async getTallies(channelId, serverId, isGlobal, limit?: number, offset?: number) {
         const where = {
             channelId,
             serverId,
@@ -230,12 +230,27 @@ export default class DB {
         };
         if (isGlobal === true) delete where.channelId;
         const tallies = await this.Tally.findAll({
-            where
+            where,
+            limit,
+            offset
         });
         for (const tally of tallies) {
             tally.description = Buffer.from(tally.description, 'base64').toString();
         }
         return tallies;
+    }
+
+    async getTalliesCount(channelId: string, serverId: string, isGlobal: boolean) {
+        const where = {
+            channelId,
+            serverId,
+            isGlobal
+        };
+        if (isGlobal === true) delete where.channelId;
+        const { count } = await this.Tally.findAndCountAll({
+            where
+        });
+        return count;
     }
 
     async initServers(servers: any) {

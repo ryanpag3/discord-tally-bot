@@ -20,6 +20,7 @@ export default {
     EMPTY_ALL: 'empty-all',
     GLOBAL: 'global',
     GET: 'get',
+    GENERATE: 'generate',
     H: 'h',
     HELP: 'help',
     KEYWORD: 'keyword',
