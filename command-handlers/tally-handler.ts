@@ -269,5 +269,62 @@ export default class TallyHandler {
         CmdHelper.finalize(message);
     }
 
+    static async runChannel(message: Message) {
+        const { command, tallyName, channelId, serverId } = TallyHandler.unMarshall(message);
+        let richEmbed;
+        try {
+            await TallyHandler.db.updateTally(
+                channelId,
+                serverId,
+                true,
+                tallyName,
+                {
+                    isGlobal: false,
+                    channelId: message.channel.id
+                }
+            );
+            richEmbed = CmdHelper.getRichEmbed(message.author.username)
+                .setTitle(`:regional_indicator_c: ${command}`)
+                .setDescription(`**${tallyName}** has been assigned to ${message.channel.toString()}`);
+        } catch (e) {
+            if (e.toString().toLowerCase().includes('validation error')) {
+                e = new Error(`There is already a tally with name ${tallyName} set to be channel scoped.`);
+            }
+            console.log(e);
+            richEmbed = CmdHelper.getRichEmbed(message.author.username)
+                .setTitle(`:regional_indicator_c: ${command}`)
+                .setDescription(`I could not assign **${tallyName}** to channel.\n\nReason: ${e.message}`);
+        }
+        if (richEmbed) message.channel.send(richEmbed);
+        CmdHelper.finalize(message);
+    }
 
+    static async runGlobal(message: Message) {
+        const { command, tallyName, channelId, serverId } = TallyHandler.unMarshall(message);
+        let richEmbed;
+        try {
+            await TallyHandler.db.updateTally(
+                channelId,
+                serverId,
+                false,
+                tallyName,
+                {
+                    isGlobal: true
+                }
+            );
+            richEmbed = CmdHelper.getRichEmbed(message.author.username)
+                .setTitle(`:regional_indicator_g: ${command}`)
+                .setDescription(`**${tallyName}** has been changed to global tally.`);
+        } catch (e) {
+            if (e.toString().toLowerCase().includes('validation error')) {
+                e = new Error(`There is already a tally with name ${tallyName} set to be global scoped.`);
+            }
+            console.log(e);
+            richEmbed = CmdHelper.getRichEmbed(message.author.username)
+                .setTitle(`:regional_indicator_g: ${command}`)
+                .setDescription(`I could not assign **${tallyName}** to server.\n\nReason: ${e.message}`);
+        }
+        if (richEmbed) message.channel.send(richEmbed);
+        CmdHelper.finalize(message);
+    }
 }

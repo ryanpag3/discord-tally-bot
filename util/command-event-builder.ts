@@ -19,8 +19,6 @@ import announce from '../commands/announce';
 import announcements from '../commands/announcements';
 import patchnotes from '../commands/patchnotes';
 import permissions from '../commands/permissions';
-import global from '../commands/global';
-import channel from '../commands/channel';
 import crash from '../commands/crash';
 import Env from './env';
 import TallyHandler from '../command-handlers/tally-handler';
@@ -44,10 +42,10 @@ export default class CommandEventBuilder {
             emitter.on(Config.prefix + Commands.ADD, TallyHandler.runCreate);
 
             // set a tally to be global
-            emitter.on(Config.prefix + Commands.GLOBAL, global);
+            emitter.on(Config.prefix + Commands.GLOBAL, TallyHandler.runGlobal);
 
             // set a tally to be channel-specific
-            emitter.on(Config.prefix + Commands.CHANNEL, channel);
+            emitter.on(Config.prefix + Commands.CHANNEL, TallyHandler.runChannel);
 
             // create a keyword tally
             emitter.on(Config.prefix + Commands.KEYWORD, keyword);
