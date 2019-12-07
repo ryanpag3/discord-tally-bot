@@ -34,6 +34,6 @@ describe('show command', function() {
             await db.createTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME + i, 'a'.repeat(255));
         }
         await TallyHandler.runShow(fakeMsg as any);
-        expect(fakeMsg.getLastChannelCall()).contains(`${totalTallies} total tallies`); 
+        expect(fakeMsg.getLastChannelCall()).contains(`${totalTallies} total`); 
     });
 });
