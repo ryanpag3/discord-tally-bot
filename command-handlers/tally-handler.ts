@@ -332,24 +332,31 @@ export default class TallyHandler {
         const { channelId, serverId, isGlobal, command } = TallyHandler.unMarshall(message, false, false);
         let richEmbed;
         try {
-            const limit = 20;
+            const limit = 25;
             const offset = TallyHandler.getShowOffset(message);
             const count = await TallyHandler.db.getTalliesCount(channelId, serverId, isGlobal);
             let tallies = await TallyHandler.db.getTallies(channelId, serverId, isGlobal, limit, offset * limit);
             tallies = TallyHandler.sortByCount(tallies);
+            const page = offset+1;
+            const total = Math.floor(count / limit); 
+            if (page > total) throw new Error(`Page number [${page}] is higher than total pages [${total}]`);
+            let description = `${TallyHandler.buildTallyShowResults(tallies)}\n\n:notebook_with_decorative_cover: ${page} of ${total}`;
+            if (page !== total) description += ` - \`!tb show ${page+1}\` for next.`;
+            description += `\n\`!tb get [tally name]\` for more info.`;
+
             richEmbed = CmdHelper.getRichEmbed(message.author.username)
-                .setTitle(`:boom: ${command}`)
-                .setDescription(`${TallyHandler.buildTallyShowResults(tallies)}\n\nPage ${offset+1} of ${Math.floor(count / limit) + 1}\n\n\`!tb show ${offset+2}\` for next page.`);
+                .setTitle(`:abacus: ${command} • ${TallyHandler.getIsGlobalIcon(isGlobal)} ${count} total`)
+                .setDescription(description);
         } catch (e) {
             console.log(e);
             richEmbed = CmdHelper.getRichEmbed(message.author.username)
-                .setTitle(`:boom: ${command}`)
-                .setDescription(`I could not empty all tallies. Reason: ${e}`);
+                .setTitle(`:abacus: ${command}`)
+                .setDescription(`I could not empty all tallies.\n\nReason: ${e.message}`);
         }
         if (richEmbed) message.channel.send(richEmbed);
         CmdHelper.finalize(message);
     }
-
+ 
     private static getShowOffset(message: Message) {
         const split: any[] = message.content.split(' ');
         return split[2] ? split[2] - 1 : 0;
@@ -366,22 +373,29 @@ export default class TallyHandler {
     private static buildTallyShowResults(tallies: any[]) {
         let str = ``;
         tallies.map(t => {
-            str += `${TallyHandler.getIsGlobalIcon(t.isGlobal)} **${t.name}** ${t.count} _${CmdHelper.truncate(t.description, 24)}_\n`;
+            str += `**${t.name}** | ${t.count} | _${CmdHelper.truncate(t.description, 24)}_\n`;
         });
         return str;
     }
 
     static async runGenerate(message: Message) {
         const randomstring = require('randomstring');
-        const count = TallyHandler.getShowOffset(message);
-        for (let i = 0; i < count; i++) {
-            await TallyHandler.db.createTally(
+        const split = message.content.split(' ');
+        const count: any = split[2];
+        let j = 0;
+        for (let i = 0; i < count; i++, j++) {
+            const tally = await TallyHandler.db.createTally(
                 message.channel.id,
                 message.guild.id,
-                i % 2 === 0,
-                randomstring.generate(24),
+                false,
+                randomstring.generate(16),
                 randomstring.generate(255)
             );
+            tally.count = randomstring.generate({
+                length: 5,
+                charset: 'numeric'
+            });
+            await tally.save();
         }
     }
 }

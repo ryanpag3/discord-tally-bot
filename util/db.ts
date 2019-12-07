@@ -6,6 +6,7 @@ import Counter from './counter';
 import Sqlize from './sqlize';
 
 export default class DB {
+    private TALLY_NAME_MAXLEN = 16;
     private TALLY_DESCRIPTION_MAXLEN = 255;
     mysqlPool;
     sequelize;
@@ -175,8 +176,11 @@ export default class DB {
     }
 
     async createTally(channelId: string, serverId: string, isGlobal: boolean, name: string, description: string, keyword?: string, bumpOnKeyword?: boolean) {
-        const maxDescriptionLen = this.TALLY_DESCRIPTION_MAXLEN;
-        if (description.length > maxDescriptionLen) {
+        if (name.length > this.TALLY_NAME_MAXLEN) {
+            throw new Error(`tally name cannot be longer than ${this.TALLY_NAME_MAXLEN} characters.`);
+        }
+        
+        if (description.length > this.TALLY_DESCRIPTION_MAXLEN) {
             throw new Error('description cannot be longer than ' + this.TALLY_DESCRIPTION_MAXLEN + ' characters, including emojis');
         }
 
@@ -247,7 +251,7 @@ export default class DB {
             isGlobal
         };
         if (isGlobal === true) delete where.channelId;
-        const { count } = await this.Tally.findAndCountAll({
+        const count = await this.Tally.count({
             where
         });
         return count;
