@@ -87,6 +87,10 @@ export default class TallyHandler {
         return `[${isGlobal ? 'G' : 'C'}]`;
     }
 
+    static getIsGlobalKeyword(isGlobal: boolean) {
+        return `${isGlobal ? 'Global' : 'Channel'}`;
+    }
+
     /**
      * demarshall bump/dump command into object
      */
@@ -106,7 +110,7 @@ export default class TallyHandler {
             amount,
             channelId: message.channel.id,
             serverId: message.guild.id,
-            description: split[3] ? split[3] : 'No description.'
+            description: split[3] ? split.slice(3, split.length).join(' ') : 'No description.'
         };
     }
 
@@ -398,5 +402,34 @@ export default class TallyHandler {
             });
             await tally.save();
         }
+    }
+
+    static async runDetails(message: Message) {
+        const { isGlobal, command, tallyName, channelId, serverId } = TallyHandler.unMarshall(message);
+        let richEmbed;
+        try {
+            const tally = await TallyHandler.db.getTally(
+                channelId,
+                serverId,
+                isGlobal,
+                tallyName
+            );
+
+            if (!tally) throw new Error(`Tally **${TallyHandler.getIsGlobalIcon(isGlobal)} ${tallyName}** does not exist.`);
+            richEmbed = CmdHelper.getRichEmbed(message.author.username)
+                .setTitle(`:printer: ${command}`)
+                .addField(`Type`, `${TallyHandler.getIsGlobalKeyword(isGlobal)}`)
+                .addField(`Name`, `${tallyName}`)
+                .addField(`Count`, `${tally.count}`)
+                .addField(`Description`, `${tally.description}`)
+                .addField(`Created On`, `${tally.createdOn ? new Date(tally.createdOn).toLocaleDateString() : 'Not found.'}`);
+        } catch (e) {
+            console.log(e);
+            richEmbed = CmdHelper.getRichEmbed(message.author.username)
+                .setTitle(`:printer: ${command}`)
+                .setDescription(`I could not get tally info.\n\nReason: ${e.message}`);
+        }
+        if (richEmbed) message.channel.send(richEmbed);
+        CmdHelper.finalize(message);
     }
 }
