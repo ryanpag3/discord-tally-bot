@@ -6,7 +6,6 @@ import test from '../commands/test';
 import help from '../commands/help';
 import keyword from '../commands/keyword';
 import rmall from '../commands/rmall';
-import details from '../commands/details';
 import timer from '../commands/timer';
 import start from '../commands/start';
 import stop from '../commands/stop';
@@ -70,8 +69,8 @@ export default class CommandEventBuilder {
             emitter.on(Config.prefix + Commands.SET, TallyHandler.runSet);
 
             // get tally details
-            emitter.on(Config.prefix + Commands.DETAILS, details);
-            emitter.on(Config.prefix + Commands.GET, details);
+            emitter.on(Config.prefix + Commands.DETAILS, TallyHandler.runDetails);
+            emitter.on(Config.prefix + Commands.GET, TallyHandler.runDetails);
 
             // set tally description
             emitter.on(Config.prefix + Commands.DESCRIBE, TallyHandler.runDescribe);

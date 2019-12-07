@@ -193,7 +193,8 @@ export default class DB {
             count: 0,
             keyword: keyword ? keyword : null,
             bumpOnKeyword,
-            base64Encoded: true
+            base64Encoded: true,
+            createdOn: new Date()
         });
 
         console.log(`
@@ -205,6 +206,7 @@ export default class DB {
             name: ${name}
             description: ${description}
             keyword: ${keyword || null}
+            created on: ${new Date().toLocaleTimeString()}
             `);
 
         return Tally;

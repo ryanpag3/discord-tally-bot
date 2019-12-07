@@ -60,7 +60,8 @@ export default {
     getRichEmbed:(username?: string) => {
         const richEmbed = new Discord.RichEmbed()
             .setTimestamp()
-            .setColor('#5fcca4');
+            .setColor('#cf5967');
+            // .setColor('#5fcca4');
         if (username)
             richEmbed.setFooter(`${username}`);
         return richEmbed;

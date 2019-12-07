@@ -21,7 +21,9 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
         base64Encoded: {
             type: DataTypes.BOOLEAN,
             defaultValue: false
-        }
+        },
+        createdOn: DataTypes.DATE,
+        lastAction: DataTypes.DATE
     }, {
         timestamps: false,
         indexes: [{

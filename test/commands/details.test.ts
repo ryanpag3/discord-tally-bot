@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import TestHelper from '../test-helper';
 import DB from '../../util/db';
 import Counter from '../../util/counter';
-import details from '../../commands/details';
+import TallyHandler from '../../command-handlers/tally-handler';
 
 describe('details command', function() {
     const TALLY_NAME = 'details-test';
@@ -31,7 +31,7 @@ describe('details command', function() {
         const fakeMsg = TestHelper.getFakeMessage();
         fakeMsg.content = command + ' ' + TALLY_NAME;
         await db.createTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, 'woop');
-        await details(fakeMsg as any);
+        await TallyHandler.runDetails(fakeMsg as any);
         expect(JSON.stringify(fakeMsg.channel.send.getCall(0).lastArg)).contains('woop'); 
     });
 
@@ -39,7 +39,7 @@ describe('details command', function() {
         const command = `!tb get ${TALLY_NAME}`;
         const fakeMessage = TestHelper.getFakeMessage();
         fakeMessage.content = command + ' ' + TALLY_NAME;
-        await details(fakeMessage as any);
-        expect(fakeMessage.channel.send.getCall(0).lastArg.description).contains('Could not find'); 
+        await TallyHandler.runDetails(fakeMessage as any);
+        expect(fakeMessage.channel.send.getCall(0).lastArg.description).contains('does not exist'); 
     });
 });
