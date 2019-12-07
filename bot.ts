@@ -20,8 +20,6 @@ if (process.env.NODE_ENV == 'production')
 const db = new DB();
 db.init();
 
-let inviteCache = {};
-
 let initialReady = true;
 bot.on('ready', async () => {
     try {

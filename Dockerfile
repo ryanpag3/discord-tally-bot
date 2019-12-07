@@ -13,4 +13,4 @@ RUN cd /opt/tally-bot && yarn install && tsc
 
 WORKDIR /opt/tally-bot
 
-ENTRYPOINT ["yarn", "start"]
+ENTRYPOINT ["yarn", "start-prod"]
