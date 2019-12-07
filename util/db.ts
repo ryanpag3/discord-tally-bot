@@ -250,6 +250,7 @@ export default class DB {
             serverId,
             isGlobal
         };
+        console.log(where);
         if (isGlobal === true) delete where.channelId;
         const count = await this.Tally.count({
             where

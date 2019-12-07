@@ -45,3 +45,6 @@ jobs:
         TEST_SUGGEST_CHANNEL: ${{ secrets.TEST_SUGGEST_CHANNEL }}
         BUGS_CHANNEL: ${{ secrets.BUGS_CHANNEL }}
         TEST_BUGS_CHANNEL: ${{ secrets.TEST_BUGS_CHANNEL }}
+    - name: Build Docker image
+      run: |
+        docker ps

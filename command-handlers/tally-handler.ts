@@ -338,7 +338,8 @@ export default class TallyHandler {
             let tallies = await TallyHandler.db.getTallies(channelId, serverId, isGlobal, limit, offset * limit);
             tallies = TallyHandler.sortByCount(tallies);
             const page = offset+1;
-            const total = Math.floor(count / limit); 
+            let total = Math.floor(count / limit); 
+            if (total === 0) total = 1;
             if (page > total) throw new Error(`Page number [${page}] is higher than total pages [${total}]`);
             let description = `${TallyHandler.buildTallyShowResults(tallies)}\n\n:notebook_with_decorative_cover: ${page} of ${total}`;
             if (page !== total) description += ` - \`!tb show ${page+1}\` for next.`;
@@ -351,7 +352,7 @@ export default class TallyHandler {
             console.log(e);
             richEmbed = CmdHelper.getRichEmbed(message.author.username)
                 .setTitle(`:abacus: ${command}`)
-                .setDescription(`I could not empty all tallies.\n\nReason: ${e.message}`);
+                .setDescription(`I could not show tallies.\n\nReason: ${e.message}`);
         }
         if (richEmbed) message.channel.send(richEmbed);
         CmdHelper.finalize(message);
@@ -373,7 +374,7 @@ export default class TallyHandler {
     private static buildTallyShowResults(tallies: any[]) {
         let str = ``;
         tallies.map(t => {
-            str += `**${t.name}** | ${t.count} | _${CmdHelper.truncate(t.description, 24)}_\n`;
+            str += `**${t.name}** | ${t.count} | _${t.description ? CmdHelper.truncate(t.description, 24) : 'no description'}_\n`;
         });
         return str;
     }
