@@ -21,8 +21,11 @@ db.init();
 
 let inviteCache = {};
 
+let initialReady = true
 bot.on('ready', async () => {
     console.log(`Tally Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);
+    if (!initialReady)
+        return;
     setTimeout(() => startBroadcasting(), 5000);
     CronAnnouncer.setBot({
         bot: bot
@@ -30,6 +33,7 @@ bot.on('ready', async () => {
     CronAnnouncer.initCronJobs();
     await db.initServers(bot.guilds);
     await db.normalizeTallies(bot.channels);
+    initialReady = false;
 });
 
 bot.on('message', async (message: Message) => {

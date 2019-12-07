@@ -103,6 +103,6 @@ export default class TallyCommon {
     }
 
     static getTallyDescription(tally: any) {
-        return tally.description ? CmdHelper.truncate(tally.description, 128) : 'No description.';
+        return tally.description ? CmdHelper.truncate(Buffer.from(tally.description, 'base64'), 128) : 'No description.';
     }
 }
