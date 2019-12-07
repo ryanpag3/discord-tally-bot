@@ -22,18 +22,21 @@ db.init();
 
 let inviteCache = {};
 
+let initialReady = true;
 bot.on('ready', async () => {
     try {
-    console.log(`Tally Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);
-    setTimeout(() => startBroadcasting(), 5000);
-    CronAnnouncer.setBot({
-        bot: bot
-    });
-    CronAnnouncer.initCronJobs();
-    await db.initServers(bot.guilds);
-    await db.normalizeTallies(bot.channels);
-} catch (e) {
-    console.log(`An error occured while running post-launch behavior ${e}`)
+        console.log(`Tally Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);
+        if (!initialReady) return;
+        setTimeout(() => startBroadcasting(), 5000);
+        CronAnnouncer.setBot({
+            bot: bot
+        });
+        CronAnnouncer.initCronJobs();
+        await db.initServers(bot.guilds);
+        await db.normalizeTallies(bot.channels);
+        initialReady = false;
+    } catch (e) {
+        console.log(`An error occured while running post-launch behavior ${e}`);
     }
 });
 
