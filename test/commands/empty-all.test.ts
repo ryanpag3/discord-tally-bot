@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import TestHelper from '../test-helper';
 import DB from '../../util/db';
 import Counter from '../../util/counter';
-import emptyAll from '../../commands/empty-all';
+import TallyHandler from '../../command-handlers/tally-handler';
 
 describe('empty-all command', function() {
     const TALLY_NAME = 'set-test';
@@ -28,11 +28,13 @@ describe('empty-all command', function() {
         const fakeMsg = TestHelper.getFakeMessage();
         fakeMsg.content = `!tb empty-all`;
         await db.createTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), true, TALLY_NAME, 'woop');
-        await db.updateTallies(fakeMsg.getGuildId(), { count: 100 }, fakeMsg.getChannelId());
-        await emptyAll(fakeMsg as any);
+        await db.updateTallies(fakeMsg.getGuildId(), fakeMsg.getGuildId(), true, { count: 100 });
+        await TallyHandler.runEmptyAll(fakeMsg as any);
         const tallies = await db.getTallies(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false);
         tallies.map(t => {
             expect(t.count).eqls(0);
         });
     });
+
+    // TODO: this needs more test coverage
 });

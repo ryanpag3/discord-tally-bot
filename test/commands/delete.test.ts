@@ -1,7 +1,8 @@
+import { expect } from 'chai'; 
 import DB from '../../util/db';
 import TestHelper from '../test-helper';
 import Counter from '../../util/counter';
-import runDelete from '../../commands/delete';
+import TallyHandler from '../../command-handlers/tally-handler';
 
 describe('delete command', function() {
     const TALLY_NAME = 'empty-test';
@@ -28,8 +29,10 @@ describe('delete command', function() {
     it('should delete a valid tally', async function() {
         let fakeMessage = TestHelper.getFakeMessage();
         fakeMessage.content = '!tb rm ' + TALLY_NAME;
-        const tally = await db.createTally(fakeMessage.getChannelId(), fakeMessage.getGuildId(), false, TALLY_NAME, '');
-        await runDelete(fakeMessage as any);
+        await db.createTally(fakeMessage.getChannelId(), fakeMessage.getGuildId(), false, TALLY_NAME, '');
+        await TallyHandler.runDelete(fakeMessage as any);
+        const tally = await db.getTally(fakeMessage.getChannelId(), fakeMessage.getGuildId(), false, TALLY_NAME);
+        expect(tally).to.be.null;
     });
 
 });

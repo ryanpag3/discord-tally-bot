@@ -6,6 +6,7 @@ import Counter from './counter';
 import Sqlize from './sqlize';
 
 export default class DB {
+    private TALLY_NAME_MAXLEN = 16;
     private TALLY_DESCRIPTION_MAXLEN = 255;
     mysqlPool;
     sequelize;
@@ -175,8 +176,11 @@ export default class DB {
     }
 
     async createTally(channelId: string, serverId: string, isGlobal: boolean, name: string, description: string, keyword?: string, bumpOnKeyword?: boolean) {
-        const maxDescriptionLen = this.TALLY_DESCRIPTION_MAXLEN;
-        if (description.length > maxDescriptionLen) {
+        if (name.length > this.TALLY_NAME_MAXLEN) {
+            throw new Error(`tally name cannot be longer than ${this.TALLY_NAME_MAXLEN} characters.`);
+        }
+        
+        if (description.length > this.TALLY_DESCRIPTION_MAXLEN) {
             throw new Error('description cannot be longer than ' + this.TALLY_DESCRIPTION_MAXLEN + ' characters, including emojis');
         }
 
@@ -222,7 +226,7 @@ export default class DB {
         return tally;
     }
 
-    async getTallies(channelId, serverId, isGlobal) {
+    async getTallies(channelId, serverId, isGlobal, limit?: number, offset?: number) {
         const where = {
             channelId,
             serverId,
@@ -230,12 +234,27 @@ export default class DB {
         };
         if (isGlobal === true) delete where.channelId;
         const tallies = await this.Tally.findAll({
-            where
+            where,
+            limit,
+            offset
         });
         for (const tally of tallies) {
             tally.description = Buffer.from(tally.description, 'base64').toString();
         }
         return tallies;
+    }
+
+    async getTalliesCount(channelId: string, serverId: string, isGlobal: boolean) {
+        const where = {
+            channelId,
+            serverId,
+            isGlobal
+        };
+        if (isGlobal === true) delete where.channelId;
+        const count = await this.Tally.count({
+            where
+        });
+        return count;
     }
 
     async initServers(servers: any) {
@@ -269,16 +288,13 @@ export default class DB {
         return await tally.update(updateObj);
     }
 
-    async updateTallies(serverId: string, update: any, channelId?: string) {
+    async updateTallies(serverId: string, channelId: string, isGlobal: boolean, update: any, ) {
         const where: any = {
             serverId,
-            isGlobal: true
+            channelId,
+            isGlobal
         }
-        if (channelId) {
-            where.isGlobal = false;
-            where.channelId = channelId;
-        }
-
+        if (isGlobal) delete where.channelId;
         await this.Tally.update(update, {
             where
         });
@@ -585,5 +601,13 @@ export default class DB {
             endDate: null,
             totTime: null
         });
+    }
+
+    /**
+     * Base 64 a tally description and save it
+     */
+    async saveTally(tally: any) {
+        tally.description = Buffer.from(tally.description).toString('base64');
+        await tally.save();
     }
 }

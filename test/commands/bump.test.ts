@@ -5,7 +5,6 @@ import DB from '../../util/db';
 import Bluebird = require('bluebird');
 import Counter from '../../util/counter';
 import TestHelper from '../test-helper';
-import bump from '../../commands/bump';
 
 describe('bump command', function() {
     TestHelper.exportDBEnvironmentVar();

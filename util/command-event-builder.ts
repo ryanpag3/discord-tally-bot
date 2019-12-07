@@ -4,18 +4,9 @@ import Commands from '../static/Commands';
 
 import test from '../commands/test';
 import help from '../commands/help';
-import show from '../commands/show';
-import create from '../commands/create';
 import keyword from '../commands/keyword';
-import del from '../commands/delete';
-import bump from '../commands/bump';
-import dump from '../commands/dump';
-import empty from '../commands/empty';
-import emptyAll from '../commands/empty-all';
-import set from '../commands/set';
 import rmall from '../commands/rmall';
 import details from '../commands/details';
-import describe from '../commands/describe';
 import timer from '../commands/timer';
 import start from '../commands/start';
 import stop from '../commands/stop';
@@ -27,10 +18,9 @@ import announce from '../commands/announce';
 import announcements from '../commands/announcements';
 import patchnotes from '../commands/patchnotes';
 import permissions from '../commands/permissions';
-import global from '../commands/global';
-import channel from '../commands/channel';
 import crash from '../commands/crash';
 import Env from './env';
+import TallyHandler from '../command-handlers/tally-handler';
 
 export default class CommandEventBuilder {
     static build(emitter: EventEmitter) {
@@ -44,48 +34,48 @@ export default class CommandEventBuilder {
             emitter.on(Config.prefix + Commands.H, help);
 
             // show existing tallies
-            emitter.on(Config.prefix + Commands.SHOW, show);
+            emitter.on(Config.prefix + Commands.SHOW, TallyHandler.runShow);
 
             // create new tally
-            emitter.on(Config.prefix + Commands.CREATE, create);
-            emitter.on(Config.prefix + Commands.ADD, create);
+            emitter.on(Config.prefix + Commands.CREATE, TallyHandler.runCreate);
+            emitter.on(Config.prefix + Commands.ADD, TallyHandler.runCreate);
 
             // set a tally to be global
-            emitter.on(Config.prefix + Commands.GLOBAL, global);
+            emitter.on(Config.prefix + Commands.GLOBAL, TallyHandler.runGlobal);
 
             // set a tally to be channel-specific
-            emitter.on(Config.prefix + Commands.CHANNEL, channel);
+            emitter.on(Config.prefix + Commands.CHANNEL, TallyHandler.runChannel);
 
             // create a keyword tally
             emitter.on(Config.prefix + Commands.KEYWORD, keyword);
             emitter.on(Config.prefix + Commands.KW, keyword);
 
             // delete a tally
-            emitter.on(Config.prefix + Commands.DELETE, del);
-            emitter.on(Config.prefix + Commands.RM, del);
+            emitter.on(Config.prefix + Commands.DELETE, TallyHandler.runDelete);
+            emitter.on(Config.prefix + Commands.RM, TallyHandler.runDelete);
 
             // bump a tally's count up
-            emitter.on(Config.prefix + Commands.BUMP, bump);
+            emitter.on(Config.prefix + Commands.BUMP, TallyHandler.runBump);
 
             // dump a tally's count down
-            emitter.on(Config.prefix + Commands.DUMP, dump);
+            emitter.on(Config.prefix + Commands.DUMP, TallyHandler.runDump);
 
             // set a tally to 0
-            emitter.on(Config.prefix + Commands.EMPTY, empty);
+            emitter.on(Config.prefix + Commands.EMPTY, TallyHandler.runEmpty);
 
             // empty all tallies to 0
-            emitter.on(Config.prefix + Commands.EMPTY_ALL, emptyAll);
+            emitter.on(Config.prefix + Commands.EMPTY_ALL, TallyHandler.runEmptyAll);
 
             // set a tally to an amount
-            emitter.on(Config.prefix + Commands.SET, set);
+            emitter.on(Config.prefix + Commands.SET, TallyHandler.runSet);
 
             // get tally details
             emitter.on(Config.prefix + Commands.DETAILS, details);
             emitter.on(Config.prefix + Commands.GET, details);
 
             // set tally description
-            emitter.on(Config.prefix + Commands.DESCRIBE, describe);
-            emitter.on(Config.prefix + Commands.UPDATE, describe);
+            emitter.on(Config.prefix + Commands.DESCRIBE, TallyHandler.runDescribe);
+            emitter.on(Config.prefix + Commands.UPDATE, TallyHandler.runDescribe);
 
             // create a timer
             emitter.on(Config.prefix + Commands.TIMER, timer);
@@ -116,9 +106,6 @@ export default class CommandEventBuilder {
             // show announcements
             emitter.on(Config.prefix + Commands.ANNOUNCEMENTS, announcements);
 
-            // set channel timezone
-            // emitter.on(Config.prefix + 'timezone', timezone);
-
             // enable/disable patch notes alerts
             emitter.on(Config.prefix + Commands.PATCHNOTES, patchnotes);
 
@@ -131,6 +118,7 @@ export default class CommandEventBuilder {
             if (Env.isProduction() === false) {
                 emitter.on(Config.prefix + Commands.RMALL, rmall);
                 emitter.on(Config.prefix + Commands.CRASH, crash);
+                emitter.on(Config.prefix + Commands.GENERATE, TallyHandler.runGenerate);
             }
         } catch (e) {
             console.log('Error occured while handling command event');
