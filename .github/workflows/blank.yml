@@ -46,7 +46,10 @@ jobs:
         BUGS_CHANNEL: ${{ secrets.BUGS_CHANNEL }}
         TEST_BUGS_CHANNEL: ${{ secrets.TEST_BUGS_CHANNEL }}
     - name: Build Docker image
+      env:
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       run: |
-        echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
+        docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
         docker build . -t ryanpage/internal:tally-bot-${GITHUB_REF}
         docker push ryanpage/internal:tally-bot-${GITHUB_REF}
