@@ -337,7 +337,7 @@ export default class TallyHandler {
         let richEmbed;
         try {
             const limit = 25;
-            const offset = TallyHandler.getShowOffset(message);
+            const offset = TallyHandler.getShowOffset(message, isGlobal);
             const count = await TallyHandler.db.getTalliesCount(channelId, serverId, isGlobal);
             let tallies = await TallyHandler.db.getTallies(channelId, serverId, isGlobal, limit, offset * limit);
             tallies = TallyHandler.sortByCount(tallies);
@@ -362,9 +362,10 @@ export default class TallyHandler {
         CmdHelper.finalize(message);
     }
  
-    private static getShowOffset(message: Message) {
+    private static getShowOffset(message: Message, isGlobal: boolean) {
         const split: any[] = message.content.split(' ');
-        return split[2] ? split[2] - 1 : 0;
+        let i = isGlobal ? 3 : 2;
+        return split[i] ? split[i] - 1 : 0;
     }
 
     private static sortByCount(tallies: any[]) {
