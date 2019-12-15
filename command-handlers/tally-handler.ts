@@ -445,6 +445,8 @@ export default class TallyHandler {
             };
             if (!isGlobal) {
                 delete where.serverId;
+            } else {
+                delete where.channelId;
             }
             const deletedCnt = await TallyHandler.db.deleteTallies(where);
             richEmbed = CmdHelper.getRichEmbed(message.author.username)
