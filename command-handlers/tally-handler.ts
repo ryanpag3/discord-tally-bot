@@ -433,4 +433,30 @@ export default class TallyHandler {
         if (richEmbed) message.channel.send(richEmbed);
         CmdHelper.finalize(message);
     }
+
+    static async deleteAll(message: Message) {
+        const { channelId, serverId, isGlobal, command } = TallyHandler.unMarshall(message, false, false);
+        let richEmbed;
+        try {
+            let where = {
+                serverId,
+                channelId,
+                isGlobal
+            };
+            if (!isGlobal) {
+                delete where.serverId;
+            }
+            const deletedCnt = await TallyHandler.db.deleteTallies(where);
+            richEmbed = CmdHelper.getRichEmbed(message.author.username)
+                .setTitle(`:recycle: ${command}`)
+                .setDescription(`${deletedCnt} ${TallyHandler.getIsGlobalKeyword(isGlobal)} tallies deleted.`);
+        } catch (e) {
+            console.log(e);
+            richEmbed = CmdHelper.getRichEmbed(message.author.username)
+                .setTitle(`:recycle: ${command}`)
+                .setDescription(`I could not delete tallies.\n\nReason: ${e.message}`);
+        }
+        if (richEmbed) message.channel.send(richEmbed);
+        CmdHelper.finalize(message);
+    }
 }

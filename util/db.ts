@@ -252,7 +252,6 @@ export default class DB {
             serverId,
             isGlobal
         };
-        console.log(where);
         if (isGlobal === true) delete where.channelId;
         const count = await this.Tally.count({
             where
@@ -313,6 +312,14 @@ export default class DB {
         const tally = await this.getTally(channelId, serverId, isGlobal, name);
         if (!tally) throw new Error(`could not find tally to delete`);
         return await tally.destroy();
+    }
+
+    async deleteTallies(where: any) {
+        const tallies = await this.Tally.findAll({ where });
+        await this.Tally.destroy({
+            where
+        });
+        return tallies.length;
     }
 
     async initServer(id: string) {
