@@ -10,7 +10,7 @@
         "start-w": "nodemon -e \".ts\" --exec \"tsc && node -r dotenv/config -r source-map-support/register dist/bot.js || true\"",
         "test": "export TEST_ENV=\"1\" && ts-mocha -r dotenv/config --recursive --exit --timeout 5000 ./**/*.test.ts",
         "coverage": "export TEST_ENV=\"1\" && nyc mocha -r dotenv/config --recursive --exit --timeout 5000 ./**/*.test.ts",
-        "run-test": "export TEST_ENV=\"1\" && ts-mocha -r dotenv/config --recursive --exit --timeout 5000 "
+        "run-test": "export TEST_ENV=\"1\" && ts-mocha -r dotenv/config --recursive --exit --timeout 5000"
     },
     "repository": {
         "type": "git",

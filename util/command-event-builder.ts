@@ -65,6 +65,9 @@ export default class CommandEventBuilder {
             // empty all tallies to 0
             emitter.on(Config.prefix + Commands.EMPTY_ALL, TallyHandler.runEmptyAll);
 
+            // delete all tallies
+            emitter.on(Config.prefix + Commands.DELETE_ALL, TallyHandler.deleteAll);
+
             // set a tally to an amount
             emitter.on(Config.prefix + Commands.SET, TallyHandler.runSet);
 

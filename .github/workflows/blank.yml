@@ -34,7 +34,7 @@ jobs:
         yarn install
     - name: Run tests
       run: |
-        yarn test
+        yarn coverage
       env:
         DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
         DATABASE_URL: ${{ secrets.DATABASE_URL }}

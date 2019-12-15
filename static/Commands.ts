@@ -13,6 +13,7 @@ export default {
     CRASH: 'crash',
     CREATE: 'create',
     DELETE: 'delete',
+    DELETE_ALL: 'delete-all',
     DESCRIBE: 'describe',
     DETAILS: 'details',
     DUMP: 'dump',
