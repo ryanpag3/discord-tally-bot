@@ -26,6 +26,7 @@ export default {
     HELP: 'help',
     KEYWORD: 'keyword',
     KW: 'kw',
+    INVITE: 'invite',
     PATCHNOTES: 'patchnotes',
     PERMISSIONS: 'permissions',
     ROLE: '-role', // reserved

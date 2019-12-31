@@ -17,6 +17,7 @@ Cases where `[]` is shown should be replaced in its entirety with the value it r
 
 - [General Commands](#General)
   - [Get Help](#get-help)
+  - [Invite Bot](#invite-bot)
   - [Make a Feature Request](#make-a-feature-request)
   - [Make a Bug Report](#make-a-bug-report)
 - [Permissions](#permissions)
@@ -38,6 +39,7 @@ Cases where `[]` is shown should be replaced in its entirety with the value it r
   - [Show All Tallies](#show-all-tallies)
   - [Get Tally Details](#get-tally-details)
   - [Delete Tally](#delete-a-tally)
+  - [Delete All Tallies](#delete-all-tallies)
   - [Reset Tally](#reset-tally-to-0)
   - [Reset All Tallies](#reset-all-tallies-to-0)
 - [Announcements](#announcements)
@@ -63,6 +65,12 @@ Cases where `[]` is shown should be replaced in its entirety with the value it r
 This will send you back here.
 
     !tb help
+
+### **Invite Bot**
+Get an invite link to add the bot elsewhere.
+
+    !tb invite
+
 
 ### **Make a Feature Request**
 Want to see somethings added? Just use this command to open a request.
@@ -258,6 +266,14 @@ Delete a tally. This actually, sincerely, will destroy the record in the databas
     !tb delete my-tally
 
     !tb rm my-tally
+
+### **Delete all Tallies**
+Same as above but will delete all channel/global tallies.
+
+    !tb delete-all
+
+    ---- examples ----
+    !tb delete-all
 
 ### **Reset Tally to 0**
 You can empty a tally and set the value to 0.
