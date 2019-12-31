@@ -67,7 +67,7 @@ This will send you back here.
     !tb help
 
 ### **Invite Bot**
-This will send you back here.
+Get an invite link to add the bot elsewhere.
 
     !tb invite
 
