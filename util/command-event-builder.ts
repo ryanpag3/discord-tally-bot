@@ -20,6 +20,7 @@ import permissions from '../commands/permissions';
 import crash from '../commands/crash';
 import Env from './env';
 import TallyHandler from '../command-handlers/tally-handler';
+import CmdHandler from '../command-handlers/cmd-handler';
 
 export default class CommandEventBuilder {
     static build(emitter: EventEmitter) {
@@ -113,6 +114,9 @@ export default class CommandEventBuilder {
 
             // show permissions
             emitter.on(Config.prefix + Commands.PERMISSIONS, permissions);
+
+            // get invite link
+            emitter.on(Config.prefix + Commands.INVITE, CmdHandler.runInvite);
 
             /**
              * The following commands are only exposed when bot is run without `production` flag

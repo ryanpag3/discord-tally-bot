@@ -3,6 +3,7 @@ import Permissions from './permissions';
 import { EventEmitter } from 'events';
 import Config from '../config';
 import CommandEventBuilder from './command-event-builder';
+import Commands from '../static/Commands';
 
 export default class CommandHandler {
     private emitter: EventEmitter;
@@ -55,7 +56,7 @@ export default class CommandHandler {
      */
     emit(command: string, message: any) {
         // TODO: make more data driven as more added
-        if (command == Config.prefix + 'suggest' || command == Config.prefix + 'bug') {
+        if (this.isBotIncludedCommand(command)) {
             this.emitter.emit(command, {
                 message: message,
                 bot: this.bot
@@ -63,5 +64,11 @@ export default class CommandHandler {
         } else {
             this.emitter.emit(command, message);
         }
+    }
+
+    isBotIncludedCommand(command: string) {
+        return command == Config.prefix + Commands.SUGGEST 
+            || command == Config.prefix + Commands.BUG
+            || command == Config.prefix + Commands.INVITE
     }
 }
