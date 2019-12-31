@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 - Added fix for global tallies not being triggered by global keywords
 - Added the ability to dump on keyword
 - Added command for resetting all tallies to 0
+- Added command for deleting all tallies
+- Added command for getting bot invite link
 ### Fixed
 - Database code has been completely rewritten to improve performance.
 
