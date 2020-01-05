@@ -4,6 +4,7 @@ import {
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
 import cmdHelper from "../util/cmd-helper";
+import logger from "../util/logger";
 
 const db = new DB();
 const Announcement = db.Announcement;
@@ -14,7 +15,7 @@ export default async (message: Message) => {
     msg.shift(); // command
     const page: number = Number.parseInt(msg.shift()) || 1;
 
-    console.log('Showing announcements for channel [' + message.channel.id + ']');
+    logger.info('Showing announcements for channel [' + message.channel.id + ']');
 
     let records = await Announcement.findAll({
         where: {

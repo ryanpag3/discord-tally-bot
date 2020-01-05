@@ -4,6 +4,7 @@ import Config from '../config';
 import PrivateConfig from '../config-private';
 import Counter from './counter';
 import Sqlize from './sqlize';
+import logger from './logger';
 
 export default class DB {
     private TALLY_NAME_MAXLEN = 16;
@@ -75,13 +76,13 @@ export default class DB {
     }
 
     async createDatabaseIfNotExists(dbName: string) {
-        console.log(`attempting to create database ${dbName}`);
+        logger.info(`attempting to create database ${dbName}`);
         return new Promise(async (resolve, reject) => {
             const conn = await this.getMysqlConn();
             conn.query(`CREATE DATABASE IF NOT EXISTS ${dbName}`, (err, result) => {
                 if (err) return reject(err);
                 if (result.warningCount !== 1) {
-                    console.log(`Database ${dbName} has been created`);
+                    logger.info(`Database ${dbName} has been created`);
                 }
                 conn.release();
                 resolve();
@@ -91,7 +92,7 @@ export default class DB {
 
     async dropDatabase(dbName?: string) {
         if (process.env.NODE_ENV === 'production') {
-            console.log('dropDatabase called in production. This should not happen.');
+            logger.info('dropDatabase called in production. This should not happen.');
             return;
         }
 
@@ -99,7 +100,7 @@ export default class DB {
             dbName = this.dbName;
         }
 
-        console.log(`attempting to drop database ${dbName}`);
+        logger.info(`attempting to drop database ${dbName}`);
         return new Promise(async (resolve, reject) => {
             const conn = await this.getMysqlConn();
             conn.query('DROP DATABASE ' + dbName, (err, result) => {
@@ -140,27 +141,27 @@ export default class DB {
     }
 
     async upsertTables() {
-        console.log('creating and/or altering Tally table');
+        logger.info('creating and/or altering Tally table');
         await this.Tally.sync({
             alter: true
         });
-        console.log('creating and/or altering Timer table');
+        logger.info('creating and/or altering Timer table');
         await this.Timer.sync({
             alter: true
         });
-        console.log('creating and/or altering Announcement table');
+        logger.info('creating and/or altering Announcement table');
         await this.Announcement.sync({
             alter: true
         });
-        console.log('creating and/or altering Channel table');
+        logger.info('creating and/or altering Channel table');
         await this.Channel.sync({
             alter: true
         });
-        console.log('creating and/or altering Server table');
+        logger.info('creating and/or altering Server table');
         await this.Server.sync({
             alter: true
         });
-        console.log('creating and/or altering Permission table');
+        logger.info('creating and/or altering Permission table');
         await this.Permission.sync({
             alter: true
         });
@@ -197,7 +198,7 @@ export default class DB {
             createdOn: new Date()
         });
 
-        console.log(`
+        logger.info(`
             Tally Created
             -------------
             channelId: ${channelId}
@@ -266,7 +267,7 @@ export default class DB {
                     id: server.id
                 });
             } catch (e) {
-                console.log(`Failed to upsert Server record on init. Reason: ${e}`);
+                logger.info(`Failed to upsert Server record on init. Reason: ${e}`);
             }
         });
     }
@@ -304,7 +305,7 @@ export default class DB {
         const tallies = await this.Tally.findAll({
             where
         });
-        console.log(`${tallies.length} tallies have been updated with ${JSON.stringify(update)}`);
+        logger.info(`${tallies.length} tallies have been updated with ${JSON.stringify(update)}`);
         return tallies;
     }
 
@@ -326,7 +327,7 @@ export default class DB {
         try {
             await this.Server.upsert({ id });
         } catch (e) {
-            console.log(`Failed to upsert Server record on init. Reason: ${e}`);
+            logger.info(`Failed to upsert Server record on init. Reason: ${e}`);
         }
     }
 
@@ -346,7 +347,7 @@ export default class DB {
             });
             return tally.count;
         } catch (e) {
-            console.log(`Error while getting count for ${name}: ${e}`);
+            logger.info(`Error while getting count for ${name}: ${e}`);
         }
     }
 
@@ -401,10 +402,10 @@ export default class DB {
 
         const promises = tallies.map(async tally => {
             if (tally.bumpOnKeyword === false) {
-                console.log(`keyword dump for tally ${tally.name}`)
+                logger.info(`keyword dump for tally ${tally.name}`)
                 tally.count = tally.count - 1;
             } else {
-                console.log(`keyword bump for tally ${tally.name}`)
+                logger.info(`keyword bump for tally ${tally.name}`)
                 tally.count = tally.count + 1;
             }
             return tally.save();
@@ -428,7 +429,7 @@ export default class DB {
             name: name,
             description: description
         });
-        console.log(`
+        logger.info(`
             Created Announcement
             --------------------
             channelId: ${channelId}
@@ -444,7 +445,7 @@ export default class DB {
             name: name,
             description: description
         });
-        console.log(`
+        logger.info(`
             Upserted Announcement
             --------------------
             channelId: ${channelId}
@@ -545,7 +546,7 @@ export default class DB {
      */
     async normalizeTallies(channels) {
         const tallies = await this.getUnnormalizedTallies();
-        if (tallies.length > 0) console.log(`Normalizing tally schemas for ${tallies.length} tallies.`);
+        if (tallies.length > 0) logger.info(`Normalizing tally schemas for ${tallies.length} tallies.`);
         for (let tally of tallies) {
             const channel = channels.get(tally.channelId);
             if (!channel) continue;
@@ -553,7 +554,7 @@ export default class DB {
             tally.serverId = server.id;
             tally.isGlobal = false;
             tally.save();
-            console.log(`Assigned channel [${channel.id}] to server [${server.id}]`);
+            logger.info(`Assigned channel [${channel.id}] to server [${server.id}]`);
         }
         await this.encodeTallyDescriptions();
     }

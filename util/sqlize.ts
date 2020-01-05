@@ -1,6 +1,7 @@
 import Sequelize from 'sequelize';
 import PrivateConfig from '../config-private';
 import Config from '../config';
+import logger from './logger';
 
 /**
  * This maintains the singleton sequelize client
@@ -18,7 +19,7 @@ export default class Sqlize {
     }
 
     getSequelize(dbName: string) {
-        console.log('getting new sequelize instance for db ' + dbName);
+        logger.info('getting new sequelize instance for db ' + dbName);
         return new Sequelize({
             host: PrivateConfig.database.url,
             database: dbName,

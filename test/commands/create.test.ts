@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import TestHelper from '../test-helper';
 import DB from '../../util/db';
 import Counter from '../../util/counter';
-import TallyHandler from '../../command-handlers/tally-handler';
+import TallyCmdHandler from '../../command-handlers/tally-cmd-handler';
 
 describe('create command', function() {
     const TALLY_NAME = 'empty-test';
@@ -29,7 +29,7 @@ describe('create command', function() {
     it('should create a tally', async function() {
         const fakeMsg = TestHelper.getFakeMessage();
         fakeMsg['content'] = '!tb add ' + TALLY_NAME;
-        await TallyHandler.runCreate(fakeMsg as any);
+        await TallyCmdHandler.runCreate(fakeMsg as any);
         const tally = await db.getTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME);
         expect(tally).to.exist;
     });
@@ -39,7 +39,7 @@ describe('create command', function() {
         const fakeMessage = TestHelper.getFakeMessage();
         fakeMessage.content = command + ' ' + TALLY_NAME;
         await db.createTally(fakeMessage.getChannelId(), fakeMessage.getGuildId(), false, TALLY_NAME, '');
-        await TallyHandler.runCreate(fakeMessage as any);
+        await TallyCmdHandler.runCreate(fakeMessage as any);
         expect(fakeMessage.getLastChannelCall('description')).contains('already exists'); 
     });
 });

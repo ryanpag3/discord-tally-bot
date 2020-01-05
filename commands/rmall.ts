@@ -3,6 +3,7 @@ import {
 } from "discord.js";
 import DB from '../util/db';
 import helper from '../util/cmd-helper';
+import logger from "../util/logger";
 
 const db = new DB();
 const Tally = db.Tally;
@@ -10,7 +11,7 @@ const Timer = db.Timer;
 const Announcement = db.Announcement;
 
 export default async (message: Message) => {
-    console.log('Deleting all tallies.');
+    logger.info('Deleting all tallies.');
     await Tally.destroy({
         where: {
             channelId: message.channel.id

@@ -58,7 +58,7 @@ describe('db.ts', function() {
             await createTestTally();
             await createTestTally();
         } catch (e) {
-            // console.log(e);
+            // logger.info(e);
             error = e;
         }
         expect(error).to.not.be.null;

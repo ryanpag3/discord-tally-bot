@@ -6,6 +6,7 @@ import { CronJob } from 'cron';
 import helper from '../util/cmd-helper';
 import DB from '../util/db';
 import CronAnnouncer from '../util/cron-announcer';
+import logger from "../util/logger";
 
 export default async (message: Message) => {
     const db = new DB();
@@ -34,7 +35,7 @@ export default async (message: Message) => {
                 break;
         }
     } catch (e) {
-        console.log('Announcement command failed. Reason: ' + e);
+        logger.info('Announcement command failed. Reason: ' + e);
         helper.finalize(message);
         const richEmbed = {
             description: `Announcement command failed. Reason: ${e}`
@@ -43,7 +44,7 @@ export default async (message: Message) => {
     }
 
     async function setTallyGoal() {
-        console.log(`Setting tally goal for ${message.author.tag}`);
+        logger.info(`Setting tally goal for ${message.author.tag}`);
         const channelId = message.channel.id;
         const goalName: string = msg[4], goalCount: string = msg[5];
         
@@ -68,7 +69,7 @@ export default async (message: Message) => {
     }
 
     async function setDateGoal() {
-        console.log(`Setting date goal for ${message.author.tag}.`);
+        logger.info(`Setting date goal for ${message.author.tag}.`);
         const datePattern = msg.slice(4, msg.length).join(' ');
         if (!isValidDate(datePattern) && !isValidCron(datePattern))
             throw new Error(`Invalid date pattern provided.\n` +
@@ -77,9 +78,9 @@ export default async (message: Message) => {
         
         let date;
         if (isValidDate(datePattern)){
-            console.log('Using date pattern to create date object.');
+            logger.info('Using date pattern to create date object.');
             date = new Date(datePattern);
-            console.log(date);
+            logger.info(date);
         }
 
         await db.setAnnounceDate(message.channel.id, announceName, datePattern);
@@ -127,7 +128,7 @@ export default async (message: Message) => {
     }
 
     async function deleteAnnouncement() {
-        console.log(`Deleting announcement for ${message.author.tag}`);
+        logger.info(`Deleting announcement for ${message.author.tag}`);
         try {
             const res = await db.deleteAnnounce(message.channel.id, msg[2]);
             if (res === 0) throw new Error(`no announcement found to delete with name **${msg[2]}**`);
@@ -138,13 +139,13 @@ export default async (message: Message) => {
             helper.finalize(message);
             message.channel.send(helper.buildRichMsg(richEmbed));
         } catch (e) {
-            console.log(`Failed to delete announcement. Reason: ${e}`);
+            logger.info(`Failed to delete announcement. Reason: ${e}`);
             throw e;
         }
     }
 
     async function createAnnouncement() {
-        console.log(`Creating announcement for ${message.author.tag}`);
+        logger.info(`Creating announcement for ${message.author.tag}`);
         try {
             const noDescription = 'no description.';
             await db.upsertAnnouncement(message.channel.id, msg[2], msg[3] || noDescription);
@@ -168,7 +169,7 @@ export default async (message: Message) => {
             helper.finalize(message);
             message.channel.send(helper.buildRichMsg(richEmbed));
         } catch (e) {
-            console.log('Failed to create announcement. Reason: ' + e);
+            logger.info('Failed to create announcement. Reason: ' + e);
         
             helper.finalize(message);
     

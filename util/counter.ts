@@ -1,4 +1,5 @@
 import DB from './db';
+import logger from './logger';
 
 export default class Counter {
     static BUMP_COUNTER = 'BUMP_COUNTER';
@@ -37,7 +38,7 @@ export default class Counter {
             await db.createTally(Counter.INTERNAL, Counter.INTERNAL, true, name, 'Internal tally for ' + name);
         } catch (e) {
             if (!e.message.includes('Validation error'))
-                console.log(e);
+                logger.info(e);
         }
     }
 
@@ -68,7 +69,7 @@ export default class Counter {
             tally.count++;
             await tally.save();
         } catch (e) {
-            console.log(e);
+            logger.info(e);
         }
     }
 
@@ -83,7 +84,7 @@ export default class Counter {
             });
             return tally.count;
         } catch (e) {
-            console.log(`Error while getting count for ${name}: ${e}`);
+            logger.info(`Error while getting count for ${name}: ${e}`);
         }
     }
 
@@ -91,7 +92,7 @@ export default class Counter {
         try {
             return await this.getCount(Counter.DUMP_COUNTER, Counter.INTERNAL);
         } catch (e) {
-            console.log(`Error while getting dump count ${e}`);
+            logger.info(`Error while getting dump count ${e}`);
         }
     }
 
@@ -99,7 +100,7 @@ export default class Counter {
         try {
             return await this.getCount(Counter.BUMP_COUNTER, Counter.INTERNAL);
         } catch (e) {
-            console.log('Error while getting bump count: ' + e);
+            logger.info('Error while getting bump count: ' + e);
         }
     }
 }

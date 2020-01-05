@@ -1,5 +1,6 @@
 import helper from '../util/cmd-helper';
 import pConfig from '../config-private';
+import logger from '../util/logger';
 
 export default async (params) => {
     const message = params.message;
@@ -10,7 +11,7 @@ export default async (params) => {
     const bugReport = msg.join(' ');
     const bot = params.bot;
 
-    console.log('Reporting bug for user [' + author.toString() + '] to ');
+    logger.info('Reporting bug for user [' + author.toString() + '] to ');
 
     helper.finalize(message);
 

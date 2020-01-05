@@ -1,8 +1,9 @@
 import { Message } from "discord.js";
 import helper from '../util/cmd-helper';
+import logger from "../util/logger";
 
 export default (message: Message) => {
-    console.log('Running help command for channel [' + message.channel.id + ']');
+    logger.info('Running help command for channel [' + message.channel.id + ']');
 
     const msg = {
         title: `_Tally Bot Command Reference_`,

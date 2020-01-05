@@ -1,8 +1,9 @@
 import { Message } from "discord.js";
 import helper from '../util/cmd-helper';
+import logger from "../util/logger";
 
 export default (message: Message) => {
-    console.log('Running test command for channel [' + message.channel.id + ']');
+    logger.info('Running test command for channel [' + message.channel.id + ']');
 
     helper.finalize(message);
 
