@@ -40,7 +40,7 @@ export default async (message: Message) => {
     }
 
     try {
-        await db.createTally(
+        await db.createCmdTally(
             message.channel.id,
             message.guild.id,
             isGlobal,

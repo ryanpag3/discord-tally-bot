@@ -27,7 +27,7 @@ describe('empty-all command', function() {
     it('should empty all tallies', async function() {
         const fakeMsg = TestHelper.getFakeMessage();
         fakeMsg.content = `!tb empty-all`;
-        await db.createTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), true, TALLY_NAME, 'woop');
+        await db.createCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), true, TALLY_NAME, 'woop');
         await db.updateTallies(fakeMsg.getGuildId(), fakeMsg.getGuildId(), true, { count: 100 });
         await TallyCmdHandler.runEmptyAll(fakeMsg as any);
         const tallies = await db.getTallies(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false);

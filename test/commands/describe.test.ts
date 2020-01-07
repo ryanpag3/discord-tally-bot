@@ -30,7 +30,7 @@ describe('describe command', function() {
         const fakeMsg = TestHelper.getFakeMessage();
         const desc = 'newdesc';
         fakeMsg['content'] = `!tb describe ${TALLY_NAME} ${desc}`;
-        const tally = await db.createTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, '');
+        const tally = await db.createCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, '');
         await TallyCmdHandler.runDescribe(fakeMsg as any);
         await tally.reload();
         expect(tally.description).not.eqls('');

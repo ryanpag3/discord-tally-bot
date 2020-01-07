@@ -33,7 +33,7 @@ describe('db.ts', function() {
     });
 
     it('.createTally should create a tally', async () => {
-        await db.createTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME, DESCRIPTION);
+        await db.createCmdTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME, DESCRIPTION);
         const Tally = await db.Tally.findOne({
             where: {
                 channelId: CHANNEL_ID,
@@ -46,7 +46,7 @@ describe('db.ts', function() {
 
     it('.createTally should throw an exception with invalid description', async () => {
         try {
-            await db.createTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME, DESCRIPTION.repeat(100));
+            await db.createCmdTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME, DESCRIPTION.repeat(100));
         } catch (e) {
             expect(e).to.exist;
         }
@@ -372,6 +372,6 @@ describe('db.ts', function() {
     }
 
     async function createTestTally(name?: string, keyword?: string) {
-        return await db.createTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, name || NAME, DESCRIPTION, keyword);
+        return await db.createCmdTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, name || NAME, DESCRIPTION, keyword);
     }
 });

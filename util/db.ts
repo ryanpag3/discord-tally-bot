@@ -1,10 +1,12 @@
 import Sequelize from 'sequelize';
 import mysql from 'mysql';
+import dedent from 'dedent-js';
 import Config from '../config';
 import PrivateConfig from '../config-private';
 import Counter from './counter';
 import Sqlize from './sqlize';
 import logger from './logger';
+import Default from '../static/Default';
 
 export default class DB {
     private TALLY_NAME_MAXLEN = 16;
@@ -29,8 +31,7 @@ export default class DB {
     }
 
     private getConfiguredDB() {
-        if (process.env.TEST_ENV)
-            return Config.test.database.name;
+        if (process.env.TEST_ENV) return Config.test.database.name;
         return Config.database.name;
     }
 
@@ -176,29 +177,66 @@ export default class DB {
         await this.Permission.truncate();
     }
 
-    async createTally(channelId: string, serverId: string, isGlobal: boolean, name: string, description: string, keyword?: string, bumpOnKeyword?: boolean) {
-        if (name.length > this.TALLY_NAME_MAXLEN) {
-            throw new Error(`tally name cannot be longer than ${this.TALLY_NAME_MAXLEN} characters.`);
-        }
-        
-        if (description.length > this.TALLY_DESCRIPTION_MAXLEN) {
+    async createTally(tally: any) {
+        if (!tally.name) throw new Error(`Name is required to create a tally.`);
+        if (tally.name.length > this.TALLY_NAME_MAXLEN)
+            throw new Error(`Tally name cannot be longer than ${this.TALLY_NAME_MAXLEN} characters.`);
+        if (!tally.description) tally.description = `no description.`;
+        if (tally.description.length > this.TALLY_DESCRIPTION_MAXLEN)
             throw new Error('description cannot be longer than ' + this.TALLY_DESCRIPTION_MAXLEN + ' characters, including emojis');
-        }
+        tally.description = Buffer.from(tally.description).toString('base64');
+        tally.base64Encoded = true;
+        tally.count = 0;
+        tally.createdOn = new Date();
+        tally = await this.Tally.create(tally);
+        tally.description = Buffer.from(tally.description, 'base64'); // no need to keep it encoded in memory
+        return tally;
+    }
 
-        const Tally = await this.Tally.create({
+    async createDmTally(userId: string, name: string, description: string) {
+        const tally = await this.createTally({
+            userId,
+            name,
+            description,
+            isDm: true,
+            isGlobal: false, // manually assign this instead of using default model value due to legacy support
+            serverId: Default.USER_TALLY_SERVERID,
+            channelId: Default.USER_TALLY_CHANNELID
+        });
+        logger.info(
+            dedent(`\n
+            DM Tally Created
+            ----------------
+            userId: ${userId}
+            name: ${name}
+            description: ${tally.description}
+        `)
+        );
+        return tally;
+    }
+
+    async createCmdTally(
+        channelId: string,
+        serverId: string,
+        isGlobal: boolean,
+        name: string,
+        description: string,
+        keyword?: string,
+        bumpOnKeyword?: boolean
+    ) {
+        const tally = await this.createTally({
             channelId,
             serverId,
+            userId: Default.CMD_TALLY_USERID,
             isGlobal,
             name,
-            description: Buffer.from(description).toString('base64'),
-            count: 0,
-            keyword: keyword ? keyword : null,
-            bumpOnKeyword,
-            base64Encoded: true,
-            createdOn: new Date()
+            description,
+            keyword,
+            bumpOnKeyword
         });
 
-        logger.info(`
+        logger.info(
+            dedent(`\n
             Tally Created
             -------------
             channelId: ${channelId}
@@ -208,9 +246,10 @@ export default class DB {
             description: ${description}
             keyword: ${keyword || null}
             created on: ${new Date().toLocaleTimeString()}
-            `);
+            `)
+        );
 
-        return Tally;
+        return tally;
     }
 
     async getTally(channelId, serverId, isGlobal, name) {
@@ -291,12 +330,12 @@ export default class DB {
         return await tally.update(updateObj);
     }
 
-    async updateTallies(serverId: string, channelId: string, isGlobal: boolean, update: any, ) {
+    async updateTallies(serverId: string, channelId: string, isGlobal: boolean, update: any) {
         const where: any = {
             serverId,
             channelId,
             isGlobal
-        }
+        };
         if (isGlobal) delete where.channelId;
         await this.Tally.update(update, {
             where
@@ -402,10 +441,10 @@ export default class DB {
 
         const promises = tallies.map(async tally => {
             if (tally.bumpOnKeyword === false) {
-                logger.info(`keyword dump for tally ${tally.name}`)
+                logger.info(`keyword dump for tally ${tally.name}`);
                 tally.count = tally.count - 1;
             } else {
-                logger.info(`keyword bump for tally ${tally.name}`)
+                logger.info(`keyword bump for tally ${tally.name}`);
                 tally.count = tally.count + 1;
             }
             return tally.save();

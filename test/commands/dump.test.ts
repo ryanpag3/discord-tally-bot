@@ -36,7 +36,7 @@ describe('dump command', function() {
     });
 
     it('should decrease tally count when command is run against valid tally', async function() {
-        await db.createTally(channelId, serverId, false, TALLY_NAME, '');
+        await db.createCmdTally(channelId, serverId, false, TALLY_NAME, '');
         const command = `!tb dump`;
         fakeMessage.content = command + ' ' + TALLY_NAME;
         commandHandler.emit(command, fakeMessage);
@@ -54,7 +54,7 @@ describe('dump command', function() {
     });
 
     it('should increase the total dump counter', async function() {
-        await db.createTally(channelId, serverId, false, TALLY_NAME, '');
+        await db.createCmdTally(channelId, serverId, false, TALLY_NAME, '');
         const command = `!tb dump`;
         fakeMessage.content = command + ' ' + TALLY_NAME;
         const count = await Counter.getDumpCount();
@@ -66,7 +66,7 @@ describe('dump command', function() {
 
     it('should handle a large number of dumps', async function() {
         this.timeout(15000);
-        await db.createTally(channelId, serverId, false, TALLY_NAME, '');
+        await db.createCmdTally(channelId, serverId, false, TALLY_NAME, '');
         const command = `!tb dump`;
         fakeMessage.content = command + ' ' + TALLY_NAME;
         const count = await Counter.getDumpCount();

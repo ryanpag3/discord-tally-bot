@@ -40,7 +40,7 @@ describe('announce command', function() {
         const command = `!tb announce ${ANNOUNCE_NAME} -t ${TALLY_NAME} ${tallyGoal}`;
         const msg = TestHelper.getFakeMessage(command);
         const a = await db.createAnnouncement(msg.getChannelId(), ANNOUNCE_NAME, '');
-        await db.createTally(msg.getChannelId(), msg.getGuildId(), false, TALLY_NAME, '');
+        await db.createCmdTally(msg.getChannelId(), msg.getGuildId(), false, TALLY_NAME, '');
         await announce(msg as any);
         await a.reload();
         expect(a.tallyGoal).eqls(tallyGoal);

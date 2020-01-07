@@ -204,7 +204,7 @@ export default class TallyCmdHandler {
         } = TallyCmdHandler.unMarshall(message);
         let richEmbed;
         try {
-            await TallyCmdHandler.db.createTally(
+            await TallyCmdHandler.db.createCmdTally(
                 channelId,
                 serverId,
                 isGlobal,
@@ -276,6 +276,7 @@ export default class TallyCmdHandler {
         const { command, tallyName, channelId, serverId } = TallyCmdHandler.unMarshall(message);
         let richEmbed;
         try {
+            logger.debug(`setting cmd tally to be channel-scoped`);
             await TallyCmdHandler.db.updateTally(
                 channelId,
                 serverId,
@@ -389,7 +390,7 @@ export default class TallyCmdHandler {
         const count: any = split[2];
         let j = 0;
         for (let i = 0; i < count; i++, j++) {
-            const tally = await TallyCmdHandler.db.createTally(
+            const tally = await TallyCmdHandler.db.createCmdTally(
                 message.channel.id,
                 message.guild.id,
                 false,

@@ -29,7 +29,7 @@ describe('delete command', function() {
     it('should delete a valid tally', async function() {
         let fakeMessage = TestHelper.getFakeMessage();
         fakeMessage.content = '!tb rm ' + TALLY_NAME;
-        await db.createTally(fakeMessage.getChannelId(), fakeMessage.getGuildId(), false, TALLY_NAME, '');
+        await db.createCmdTally(fakeMessage.getChannelId(), fakeMessage.getGuildId(), false, TALLY_NAME, '');
         await TallyCmdHandler.runDelete(fakeMessage as any);
         const tally = await db.getTally(fakeMessage.getChannelId(), fakeMessage.getGuildId(), false, TALLY_NAME);
         expect(tally).to.be.null;

@@ -38,7 +38,7 @@ describe('create command', function() {
         const command = `!tb add`;
         const fakeMessage = TestHelper.getFakeMessage();
         fakeMessage.content = command + ' ' + TALLY_NAME;
-        await db.createTally(fakeMessage.getChannelId(), fakeMessage.getGuildId(), false, TALLY_NAME, '');
+        await db.createCmdTally(fakeMessage.getChannelId(), fakeMessage.getGuildId(), false, TALLY_NAME, '');
         await TallyCmdHandler.runCreate(fakeMessage as any);
         expect(fakeMessage.getLastChannelCall('description')).contains('already exists'); 
     });

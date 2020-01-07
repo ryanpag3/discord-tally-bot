@@ -35,7 +35,7 @@ export default class Counter {
         }
 
         try {
-            await db.createTally(Counter.INTERNAL, Counter.INTERNAL, true, name, 'Internal tally for ' + name);
+            await db.createCmdTally(Counter.INTERNAL, Counter.INTERNAL, true, name, 'Internal tally for ' + name);
         } catch (e) {
             if (!e.message.includes('Validation error'))
                 logger.info(e);

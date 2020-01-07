@@ -36,7 +36,7 @@ describe('bump command', function() {
     });
 
     it('should increase tally count when command is run against valid tally', async function() {
-        await db.createTally(channelId, serverId, false, TALLY_NAME, '');
+        await db.createCmdTally(channelId, serverId, false, TALLY_NAME, '');
         const command = `!tb bump`;
         fakeMessage.content = command + ' ' + TALLY_NAME;
         commandHandler.emit(command, fakeMessage);
@@ -54,7 +54,7 @@ describe('bump command', function() {
     });
 
     it('should increase the total bump counter', async function() {
-        await db.createTally(channelId, serverId, false, TALLY_NAME, '');
+        await db.createCmdTally(channelId, serverId, false, TALLY_NAME, '');
         const command = `!tb bump`;
         fakeMessage.content = command + ' ' + TALLY_NAME;
         const count = await Counter.getBumpCount();
@@ -68,7 +68,7 @@ describe('bump command', function() {
 
     it('should handle a large number of bumps', async function() {
         this.timeout(15000);
-        await db.createTally(channelId, serverId, false, TALLY_NAME, '');
+        await db.createCmdTally(channelId, serverId, false, TALLY_NAME, '');
         const command = `!tb bump`;
         fakeMessage.content = command + ' ' + TALLY_NAME;
         const count = await Counter.getBumpCount();

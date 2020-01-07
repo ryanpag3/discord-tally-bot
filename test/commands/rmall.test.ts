@@ -29,7 +29,7 @@ describe('rmall command', function() {
     it('should remove all', async function() {
         const fakeMsg = TestHelper.getFakeMessage();
         fakeMsg.content = `!tb rmall`;
-        await db.createTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), true, TALLY_NAME, 'woop');
+        await db.createCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), true, TALLY_NAME, 'woop');
         const count = await db.getTallyCount();
         await rmall(fakeMsg as any);
         const newCount = await db.getTallyCount();
