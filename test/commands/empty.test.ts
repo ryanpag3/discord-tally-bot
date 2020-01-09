@@ -3,7 +3,7 @@ import TestHelper from '../test-helper';
 import DB from '../../util/db';
 import Counter from '../../util/counter';
 import Bluebird = require('bluebird');
-import TallyCmdHandler from '../../command-handlers/tally-cmd-handler';
+import TallyHandler from '../../command-handlers/tally-handler';
 
 describe('empty command', function() {
     const TALLY_NAME = 'empty-test';
@@ -34,9 +34,9 @@ describe('empty command', function() {
         await db.updateTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, {
             count: 100
         });
-        await TallyCmdHandler.runEmpty(fakeMsg as any);
+        await TallyHandler.runEmpty(fakeMsg as any);
         await Bluebird.delay(10);
-        const tally = await db.getTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME);
+        const tally = await db.getCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME);
         expect(tally.count).eqls(0);
     });
 
@@ -44,7 +44,7 @@ describe('empty command', function() {
         const command = `!tb bump`;
         const fakeMessage = TestHelper.getFakeMessage();
         fakeMessage.content = command + ' ' + TALLY_NAME;
-        await TallyCmdHandler.runEmpty(fakeMessage as any);
+        await TallyHandler.runEmpty(fakeMessage as any);
         expect(fakeMessage.channel.send.getCall(0).lastArg.description).contains('Could not find'); 
     });
 });

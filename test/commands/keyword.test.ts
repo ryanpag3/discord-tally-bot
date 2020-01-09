@@ -31,7 +31,7 @@ describe('keyword command', function() {
         const fakeMsg = TestHelper.getFakeMessage();
         fakeMsg.content = `!tb kw ${TALLY_NAME} ${KEYWORD}`;
         await keyword(fakeMsg as any);
-        const tally = await db.getTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME);
+        const tally = await db.getCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME);
         expect(tally).to.exist;
         expect(tally.keyword).eqls(KEYWORD);
     });

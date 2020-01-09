@@ -41,7 +41,7 @@ describe('bump command', function() {
         fakeMessage.content = command + ' ' + TALLY_NAME;
         commandHandler.emit(command, fakeMessage);
         await Bluebird.delay(15);
-        const tally = await db.getTally(channelId, serverId, false, TALLY_NAME);
+        const tally = await db.getCmdTally(channelId, serverId, false, TALLY_NAME);
         expect(tally.count).eqls(1);
     });
 
@@ -60,7 +60,7 @@ describe('bump command', function() {
         const count = await Counter.getBumpCount();
         commandHandler.emit(command, fakeMessage);
         await Bluebird.delay(15);
-        const tally = await db.getTally(channelId, serverId, false, TALLY_NAME);
+        const tally = await db.getCmdTally(channelId, serverId, false, TALLY_NAME);
         expect(tally.count).eqls(1);
         const newCount = await Counter.getBumpCount();
         expect(count).to.be.lessThan(newCount);
@@ -78,7 +78,7 @@ describe('bump command', function() {
             await Bluebird.delay(50);
         }
         await Bluebird.delay(100);
-        const tally = await db.getTally(channelId, serverId, false, TALLY_NAME);
+        const tally = await db.getCmdTally(channelId, serverId, false, TALLY_NAME);
         expect(tally.count).eqls(commandsAmt);
         const newCount = await Counter.getBumpCount();
         expect(count).to.be.lessThan(newCount);

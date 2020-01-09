@@ -66,12 +66,12 @@ describe('db.ts', function() {
 
     it('.getTally should return a valid tally', async () => {
         await createTestTally();
-        const tally = await db.getTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME);
+        const tally = await db.getCmdTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME);
         expect(tally.name).eqls(NAME);
     });
 
     it('.getTally should return null if no tally is defined', async () => {
-        const tally = await db.getTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME);
+        const tally = await db.getCmdTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME);
         expect(tally).to.be.null;
     });
 
@@ -87,7 +87,7 @@ describe('db.ts', function() {
         let tally = await createTestTally();
         const newDescription = 'woop';
         await db.setTallyDescription(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME, newDescription);
-        tally = await db.getTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME);
+        tally = await db.getCmdTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME);
         expect(tally.description).eqls(newDescription);
     });
 
@@ -130,7 +130,7 @@ describe('db.ts', function() {
             serverId: '1234'
         };
         await db.updateTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME, up);
-        const tally = await db.getTally(CHANNEL_ID, up.serverId, IS_GLOBAL, NAME);
+        const tally = await db.getCmdTally(CHANNEL_ID, up.serverId, IS_GLOBAL, NAME);
         expect(tally).to.exist;
     });
 
@@ -139,15 +139,15 @@ describe('db.ts', function() {
         const up = {
             serverId: '1234'
         };
-        await db.deleteTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME);
-        const tally = await db.getTally(CHANNEL_ID, up.serverId, IS_GLOBAL, NAME);
+        await db.deleteCmdTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME);
+        const tally = await db.getCmdTally(CHANNEL_ID, up.serverId, IS_GLOBAL, NAME);
         expect(tally).to.not.exist;
     });
 
     it('.deleteTally should throw an error if tally doesnt exist', async () => {
         let err;
         try {
-            await db.deleteTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME);
+            await db.deleteCmdTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME);
         } catch (e) {
             err = e;
         }
@@ -179,7 +179,7 @@ describe('db.ts', function() {
         const kw = 'test';
         await createTestTally(mName, kw);
         await db.handleKeywordTally(SERVER_ID, kw, CHANNEL_ID);
-        const tally = await db.getTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, mName);
+        const tally = await db.getCmdTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, mName);
         expect(tally.count).eqls(1);
     });
 
@@ -188,7 +188,7 @@ describe('db.ts', function() {
         const kw = 'test';
         await createTestTally(mName, kw + 'a');
         await db.handleKeywordTally(CHANNEL_ID, kw);
-        const tally = await db.getTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, mName);
+        const tally = await db.getCmdTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, mName);
         expect(tally.count).eqls(0);
     });
 

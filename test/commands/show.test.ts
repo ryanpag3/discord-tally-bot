@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import TestHelper from '../test-helper';
 import DB from '../../util/db';
 import Counter from '../../util/counter';
-import TallyCmdHandler from '../../command-handlers/tally-cmd-handler';
+import TallyHandler from '../../command-handlers/tally-handler';
 
 describe('show command', function() {
     const TALLY_NAME = 'set-test';
@@ -33,7 +33,7 @@ describe('show command', function() {
         for (let i = 0; i < totalTallies; i++) {
             await db.createCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME + i, 'a'.repeat(255));
         }
-        await TallyCmdHandler.runShow(fakeMsg as any);
+        await TallyHandler.runShow(fakeMsg as any);
         expect(fakeMsg.getLastChannelCall()).contains(`${totalTallies} total`); 
     });
 });

@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import TestHelper from '../test-helper';
 import DB from '../../util/db';
 import Counter from '../../util/counter';
-import TallyCmdHandler from '../../command-handlers/tally-cmd-handler';
+import TallyHandler from '../../command-handlers/tally-handler';
 
 describe('global command', function() {
     const TALLY_NAME = 'set-test';
@@ -30,7 +30,7 @@ describe('global command', function() {
         const fakeMsg = TestHelper.getFakeMessage();
         fakeMsg.content = `!tb channel ${TALLY_NAME}`;
         const tally = await db.createCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, 'woop');
-        await TallyCmdHandler.runGlobal(fakeMsg as any);
+        await TallyHandler.runGlobal(fakeMsg as any);
         await tally.reload();
         expect(tally.isGlobal).is.true; 
     });
@@ -40,7 +40,7 @@ describe('global command', function() {
         fakeMsg.content = `!tb channel ${TALLY_NAME}`;
         await db.createCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, 'woop');
         await db.createCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), true, TALLY_NAME, 'woop');
-        await TallyCmdHandler.runGlobal(fakeMsg as any);
+        await TallyHandler.runGlobal(fakeMsg as any);
         expect(fakeMsg.getLastChannelCall('description')).contains('already a tally with name'); 
     });
 });

@@ -7,6 +7,7 @@ import Counter from './counter';
 import Sqlize from './sqlize';
 import logger from './logger';
 import Default from '../static/Default';
+import tally from '../models/tally';
 
 export default class DB {
     private TALLY_NAME_MAXLEN = 16;
@@ -179,8 +180,7 @@ export default class DB {
 
     async createTally(tally: any) {
         if (!tally.name) throw new Error(`Name is required to create a tally.`);
-        if (tally.name.length > this.TALLY_NAME_MAXLEN)
-            throw new Error(`Tally name cannot be longer than ${this.TALLY_NAME_MAXLEN} characters.`);
+        if (tally.name.length > this.TALLY_NAME_MAXLEN) throw new Error(`Tally name cannot be longer than ${this.TALLY_NAME_MAXLEN} characters.`);
         if (!tally.description) tally.description = `no description.`;
         if (tally.description.length > this.TALLY_DESCRIPTION_MAXLEN)
             throw new Error('description cannot be longer than ' + this.TALLY_DESCRIPTION_MAXLEN + ' characters, including emojis');
@@ -215,15 +215,7 @@ export default class DB {
         return tally;
     }
 
-    async createCmdTally(
-        channelId: string,
-        serverId: string,
-        isGlobal: boolean,
-        name: string,
-        description: string,
-        keyword?: string,
-        bumpOnKeyword?: boolean
-    ) {
+    async createCmdTally(channelId: string, serverId: string, isGlobal: boolean, name: string, description: string, keyword?: string, bumpOnKeyword?: boolean) {
         const tally = await this.createTally({
             channelId,
             serverId,
@@ -252,7 +244,7 @@ export default class DB {
         return tally;
     }
 
-    async getTally(channelId, serverId, isGlobal, name) {
+    async getCmdTally(channelId, serverId, isGlobal, name) {
         const where = {
             channelId,
             serverId,
@@ -266,6 +258,18 @@ export default class DB {
         if (!tally) return null;
         tally.description = Buffer.from(tally.description, 'base64').toString();
         return tally;
+    }
+
+    async getDmTally(userId, name) {
+        const t = await this.Tally.findOne({
+            where: {
+                userId,
+                name
+            }
+        });
+        if (!t) return null;
+        t.description = Buffer.from(t.description, 'base64');
+        return t;
     }
 
     async getTallies(channelId, serverId, isGlobal, limit?: number, offset?: number) {
@@ -316,7 +320,7 @@ export default class DB {
             throw new Error('description cannot be longer than ' + this.TALLY_DESCRIPTION_MAXLEN + ' characters.');
         }
 
-        const tally = await this.getTally(channelId, serverId, isGlobal, name);
+        const tally = await this.getCmdTally(channelId, serverId, isGlobal, name);
 
         if (!tally) throw new Error('could not find tally to set description');
 
@@ -325,7 +329,7 @@ export default class DB {
     }
 
     async updateTally(channelId, serverId, isGlobal, name, updateObj) {
-        const tally = await this.getTally(channelId, serverId, isGlobal, name);
+        const tally = await this.getCmdTally(channelId, serverId, isGlobal, name);
         if (!tally) throw new Error(`could not find tally to update`);
         return await tally.update(updateObj);
     }
@@ -348,10 +352,16 @@ export default class DB {
         return tallies;
     }
 
-    async deleteTally(channelId, serverId, isGlobal, name) {
-        const tally = await this.getTally(channelId, serverId, isGlobal, name);
+    async deleteCmdTally(channelId, serverId, isGlobal, name) {
+        const tally = await this.getCmdTally(channelId, serverId, isGlobal, name);
         if (!tally) throw new Error(`could not find tally to delete`);
         return await tally.destroy();
+    }
+
+    async deleteDmTally(userId: string, name: string) {
+        const t = await this.getDmTally(userId, name);
+        if (!t) throw new Error(`could not find tally to delete`);
+        return await t.destroy();
     }
 
     async deleteTallies(where: any) {

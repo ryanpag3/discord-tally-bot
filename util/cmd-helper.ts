@@ -84,7 +84,9 @@ export default {
      * run any finalization logic for the particular message
      */
     finalize: async (msg: any) => {
-        PatchAnnouncer.announcePatch(msg);
+        if (msg.channel.type == 'dm') return;
+        // TODO: make opt-in
+        // PatchAnnouncer.announcePatch(msg);
         deleteCommandMsg(msg);
     },
 
