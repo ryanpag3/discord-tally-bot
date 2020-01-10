@@ -26,6 +26,38 @@ export default class TallyDmHandler {
         return await TallyHandler.runShow(message, IS_DM_MESSAGE);
     }
 
+    static async runGet(message: Message) {
+        // TODO:
+    }
+
+    static async runBump(message: Message) {
+        // TODO:
+    }
+
+    static async runDump(message: Message) {
+        // TODO:
+    }
+
+    static async runSet(message: Message) {
+        // TODO:
+    }
+
+    static async runEmpty(message: Message) {
+        // TODO:
+    }
+
+    static async runEmptyAll(message: Message) {
+        // TODO:
+    }
+
+    static async runBug(message: Message) {
+        // TODO:
+    }
+
+    static async runSuggest(message: Message) {
+        // TODO:
+    }
+
     static unMarshall(message: Message, amountRequired: boolean = false, tallyNameRequired: boolean = true) {
         const split = message.content.split(' ');
         const command = split[0];
