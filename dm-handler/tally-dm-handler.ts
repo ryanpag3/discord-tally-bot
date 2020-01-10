@@ -22,6 +22,10 @@ export default class TallyDmHandler {
         return await TallyHandler.runDescribe(message, IS_DM_MESSAGE);
     }
 
+    static async runShow(message: Message) {
+        return await TallyHandler.runShow(message, IS_DM_MESSAGE);
+    }
+
     static unMarshall(message: Message, amountRequired: boolean = false, tallyNameRequired: boolean = true) {
         const split = message.content.split(' ');
         const command = split[0];

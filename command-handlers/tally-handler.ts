@@ -227,11 +227,11 @@ export default class TallyHandler {
         let o: any = {};
         if (isDm) {
             for (let field of fields) {
-                o[field] = TallyDmHandler.unMarshall(message)[field];
+                o[field] = TallyDmHandler.unMarshall(message, false, false)[field];
             }
         } else {
             for (let field of fields) {
-                o[field] = TallyHandler.unMarshall(message)[field];
+                o[field] = TallyHandler.unMarshall(message, false, false)[field];
             }      
         }
         return o;
@@ -355,26 +355,38 @@ export default class TallyHandler {
         CmdHelper.finalize(message);
     }
 
-    static async runShow(message: Message) {
-        const { channelId, serverId, isGlobal, command } = TallyHandler.unMarshall(message, false, false);
+    static async runShow(message: Message, isDm: boolean = false) {
+        const { command } = TallyHandler.getFieldsByTallyType(message, isDm, ['command']);
         let richEmbed;
+        let tallies;
         try {
-            const limit = 25;
-            const offset = TallyHandler.getShowOffset(message, isGlobal);
-            const count = await TallyHandler.db.getTalliesCount(channelId, serverId, isGlobal);
-            let tallies = await TallyHandler.db.getTallies(channelId, serverId, isGlobal, limit, offset * limit);
+            const limit = 5;
+            let offset = 0;
+            let count = 0;
+            if (isDm) {
+                count = await TallyHandler.db.getDmTalliesCount(message.author.id);
+                offset = TallyHandler.getDmShowOffset(message);
+                tallies = await TallyHandler.db.getDmTallies(message.author.id, limit, offset * limit);
+                richEmbed = CmdHelper.getRichEmbed(message.author.username)
+                    .setTitle(`:abacus: ${command} • ${count} total`);
+            } else {
+                const { channelId, serverId, isGlobal } = TallyHandler.unMarshall(message, false, false);
+                offset = TallyHandler.getShowOffset(message, isGlobal);
+                count = await TallyHandler.db.getCmdTalliesCount(channelId, serverId, isGlobal);
+                tallies = await TallyHandler.db.getCmdTallies(channelId, serverId, isGlobal, limit, offset * limit);
+                richEmbed = CmdHelper.getRichEmbed(message.author.username)
+                    .setTitle(`:abacus: ${command} • ${TallyHandler.getIsGlobalIcon(isGlobal)} ${count} total`);
+            }
             tallies = TallyHandler.sortByCount(tallies);
             const page = offset + 1;
-            let total = Math.floor(count / limit);
+            logger.debug(`${count} / ${limit}`);
+            let total = Math.ceil(count / limit);
             if (total === 0) total = 1;
             if (page > total) throw new Error(`Page number [${page}] is higher than total pages [${total}]`);
             let description = `${TallyHandler.buildTallyShowResults(tallies)}\n\n:notebook_with_decorative_cover: ${page} of ${total}`;
-            if (page !== total) description += ` - \`!tb show ${page + 1}\` for next.`;
-            description += `\n\`!tb get [tally name]\` for more info.`;
-
-            richEmbed = CmdHelper.getRichEmbed(message.author.username)
-                .setTitle(`:abacus: ${command} • ${TallyHandler.getIsGlobalIcon(isGlobal)} ${count} total`)
-                .setDescription(description);
+            if (page !== total) description += ` - \`${isDm ? '' : '!tb '}show ${page + 1}\` for next.`;
+            description += `\n\`${isDm ? '' : '!tb '}get [tally name]\` for more info.`;
+            richEmbed.setDescription(description);
         } catch (e) {
             logger.info(e);
             richEmbed = CmdHelper.getRichEmbed(message.author.username)
@@ -385,10 +397,15 @@ export default class TallyHandler {
         CmdHelper.finalize(message);
     }
 
-    private static getShowOffset(message: Message, isGlobal: boolean) {
+    private static getShowOffset(message: Message, isGlobal?: boolean) {
         const split: any[] = message.content.split(' ');
         let i = isGlobal ? 3 : 2;
         return split[i] ? split[i] - 1 : 0;
+    }
+
+    private static getDmShowOffset(message: Message) {
+        const split: any[] = message.content.split(' ');
+        return split[1] ? split[1] - 1 : 0;
     }
 
     private static sortByCount(tallies: any[]) {

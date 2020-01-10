@@ -79,7 +79,7 @@ describe('db.ts', function() {
         await createTestTally('one');
         await createTestTally('two');
         await createTestTally('three');
-        const tallies = await db.getTallies(CHANNEL_ID, SERVER_ID, IS_GLOBAL);
+        const tallies = await db.getCmdTallies(CHANNEL_ID, SERVER_ID, IS_GLOBAL);
         expect(tallies.length).eqls(3);
     });
 

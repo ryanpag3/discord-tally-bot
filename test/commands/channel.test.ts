@@ -42,8 +42,8 @@ describe('channel command', function() {
         await db.createCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), true, TALLY_NAME, 'woop');
         await db.createCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, 'woop');
         await TallyHandler.runChannel(fakeMsg as any);
-        logger.info(await db.getTallies(fakeMsg.getChannelId(), fakeMsg.getGuildId(), true));
-        logger.info(await db.getTallies(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false));
+        logger.info(await db.getCmdTallies(fakeMsg.getChannelId(), fakeMsg.getGuildId(), true));
+        logger.info(await db.getCmdTallies(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false));
         expect(fakeMsg.getLastChannelCall('description')).contains('already a tally with name');
     });
 });

@@ -19,5 +19,8 @@ export default class DmEventBuilder {
         emitter.on(Commands.DESCRIBE, TallyDmHandler.runDescribe);
         emitter.on(Commands.UPDATE, TallyDmHandler.runDescribe);
 
+        // show existing tallies
+        emitter.on(Commands.SHOW, TallyDmHandler.runShow);
+
     }
 }

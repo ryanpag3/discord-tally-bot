@@ -272,7 +272,7 @@ export default class DB {
         return t;
     }
 
-    async getTallies(channelId, serverId, isGlobal, limit?: number, offset?: number) {
+    async getCmdTallies(channelId, serverId, isGlobal, limit?: number, offset?: number) {
         const where = {
             channelId,
             serverId,
@@ -290,7 +290,21 @@ export default class DB {
         return tallies;
     }
 
-    async getTalliesCount(channelId: string, serverId: string, isGlobal: boolean) {
+    async getDmTallies(userId: string, limit?: number, offset?: number) {
+        const tallies = await this.Tally.findAll({
+            where: {
+                userId
+            },
+            limit,
+            offset
+        });
+        for (const tally of tallies) {
+            tally.description = Buffer.from(tally.description, 'base64').toString();
+        }
+        return tallies;
+    }
+
+    async getCmdTalliesCount(channelId: string, serverId: string, isGlobal: boolean) {
         const where = {
             channelId,
             serverId,
@@ -300,6 +314,16 @@ export default class DB {
         const count = await this.Tally.count({
             where
         });
+        return count;
+    }
+
+    async getDmTalliesCount(userId: string) {
+        const count = await this.Tally.count({
+            where: {
+                userId
+            }
+        });
+        logger.info(count);
         return count;
     }
 

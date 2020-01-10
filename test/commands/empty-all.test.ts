@@ -30,7 +30,7 @@ describe('empty-all command', function() {
         await db.createCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), true, TALLY_NAME, 'woop');
         await db.updateTallies(fakeMsg.getGuildId(), fakeMsg.getGuildId(), true, { count: 100 });
         await TallyHandler.runEmptyAll(fakeMsg as any);
-        const tallies = await db.getTallies(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false);
+        const tallies = await db.getCmdTallies(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false);
         tallies.map(t => {
             expect(t.count).eqls(0);
         });
