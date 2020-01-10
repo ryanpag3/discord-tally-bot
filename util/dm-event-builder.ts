@@ -14,7 +14,10 @@ export default class DmEventBuilder {
         // delete a tally
         emitter.on(Commands.DELETE, TallyDmHandler.runDelete);
         emitter.on(Commands.RM, TallyDmHandler.runDelete);
-        
+
+        // set tally description
+        emitter.on(Commands.DESCRIBE, TallyDmHandler.runDescribe);
+        emitter.on(Commands.UPDATE, TallyDmHandler.runDescribe);
 
     }
 }

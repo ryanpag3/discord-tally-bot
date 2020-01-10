@@ -315,17 +315,28 @@ export default class DB {
         });
     }
 
-    async setTallyDescription(channelId, serverId, isGlobal, name, description) {
+    async setDmTallyDescription(userId: string, name: string, newDescription: string) {
+        this.checkValidTallyDescription(newDescription);
+        const t = await this.getDmTally(userId, name);
+        await this.setTallyDescription(t, newDescription);
+    }
+
+    async setCmdTallyDescription(channelId, serverId, isGlobal, name, newDescription) {
+        this.checkValidTallyDescription(newDescription);
+        const tally = await this.getCmdTally(channelId, serverId, isGlobal, name);
+        await this.setTallyDescription(tally, newDescription)
+    }
+
+    async setTallyDescription(tally: any, newDescription: string) {
+        if (!tally) throw new Error('Could not find tally to set description');
+        tally.description = Buffer.from(newDescription).toString('base64');
+        await tally.save();
+    }
+
+    async checkValidTallyDescription(description: string) {
         if (description.length > this.TALLY_DESCRIPTION_MAXLEN) {
             throw new Error('description cannot be longer than ' + this.TALLY_DESCRIPTION_MAXLEN + ' characters.');
         }
-
-        const tally = await this.getCmdTally(channelId, serverId, isGlobal, name);
-
-        if (!tally) throw new Error('could not find tally to set description');
-
-        tally.description = Buffer.from(description).toString('base64');
-        await tally.save();
     }
 
     async updateTally(channelId, serverId, isGlobal, name, updateObj) {

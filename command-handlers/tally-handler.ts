@@ -269,24 +269,32 @@ export default class TallyHandler {
         }
     }
 
-    static async runDescribe(message: Message) {
-        let richEmbed;
-        const { isGlobal, command, tallyName, channelId, serverId, description } = TallyHandler.unMarshall(message);
+    static async runDescribe(message: Message, isDm: boolean = false) {
+        let emoji = ':pencil2:'
+
+        const { tallyName, command } = TallyHandler.getFieldsByTallyType(message, isDm, ['tallyName', 'command']);
+        let richEmbed = CmdHelper.getRichEmbed(message.author.username)
+            .setTitle(`${emoji} ${command}`);
         try {
-            const tally = await TallyHandler.db.getCmdTally(channelId, serverId, isGlobal, tallyName);
-            if (!tally) throw new Error(`Could not find tally with name **${tallyName}**.`);
-            await TallyHandler.db.setTallyDescription(channelId, serverId, isGlobal, tallyName, description);
-            richEmbed = CmdHelper.getRichEmbed(message.author.username)
-                .setTitle(`:pencil2: ${command}`)
-                .setDescription(`${TallyHandler.getIsGlobalIcon(isGlobal)} **${tallyName}'s** description is now\n\n${description}`);
+            if (isDm) {
+                const { description } = TallyDmHandler.unMarshall(message);
+                await TallyHandler.db.setDmTallyDescription(message.author.id, tallyName, description);
+                richEmbed.setDescription(`${getDescMsg(description)}`);
+            } else {
+                const { isGlobal, tallyName, channelId, serverId, description } = TallyHandler.unMarshall(message);
+                await TallyHandler.db.setCmdTallyDescription(channelId, serverId, isGlobal, tallyName, description);
+                richEmbed.setDescription(`${TallyHandler.getIsGlobalIcon(isGlobal)} ${getDescMsg(description)}`);
+            }
         } catch (e) {
             logger.info(e);
-            richEmbed = CmdHelper.getRichEmbed(message.author.username)
-                .setTitle(`:pencil2: ${command}`)
-                .setDescription(`I could not describe **${tallyName}**. Reason: ${e.message}`);
+            richEmbed.setDescription(`I could not describe **${tallyName}**. Reason: ${e.message}`);
         }
-        if (richEmbed) message.channel.send(richEmbed);
+        message.channel.send(richEmbed);
         CmdHelper.finalize(message);
+
+        function getDescMsg(description) {
+            return `Tally **${tallyName}**'s description is now **_${description}_**`;
+        }
     }
 
     static async runChannel(message: Message) {

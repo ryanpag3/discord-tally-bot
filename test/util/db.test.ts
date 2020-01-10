@@ -86,7 +86,7 @@ describe('db.ts', function() {
     it('.setTallyDescription should update a tallys description', async () => {
         let tally = await createTestTally();
         const newDescription = 'woop';
-        await db.setTallyDescription(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME, newDescription);
+        await db.setCmdTallyDescription(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME, newDescription);
         tally = await db.getCmdTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME);
         expect(tally.description).eqls(newDescription);
     });
@@ -95,7 +95,7 @@ describe('db.ts', function() {
         let err;
         try {
             const newDescription = 'woop';
-            await db.setTallyDescription(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME, newDescription);
+            await db.setCmdTallyDescription(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME, newDescription);
         } catch (e) {
             err = e;
         }
@@ -107,7 +107,7 @@ describe('db.ts', function() {
         try {
             const newDescription = 'woop';
             await createTestTally();
-            await db.setTallyDescription(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME, newDescription.repeat(1000));
+            await db.setCmdTallyDescription(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME, newDescription.repeat(1000));
         } catch (e) {
             err = e;
         }
