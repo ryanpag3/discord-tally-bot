@@ -4,6 +4,8 @@ import TallyDmHandler from '../dm-handler/tally-dm-handler';
 import Env from './env';
 import bug from '../commands/bug';
 import suggest from '../commands/suggest';
+import help from '../commands/help';
+import test from '../commands/test';
 
 /**
  * Build DM events separate until we have reached feature equality
@@ -53,6 +55,14 @@ export default class DmEventBuilder {
 
         // make a suggestion
         emitter.on(Commands.SUGGEST, suggest);
+
+        // test command functionality
+        emitter.on(Commands.TEST, test);
+        emitter.on(Commands.T, test);
+
+        // give help
+        emitter.on(Commands.HELP, help);
+        emitter.on(Commands.H, help);
 
         /**
          * The following commands are only exposed when bot is run without `production` flag
