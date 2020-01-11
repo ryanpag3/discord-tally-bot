@@ -47,7 +47,7 @@ export default class TallyDmHandler {
     }
 
     static async runEmpty(message: Message) {
-        // TODO:
+        return await TallyHandler.runEmpty(message, IS_DM_MESSAGE);
     }
 
     static async runEmptyAll(message: Message) {

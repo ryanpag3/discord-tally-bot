@@ -16,6 +16,9 @@ export default class DmEventBuilder {
         emitter.on(Commands.DELETE, TallyDmHandler.runDelete);
         emitter.on(Commands.RM, TallyDmHandler.runDelete);
 
+        // delete all tallies
+        emitter.on(Commands.DELETE_ALL, TallyDmHandler.runDeleteAll);
+
         // set tally description
         emitter.on(Commands.DESCRIBE, TallyDmHandler.runDescribe);
         emitter.on(Commands.UPDATE, TallyDmHandler.runDescribe);
@@ -35,6 +38,14 @@ export default class DmEventBuilder {
 
         // set a tally to an amount
         emitter.on(Commands.SET, TallyDmHandler.runSet);
+
+        // set a tally to 0
+        emitter.on(Commands.EMPTY, TallyDmHandler.runEmpty);
+
+        // empty all tallies to 0
+        emitter.on(Commands.EMPTY_ALL, TallyDmHandler.runEmptyAll);
+
+
 
         /**
          * The following commands are only exposed when bot is run without `production` flag

@@ -380,7 +380,7 @@ export default class DB {
         return await tally.update(update);
     }
 
-    async updateTallies(serverId: string, channelId: string, isGlobal: boolean, update: any) {
+    async updateCmdTallies(serverId: string, channelId: string, isGlobal: boolean, update: any) {
         const where: any = {
             serverId,
             channelId,
@@ -393,6 +393,17 @@ export default class DB {
 
         const tallies = await this.Tally.findAll({
             where
+        });
+        logger.info(`${tallies.length} tallies have been updated with ${JSON.stringify(update)}`);
+        return tallies;
+    }
+
+    async updateDmTallies(userId: string, update: any) {
+        await this.Tally.update(update, {
+            userId
+        });
+        const tallies = await this.Tally.findAll({
+            userId
         });
         logger.info(`${tallies.length} tallies have been updated with ${JSON.stringify(update)}`);
         return tallies;
