@@ -4,9 +4,15 @@ import logger from './logger';
 import Config from '../config';
 import cmdHelper from './cmd-helper';
 import DmEventBuilder from './dm-event-builder';
+import Commands from '../static/Commands';
 
 export default class DmHandler {
     static emitter: EventEmitter = DmHandler.buildEventEmitter();
+    static bot;
+
+    static setBotClient(client) {
+        DmHandler.bot = client;
+    }
 
     static buildEventEmitter(): EventEmitter {
         const e = new EventEmitter();
@@ -54,6 +60,9 @@ export default class DmHandler {
         const mSplit = message.content.split(' ');
         const command = mSplit[0];
         logger.debug(`emitting dm: ${command}`);
-        DmHandler.emitter.emit(command, message);
+        if (command === Commands.SUGGEST || command === Commands.BUG || command === Commands.INVITE)
+            DmHandler.emitter.emit(command, { message, bot: this.bot });    
+        else
+            DmHandler.emitter.emit(command, message);
     }
 }

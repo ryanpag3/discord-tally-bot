@@ -544,24 +544,32 @@ export default class TallyHandler {
         CmdHelper.finalize(message);
     }
 
-    static async deleteAll(message: Message) {
-        const { channelId, serverId, isGlobal, command } = TallyHandler.unMarshall(message, false, false);
-        let richEmbed;
+    static async deleteAll(message: Message, isDm: boolean = false) {
+        const { command } = TallyHandler.getFieldsByTallyType(message, isDm, ['command']);
+        let richEmbed = CmdHelper.getRichEmbed(message.author.username)
+            .setTitle(`:recycle: ${command}`);
         try {
-            let where = {
-                serverId,
-                channelId,
-                isGlobal
-            };
-            if (!isGlobal) {
-                delete where.serverId;
+            if (isDm) {
+                let where = {
+                    userId: message.author.id
+                };
+                const deletedCnt = await TallyHandler.db.deleteTallies(where);
+                richEmbed.setDescription(`${deletedCnt} tallies deleted.`);
             } else {
-                delete where.channelId;
+                const { channelId, serverId, isGlobal } = TallyHandler.unMarshall(message, false, false);
+                let where = {
+                    serverId,
+                    channelId,
+                    isGlobal
+                };
+                if (!isGlobal) {
+                    delete where.serverId;
+                } else {
+                    delete where.channelId;
+                }
+                const deletedCnt = await TallyHandler.db.deleteTallies(where);
+                richEmbed.setDescription(`${deletedCnt} ${TallyHandler.getIsGlobalKeyword(isGlobal)} tallies deleted.`);
             }
-            const deletedCnt = await TallyHandler.db.deleteTallies(where);
-            richEmbed = CmdHelper.getRichEmbed(message.author.username)
-                .setTitle(`:recycle: ${command}`)
-                .setDescription(`${deletedCnt} ${TallyHandler.getIsGlobalKeyword(isGlobal)} tallies deleted.`);
         } catch (e) {
             logger.info(e);
             richEmbed = CmdHelper.getRichEmbed(message.author.username)

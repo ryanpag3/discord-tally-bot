@@ -2,6 +2,8 @@ import { EventEmitter } from 'events';
 import Commands from '../static/Commands';
 import TallyDmHandler from '../dm-handler/tally-dm-handler';
 import Env from './env';
+import bug from '../commands/bug';
+import suggest from '../commands/suggest';
 
 /**
  * Build DM events separate until we have reached feature equality
@@ -45,7 +47,12 @@ export default class DmEventBuilder {
         // empty all tallies to 0
         emitter.on(Commands.EMPTY_ALL, TallyDmHandler.runEmptyAll);
 
+        // report a bug
+        emitter.on(Commands.BUG, bug);
+        emitter.on(Commands.REPORT, bug);
 
+        // make a suggestion
+        emitter.on(Commands.SUGGEST, suggest);
 
         /**
          * The following commands are only exposed when bot is run without `production` flag

@@ -13,6 +13,7 @@ import DmHandler from './util/dm-handler';
 
 const bot = new Discord.Client();
 const commandHandler = new CommandHandler(bot);
+DmHandler.setBotClient(bot);
 
 let dbl;
 if (process.env.NODE_ENV == 'production')
@@ -105,6 +106,7 @@ process.on('unhandledRejection', (e: any) => {
  * INIT
  */
 bot.login(ConfigPrivate.token);
+
 
 /**
  * start status broadcasting
