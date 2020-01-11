@@ -30,13 +30,13 @@ describe('empty command', function() {
     it('should set a tallys count to 0', async function() {
         const fakeMsg = TestHelper.getFakeMessage();
         fakeMsg['content'] = '!tb empty ' + TALLY_NAME;
-        await db.createTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, '');
-        await db.updateTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, {
+        await db.createCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, '');
+        await db.updateCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, {
             count: 100
         });
         await TallyHandler.runEmpty(fakeMsg as any);
         await Bluebird.delay(10);
-        const tally = await db.getTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME);
+        const tally = await db.getCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME);
         expect(tally.count).eqls(0);
     });
 

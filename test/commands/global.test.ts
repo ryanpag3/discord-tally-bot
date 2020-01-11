@@ -29,7 +29,7 @@ describe('global command', function() {
     it('should set a tally to be global scoped', async function() {
         const fakeMsg = TestHelper.getFakeMessage();
         fakeMsg.content = `!tb channel ${TALLY_NAME}`;
-        const tally = await db.createTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, 'woop');
+        const tally = await db.createCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, 'woop');
         await TallyHandler.runGlobal(fakeMsg as any);
         await tally.reload();
         expect(tally.isGlobal).is.true; 
@@ -38,8 +38,8 @@ describe('global command', function() {
     it('should warn when a global tally already exists', async function() {
         const fakeMsg = TestHelper.getFakeMessage();
         fakeMsg.content = `!tb channel ${TALLY_NAME}`;
-        await db.createTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, 'woop');
-        await db.createTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), true, TALLY_NAME, 'woop');
+        await db.createCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, 'woop');
+        await db.createCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), true, TALLY_NAME, 'woop');
         await TallyHandler.runGlobal(fakeMsg as any);
         expect(fakeMsg.getLastChannelCall('description')).contains('already a tally with name'); 
     });

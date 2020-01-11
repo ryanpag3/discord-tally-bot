@@ -21,6 +21,7 @@ import crash from '../commands/crash';
 import Env from './env';
 import TallyHandler from '../command-handlers/tally-handler';
 import CmdHandler from '../command-handlers/cmd-handler';
+import logger from './logger';
 
 export default class CommandEventBuilder {
     static build(emitter: EventEmitter) {
@@ -127,8 +128,8 @@ export default class CommandEventBuilder {
                 emitter.on(Config.prefix + Commands.GENERATE, TallyHandler.runGenerate);
             }
         } catch (e) {
-            console.log('Error occured while handling command event');
-            console.log(e);
+            logger.info('Error occured while handling command event');
+            logger.info(e);
         }
     }
 }

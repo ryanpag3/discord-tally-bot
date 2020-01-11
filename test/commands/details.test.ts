@@ -30,7 +30,7 @@ describe('details command', function() {
         const command = `!tb get ${TALLY_NAME}`;
         const fakeMsg = TestHelper.getFakeMessage();
         fakeMsg.content = command + ' ' + TALLY_NAME;
-        await db.createTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, 'woop');
+        await db.createCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, 'woop');
         await TallyHandler.runDetails(fakeMsg as any);
         expect(JSON.stringify(fakeMsg.channel.send.getCall(0).lastArg)).contains('woop'); 
     });

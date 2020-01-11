@@ -31,7 +31,7 @@ describe('show command', function() {
         fakeMsg.content = `!tb show`;
         const totalTallies = 100;
         for (let i = 0; i < totalTallies; i++) {
-            await db.createTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME + i, 'a'.repeat(255));
+            await db.createCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME + i, 'a'.repeat(255));
         }
         await TallyHandler.runShow(fakeMsg as any);
         expect(fakeMsg.getLastChannelCall()).contains(`${totalTallies} total`); 

@@ -74,7 +74,7 @@ describe('tally-common.ts', function() {
     it('should bump a tally', async function() {
         let msg = TestHelper.getFakeMessage();
         msg.content = `!tb bump test`;
-        const tally = await db.createTally(msg.getChannelId(), msg.getGuildId(), false, 'test', '');
+        const tally = await db.createCmdTally(msg.getChannelId(), msg.getGuildId(), false, 'test', '');
         await TallyHandler.runBump(msg as any);
         await tally.reload();
         expect(tally.count).eqls(1);
@@ -83,7 +83,7 @@ describe('tally-common.ts', function() {
     it('should bump a tally by count', async function() {
         let msg = TestHelper.getFakeMessage();
         msg.content = `!tb bump test 100`;
-        const tally = await db.createTally(msg.getChannelId(), msg.getGuildId(), false, 'test', '');
+        const tally = await db.createCmdTally(msg.getChannelId(), msg.getGuildId(), false, 'test', '');
         await TallyHandler.runBump(msg as any);
         await tally.reload();
         expect(tally.count).eqls(100);

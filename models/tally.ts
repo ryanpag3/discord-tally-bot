@@ -10,6 +10,7 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
         },
         channelId: DataTypes.STRING,
         serverId: DataTypes.STRING,
+        userId: DataTypes.STRING,
         description: DataTypes.STRING(5000),
         count: DataTypes.BIGINT,
         keyword: DataTypes.STRING,
@@ -18,6 +19,10 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
             defaultValue: true
         },
         isGlobal: DataTypes.BOOLEAN,
+        isDm: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        },
         base64Encoded: {
             type: DataTypes.BOOLEAN,
             defaultValue: false
@@ -27,7 +32,7 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
     }, {
         timestamps: false,
         indexes: [{
-            fields: ['name', 'channelId', 'serverId', 'isGlobal'],
+            fields: ['name', 'channelId', 'serverId', 'userId', 'isGlobal', 'isDm'],
             unique: true
         }]
     });

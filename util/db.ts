@@ -1,9 +1,13 @@
 import Sequelize from 'sequelize';
 import mysql from 'mysql';
+import dedent from 'dedent-js';
 import Config from '../config';
 import PrivateConfig from '../config-private';
 import Counter from './counter';
 import Sqlize from './sqlize';
+import logger from './logger';
+import Default from '../static/Default';
+import tally from '../models/tally';
 
 export default class DB {
     private TALLY_NAME_MAXLEN = 16;
@@ -28,8 +32,7 @@ export default class DB {
     }
 
     private getConfiguredDB() {
-        if (process.env.TEST_ENV)
-            return Config.test.database.name;
+        if (process.env.TEST_ENV) return Config.test.database.name;
         return Config.database.name;
     }
 
@@ -75,13 +78,13 @@ export default class DB {
     }
 
     async createDatabaseIfNotExists(dbName: string) {
-        console.log(`attempting to create database ${dbName}`);
+        logger.info(`attempting to create database ${dbName}`);
         return new Promise(async (resolve, reject) => {
             const conn = await this.getMysqlConn();
             conn.query(`CREATE DATABASE IF NOT EXISTS ${dbName}`, (err, result) => {
                 if (err) return reject(err);
                 if (result.warningCount !== 1) {
-                    console.log(`Database ${dbName} has been created`);
+                    logger.info(`Database ${dbName} has been created`);
                 }
                 conn.release();
                 resolve();
@@ -91,7 +94,7 @@ export default class DB {
 
     async dropDatabase(dbName?: string) {
         if (process.env.NODE_ENV === 'production') {
-            console.log('dropDatabase called in production. This should not happen.');
+            logger.info('dropDatabase called in production. This should not happen.');
             return;
         }
 
@@ -99,7 +102,7 @@ export default class DB {
             dbName = this.dbName;
         }
 
-        console.log(`attempting to drop database ${dbName}`);
+        logger.info(`attempting to drop database ${dbName}`);
         return new Promise(async (resolve, reject) => {
             const conn = await this.getMysqlConn();
             conn.query('DROP DATABASE ' + dbName, (err, result) => {
@@ -140,27 +143,27 @@ export default class DB {
     }
 
     async upsertTables() {
-        console.log('creating and/or altering Tally table');
+        logger.info('creating and/or altering Tally table');
         await this.Tally.sync({
             alter: true
         });
-        console.log('creating and/or altering Timer table');
+        logger.info('creating and/or altering Timer table');
         await this.Timer.sync({
             alter: true
         });
-        console.log('creating and/or altering Announcement table');
+        logger.info('creating and/or altering Announcement table');
         await this.Announcement.sync({
             alter: true
         });
-        console.log('creating and/or altering Channel table');
+        logger.info('creating and/or altering Channel table');
         await this.Channel.sync({
             alter: true
         });
-        console.log('creating and/or altering Server table');
+        logger.info('creating and/or altering Server table');
         await this.Server.sync({
             alter: true
         });
-        console.log('creating and/or altering Permission table');
+        logger.info('creating and/or altering Permission table');
         await this.Permission.sync({
             alter: true
         });
@@ -175,29 +178,57 @@ export default class DB {
         await this.Permission.truncate();
     }
 
-    async createTally(channelId: string, serverId: string, isGlobal: boolean, name: string, description: string, keyword?: string, bumpOnKeyword?: boolean) {
-        if (name.length > this.TALLY_NAME_MAXLEN) {
-            throw new Error(`tally name cannot be longer than ${this.TALLY_NAME_MAXLEN} characters.`);
-        }
-        
-        if (description.length > this.TALLY_DESCRIPTION_MAXLEN) {
+    async createTally(tally: any) {
+        if (!tally.name) throw new Error(`Name is required to create a tally.`);
+        if (tally.name.length > this.TALLY_NAME_MAXLEN) throw new Error(`Tally name cannot be longer than ${this.TALLY_NAME_MAXLEN} characters.`);
+        if (!tally.description) tally.description = `no description.`;
+        if (tally.description.length > this.TALLY_DESCRIPTION_MAXLEN)
             throw new Error('description cannot be longer than ' + this.TALLY_DESCRIPTION_MAXLEN + ' characters, including emojis');
-        }
+        tally.description = Buffer.from(tally.description).toString('base64');
+        tally.base64Encoded = true;
+        tally.count = 0;
+        tally.createdOn = new Date();
+        tally = await this.Tally.create(tally);
+        tally.description = Buffer.from(tally.description, 'base64'); // no need to keep it encoded in memory
+        return tally;
+    }
 
-        const Tally = await this.Tally.create({
+    async createDmTally(userId: string, name: string, description: string) {
+        const tally = await this.createTally({
+            userId,
+            name,
+            description,
+            isDm: true,
+            isGlobal: false, // manually assign this instead of using default model value due to legacy support
+            serverId: Default.USER_TALLY_SERVERID,
+            channelId: Default.USER_TALLY_CHANNELID
+        });
+        logger.info(
+            dedent(`\n
+            DM Tally Created
+            ----------------
+            userId: ${userId}
+            name: ${name}
+            description: ${tally.description}
+        `)
+        );
+        return tally;
+    }
+
+    async createCmdTally(channelId: string, serverId: string, isGlobal: boolean, name: string, description: string, keyword?: string, bumpOnKeyword?: boolean) {
+        const tally = await this.createTally({
             channelId,
             serverId,
+            userId: Default.CMD_TALLY_USERID,
             isGlobal,
             name,
-            description: Buffer.from(description).toString('base64'),
-            count: 0,
-            keyword: keyword ? keyword : null,
-            bumpOnKeyword,
-            base64Encoded: true,
-            createdOn: new Date()
+            description,
+            keyword,
+            bumpOnKeyword
         });
 
-        console.log(`
+        logger.info(
+            dedent(`\n
             Tally Created
             -------------
             channelId: ${channelId}
@@ -207,12 +238,13 @@ export default class DB {
             description: ${description}
             keyword: ${keyword || null}
             created on: ${new Date().toLocaleTimeString()}
-            `);
+            `)
+        );
 
-        return Tally;
+        return tally;
     }
 
-    async getTally(channelId, serverId, isGlobal, name) {
+    async getCmdTally(channelId, serverId, isGlobal, name) {
         const where = {
             channelId,
             serverId,
@@ -228,7 +260,19 @@ export default class DB {
         return tally;
     }
 
-    async getTallies(channelId, serverId, isGlobal, limit?: number, offset?: number) {
+    async getDmTally(userId, name) {
+        const t = await this.Tally.findOne({
+            where: {
+                userId,
+                name
+            }
+        });
+        if (!t) return null;
+        t.description = Buffer.from(t.description, 'base64');
+        return t;
+    }
+
+    async getCmdTallies(channelId, serverId, isGlobal, limit?: number, offset?: number) {
         const where = {
             channelId,
             serverId,
@@ -237,6 +281,7 @@ export default class DB {
         if (isGlobal === true) delete where.channelId;
         const tallies = await this.Tally.findAll({
             where,
+            order: [['count', 'DESC']],
             limit,
             offset
         });
@@ -246,7 +291,22 @@ export default class DB {
         return tallies;
     }
 
-    async getTalliesCount(channelId: string, serverId: string, isGlobal: boolean) {
+    async getDmTallies(userId: string, limit?: number, offset?: number) {
+        const tallies = await this.Tally.findAll({
+            where: {
+                userId
+            },
+            order: [['count', 'DESC']],
+            limit,
+            offset
+        });
+        for (const tally of tallies) {
+            tally.description = Buffer.from(tally.description, 'base64').toString();
+        }
+        return tallies;
+    }
+
+    async getCmdTalliesCount(channelId: string, serverId: string, isGlobal: boolean) {
         const where = {
             channelId,
             serverId,
@@ -259,6 +319,15 @@ export default class DB {
         return count;
     }
 
+    async getDmTalliesCount(userId: string) {
+        const count = await this.Tally.count({
+            where: {
+                userId
+            }
+        });
+        return count;
+    }
+
     async initServers(servers: any) {
         servers.map(async server => {
             try {
@@ -266,36 +335,54 @@ export default class DB {
                     id: server.id
                 });
             } catch (e) {
-                console.log(`Failed to upsert Server record on init. Reason: ${e}`);
+                logger.info(`Failed to upsert Server record on init. Reason: ${e}`);
             }
         });
     }
 
-    async setTallyDescription(channelId, serverId, isGlobal, name, description) {
-        if (description.length > this.TALLY_DESCRIPTION_MAXLEN) {
-            throw new Error('description cannot be longer than ' + this.TALLY_DESCRIPTION_MAXLEN + ' characters.');
-        }
+    async setDmTallyDescription(userId: string, name: string, newDescription: string) {
+        this.checkValidTallyDescription(newDescription);
+        const t = await this.getDmTally(userId, name);
+        await this.setTallyDescription(t, newDescription);
+    }
 
-        const tally = await this.getTally(channelId, serverId, isGlobal, name);
+    async setCmdTallyDescription(channelId, serverId, isGlobal, name, newDescription) {
+        this.checkValidTallyDescription(newDescription);
+        const tally = await this.getCmdTally(channelId, serverId, isGlobal, name);
+        await this.setTallyDescription(tally, newDescription);
+    }
 
-        if (!tally) throw new Error('could not find tally to set description');
-
-        tally.description = Buffer.from(description).toString('base64');
+    async setTallyDescription(tally: any, newDescription: string) {
+        if (!tally) throw new Error('Could not find tally to set description');
+        tally.description = Buffer.from(newDescription).toString('base64');
         await tally.save();
     }
 
-    async updateTally(channelId, serverId, isGlobal, name, updateObj) {
-        const tally = await this.getTally(channelId, serverId, isGlobal, name);
-        if (!tally) throw new Error(`could not find tally to update`);
+    async checkValidTallyDescription(description: string) {
+        if (description.length > this.TALLY_DESCRIPTION_MAXLEN) {
+            throw new Error('description cannot be longer than ' + this.TALLY_DESCRIPTION_MAXLEN + ' characters.');
+        }
+    }
+
+    async updateCmdTally(channelId, serverId, isGlobal, name, updateObj) {
+        const tally = await this.getCmdTally(channelId, serverId, isGlobal, name);
+        if (!tally) throw new Error(`could not find cmd tally to update`);
         return await tally.update(updateObj);
     }
 
-    async updateTallies(serverId: string, channelId: string, isGlobal: boolean, update: any, ) {
+    async updateDmTally(userId: string, name: string, update: any) {
+        const tally = await this.getDmTally(userId, name);
+        if (!tally) throw new Error(`could not find dm tally to update`);
+        return await tally.update(update);
+    }
+
+    async updateCmdTallies(serverId: string, channelId: string, isGlobal: boolean, update: any) {
         const where: any = {
             serverId,
             channelId,
-            isGlobal
-        }
+            isGlobal,
+            userId: Default.CMD_TALLY_USERID
+        };
         if (isGlobal) delete where.channelId;
         await this.Tally.update(update, {
             where
@@ -304,14 +391,37 @@ export default class DB {
         const tallies = await this.Tally.findAll({
             where
         });
-        console.log(`${tallies.length} tallies have been updated with ${JSON.stringify(update)}`);
+        logger.info(`${tallies.length} tallies have been updated with ${JSON.stringify(update)}`);
         return tallies;
     }
 
-    async deleteTally(channelId, serverId, isGlobal, name) {
-        const tally = await this.getTally(channelId, serverId, isGlobal, name);
+    async updateDmTallies(userId: string, update: any) {
+        await this.Tally.update(update, {
+            where: {
+                userId,
+                serverId: Default.USER_TALLY_SERVERID,
+                channelId: Default.USER_TALLY_CHANNELID
+            }
+        });
+        const tallies = await this.Tally.findAll({
+            where: {
+                userId
+            }
+        });
+        logger.info(`${tallies.length} tallies have been updated with ${JSON.stringify(update)}`);
+        return tallies;
+    }
+
+    async deleteCmdTally(channelId, serverId, isGlobal, name) {
+        const tally = await this.getCmdTally(channelId, serverId, isGlobal, name);
         if (!tally) throw new Error(`could not find tally to delete`);
         return await tally.destroy();
+    }
+
+    async deleteDmTally(userId: string, name: string) {
+        const t = await this.getDmTally(userId, name);
+        if (!t) throw new Error(`could not find tally to delete`);
+        return await t.destroy();
     }
 
     async deleteTallies(where: any) {
@@ -326,14 +436,14 @@ export default class DB {
         try {
             await this.Server.upsert({ id });
         } catch (e) {
-            console.log(`Failed to upsert Server record on init. Reason: ${e}`);
+            logger.info(`Failed to upsert Server record on init. Reason: ${e}`);
         }
     }
 
     async getTallyCount() {
-        return this.Tally.findAll({
+        return await this.Tally.count({
             where: {}
-        }).then(tallies => tallies.length);
+        });
     }
 
     async getCount(name: string, channelId: string) {
@@ -346,7 +456,7 @@ export default class DB {
             });
             return tally.count;
         } catch (e) {
-            console.log(`Error while getting count for ${name}: ${e}`);
+            logger.info(`Error while getting count for ${name}: ${e}`);
         }
     }
 
@@ -401,10 +511,10 @@ export default class DB {
 
         const promises = tallies.map(async tally => {
             if (tally.bumpOnKeyword === false) {
-                console.log(`keyword dump for tally ${tally.name}`)
+                logger.info(`keyword dump for tally ${tally.name}`);
                 tally.count = tally.count - 1;
             } else {
-                console.log(`keyword bump for tally ${tally.name}`)
+                logger.info(`keyword bump for tally ${tally.name}`);
                 tally.count = tally.count + 1;
             }
             return tally.save();
@@ -428,7 +538,7 @@ export default class DB {
             name: name,
             description: description
         });
-        console.log(`
+        logger.info(`
             Created Announcement
             --------------------
             channelId: ${channelId}
@@ -444,7 +554,7 @@ export default class DB {
             name: name,
             description: description
         });
-        console.log(`
+        logger.info(`
             Upserted Announcement
             --------------------
             channelId: ${channelId}
@@ -545,7 +655,7 @@ export default class DB {
      */
     async normalizeTallies(channels) {
         const tallies = await this.getUnnormalizedTallies();
-        if (tallies.length > 0) console.log(`Normalizing tally schemas for ${tallies.length} tallies.`);
+        if (tallies.length > 0) logger.info(`Normalizing tally schemas for ${tallies.length} tallies.`);
         for (let tally of tallies) {
             const channel = channels.get(tally.channelId);
             if (!channel) continue;
@@ -553,7 +663,7 @@ export default class DB {
             tally.serverId = server.id;
             tally.isGlobal = false;
             tally.save();
-            console.log(`Assigned channel [${channel.id}] to server [${server.id}]`);
+            logger.info(`Assigned channel [${channel.id}] to server [${server.id}]`);
         }
         await this.encodeTallyDescriptions();
     }

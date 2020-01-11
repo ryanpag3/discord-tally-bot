@@ -1,15 +1,16 @@
 import { Message } from "discord.js";
 import helper from '../util/cmd-helper';
 import Env from "../util/env";
+import logger from "../util/logger";
 
 export default async (message: Message) => {
 
     if (Env.isProduction()) {
-        console.log(`Someone tried to run !tb crash in production and they got rekt.`);
+        logger.info(`Someone tried to run !tb crash in production and they got rekt.`);
         return;
     }
 
-    console.log('Crashing the bot...');
+    logger.info('Crashing the bot...');
 
     return new Promise((resolve, reject) => {
         return reject(new Error(`Error that shuts the whole damn thing down!`));

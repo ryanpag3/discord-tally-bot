@@ -3,9 +3,9 @@ import {
 } from "discord.js";
 import cmdHelper from "../util/cmd-helper";
 import DB from '../util/db';
+import logger from "../util/logger";
 
 const db = new DB();
-const Tally = db.Tally;
 
 // register listener
 // create tally like normal
@@ -40,7 +40,7 @@ export default async (message: Message) => {
     }
 
     try {
-        await db.createTally(
+        await db.createCmdTally(
             message.channel.id,
             message.guild.id,
             isGlobal,
@@ -73,12 +73,12 @@ export default async (message: Message) => {
                 }
             ]
         }));
-        console.log(`keyword tally  [${isGlobal ? 'G' : 'C'}] ${name} created.`);
+        logger.info(`keyword tally  [${isGlobal ? 'G' : 'C'}] ${name} created.`);
     } catch (e) {
         if (e.toString().toLowerCase().indexOf('uniqueconstrainterror') != -1) e = 'tally already exists';
         if (e.toString().toLowerCase().indexOf('incorrect string value') != -1) e = 'non-valid characters provided.';
         const err = `Failed to create keyword tally. Reason: ${e}`;
-        console.log(err);
+        logger.info(err);
         message.channel.send(cmdHelper.buildRichMsg({
             description: `${err}\n` +
                 `Requested by ${message.author.toString()}`

@@ -1,9 +1,10 @@
 import { Message } from "discord.js";
 import helper from '../util/cmd-helper';
 import Permissions from '../util/permissions';
+import logger from "../util/logger";
 
 export default async (message: Message) => {
-    console.log(`Displaying permissions for ${message.guild.id}`);
+    logger.info(`Displaying permissions for ${message.guild.id}`);
     try {
         const permissions: any = await Permissions.getServerPermissions(message.guild.id);
         let richEmbed = { description: `Current Server Permissions\n` };

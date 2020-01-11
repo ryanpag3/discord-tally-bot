@@ -31,7 +31,7 @@ describe('keyword command', function() {
         const fakeMsg = TestHelper.getFakeMessage();
         fakeMsg.content = `!tb kw ${TALLY_NAME} ${KEYWORD}`;
         await keyword(fakeMsg as any);
-        const tally = await db.getTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME);
+        const tally = await db.getCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME);
         expect(tally).to.exist;
         expect(tally.keyword).eqls(KEYWORD);
     });
@@ -60,7 +60,7 @@ describe('keyword command', function() {
     it('should respond with a warning if tally already exists', async function() {
         const fakeMsg = TestHelper.getFakeMessage();
         fakeMsg.content = `!tb kw ${TALLY_NAME} ${KEYWORD}`;
-        await db.createTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, '');
+        await db.createCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, '');
         await keyword(fakeMsg as any);
         expect(fakeMsg.channel.send.getCall(0).lastArg.description).contains('already exists'); 
     });

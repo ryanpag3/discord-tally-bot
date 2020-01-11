@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## 1.3
+### Added
+- Added direct message support for a number of commands. See README.md for more details.
+- Improved help command by adding navigation links
+
+
+### Fixed
+- Fixed issue where show command would sort only by each page and not the whole query.
+
 ## **1.2.2**
 ### Added
 - Added fix for global tallies not being triggered by global keywords

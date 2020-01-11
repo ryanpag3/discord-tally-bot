@@ -1,16 +1,18 @@
 import helper from '../util/cmd-helper';
 import pConfig from '../config-private';
+import logger from '../util/logger';
+import Config from '../config';
 
 export default async (params) => {
     const message = params.message;
     const author = params.message.author;
     let msg = message.content.split(' ');
-    msg.shift(); // prefix
+    if (msg[0] === Config.prefix) msg.shift(); // prefix
     msg.shift(); // command
     const suggestion = msg.join(' ');
     const bot = params.bot;
 
-    console.log('Suggesting feature for user [' + author.tag + ']');
+    logger.info('Suggesting feature for user [' + author.tag + ']');
 
     helper.finalize(message);
 

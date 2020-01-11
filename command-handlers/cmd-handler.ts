@@ -11,7 +11,7 @@ export default class CmdHandler {
             Permissions.FLAGS.MANAGE_MESSAGES
         ]);
         const richEmbed = CmdHelper.getRichEmbed(message.author.username)
-            .setTitle(`:email: !tb invite`)
+            .setTitle(`:email: invite`)
             .setDescription(`[Click to invite bot](${link})`);
         message.channel.send(richEmbed);
         CmdHelper.finalize(message);

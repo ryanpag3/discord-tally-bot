@@ -1,6 +1,7 @@
 import path from 'path';
 import DB from './db';
 import helper from './cmd-helper';
+import logger from './logger';
 
 export default class PatchAnnouncer {
     constructor() {}
@@ -22,7 +23,7 @@ export default class PatchAnnouncer {
             server.lastPatchAnnounced = PatchAnnouncer.getCurrentVersion();
             await server.save();
         } catch (e) {
-            console.log(`Could not announce patch. Reason ${e}`);
+            logger.info(`Could not announce patch. Reason ${e}`);
         }
     }
 

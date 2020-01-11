@@ -8,9 +8,12 @@ import keywordUtil from './util/keyword-util';
 import cmdHelper from './util/cmd-helper';
 import CommandHandler from './util/command-handler.js';
 import Counter from './util/counter';
+import logger from './util/logger';
+import DmHandler from './util/dm-handler';
 
 const bot = new Discord.Client();
 const commandHandler = new CommandHandler(bot);
+DmHandler.setBotClient(bot);
 
 let dbl;
 if (process.env.NODE_ENV == 'production')
@@ -23,7 +26,7 @@ db.init();
 let initialReady = true;
 bot.on('ready', async () => {
     try {
-        console.log(`Tally Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);
+        logger.info(`Tally Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);
         if (!initialReady) return;
         setTimeout(() => startBroadcasting(), 5000);
         CronAnnouncer.setBot({
@@ -34,15 +37,14 @@ bot.on('ready', async () => {
         await db.normalizeTallies(bot.channels);
         initialReady = false;
     } catch (e) {
-        console.log(`An error occured while running post-launch behavior ${e}`);
+        logger.info(`An error occured while running post-launch behavior ${e}`);
     }
 });
 
 bot.on('message', async (message: Message) => {
     try {
         if (message.channel.type == 'dm') {
-            console.log(`PM received: ${message.content}`);
-            return;
+            return DmHandler.handle(message);
         }
 
         const startsWithPrefix = message.content.startsWith(Config.prefix);
@@ -56,7 +58,7 @@ bot.on('message', async (message: Message) => {
         db.initServer(message.guild.id);
         await commandHandler.handle(message);
     } catch (e) {
-        console.log(`Error while inbounding message: ` + e);
+        logger.info(`Error while inbounding message: ` + e);
         if (e.toString().includes('invalid command')) {
             const richEmbed = {
                 description: `Invalid command used.`
@@ -84,15 +86,15 @@ bot.on('error', function(error) {
 });
 
 bot.on('warn', function(info) {
-    console.log(`warn: ${info}`);
+    logger.info(`warn: ${info}`);
 });
 
 bot.on('reconnecting', function(info) {
-    console.log(`reconnecting`);
+    logger.info(`reconnecting`);
 });
 
 bot.on('disconnect', function(event) {
-    console.log(`The WebSocket has closed and will no longer attempt to reconnect`);
+    logger.info(`The WebSocket has closed and will no longer attempt to reconnect`);
     process.exit(1);
 });
 
@@ -104,6 +106,7 @@ process.on('unhandledRejection', (e: any) => {
  * INIT
  */
 bot.login(ConfigPrivate.token);
+
 
 /**
  * start status broadcasting

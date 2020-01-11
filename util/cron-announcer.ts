@@ -3,6 +3,7 @@ import {
 } from 'cron';
 import DB from './db';
 import helper from './cmd-helper';
+import logger from './logger';
 
 let cronCache = {}; // global singleton cache
 let bot;
@@ -44,7 +45,7 @@ export default class Cron {
      * TODO: timezones
      */
     static async createCronJob(announceName, channelId, date) {
-        console.log(`creating new cron job for ${announceName} on ${channelId} at ${date}`);
+        logger.info(`creating new cron job for ${announceName} on ${channelId} at ${date}`);
         let repeating = true;
         if (typeof date !== 'string') repeating = false;
         cronCache[announceName] = new CronJob(date, () => {
@@ -56,7 +57,7 @@ export default class Cron {
     static async destroyCronJob(announceName, channelId) {
         const db = new DB();
         if (!cronCache[announceName]) return;
-        console.log(`Destroying cron job for ${announceName}`);
+        logger.info(`Destroying cron job for ${announceName}`);
         const announce: any = await db.Announcement.findOne({ where :{
             channelId: channelId,
             name: announceName
@@ -74,7 +75,7 @@ export default class Cron {
      */
     static async announce(announceName, channelId) {
         const db = new DB();
-        console.log(`announcing ${announceName} for ${channelId}`);
+        logger.info(`announcing ${announceName} for ${channelId}`);
         const announcement: any = await db.Announcement.findOne({
             where: {
                 name: announceName,

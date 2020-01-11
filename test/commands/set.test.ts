@@ -29,7 +29,7 @@ describe('set command', function() {
     it('should set the count of a valid tally', async function() {
         const fakeMsg = TestHelper.getFakeMessage();
         fakeMsg.content = `!tb set ${TALLY_NAME} 100`;
-        await db.createTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, 'woop');
+        await db.createCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, 'woop');
         await TallyHandler.runSet(fakeMsg as any);
         expect(JSON.stringify(fakeMsg.channel.send.getCall(0).lastArg)).contains('woop'); 
     });

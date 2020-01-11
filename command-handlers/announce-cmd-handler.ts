@@ -2,7 +2,7 @@ import { Message } from "discord.js";
 import DB from "../util/db";
 
 
-export default class AnnounceHandler {
+export default class AnnounceCmdHandler {
     db = new DB();
 
 

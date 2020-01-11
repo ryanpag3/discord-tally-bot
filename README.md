@@ -13,7 +13,6 @@ This will help offset the cost of running the bot. Thank you 👊
 [Click here](https://github.com/ryanpage42/discord-tally-bot/blob/master/CHANGELOG.md)
 
 # Commands
-Cases where `[]` is shown should be replaced in its entirety with the value it represents. (i.e `!tb add my-tally` or `!tb rm my-tally`)
 
 - [General Commands](#General)
   - [Get Help](#get-help)
@@ -58,27 +57,65 @@ Cases where `[]` is shown should be replaced in its entirety with the value it r
   - [Stop a Timer](#stop-a-timer)
   - [Reset a Timer](#reset-a-timer)
 
+## Direct Messages
+Direct messages can be used for a limited number of commands. There is no need to add the command prefix (ex. !tb) for direct messages.
+- [General Commands](#General)
+  - [Get Help](#get-help)
+  - [Invite Bot](#invite-bot)
+  - [Make a Feature Request](#make-a-feature-request)
+  - [Make a Bug Report](#make-a-bug-report)
+- [Tallies](#tallies)
+  - [Create a Tally](#create-a-tally)
+  - [Change Tally Description](#change-tally-description)
+  - [Increase Tally](#increase-a-tally)
+  - [Decrease Tally](#decrease-a-tally)
+  - [Set Tally Count](#set-a-tallys-count)
+  - [Show All Tallies](#show-all-tallies)
+  - [Get Tally Details](#get-tally-details)
+  - [Delete Tally](#delete-a-tally)
+  - [Delete All Tallies](#delete-all-tallies)
+  - [Reset Tally](#reset-tally-to-0)
+  - [Reset All Tallies](#reset-all-tallies-to-0)
+
 ## General
-`!tb` - This is the prefix. All commands should lead with this followed by a space. For example: `!tb show`
 
 ### **Get Help**
 This will send you back here.
 
+
+    ---- Server Examples ----
+
     !tb help
+
+
+    ---- Direct Message Examples ----
+
+    help
 
 ### **Invite Bot**
 Get an invite link to add the bot elsewhere.
 
+    ---- Server Examples ----
+
     !tb invite
 
+
+    ---- Direct Message Examples ----
+
+    invite
 
 ### **Make a Feature Request**
 Want to see somethings added? Just use this command to open a request.
 
     !tb suggest [suggestion]
 
-    ---- examples ----
+    ---- Server Examples ----
+
     !tb suggest Have you tried not sucking?
+
+    ---- Direct Message Examples ----
+
+    suggest Have you tried not sucking?
 
 ### **Make a Bug Report**
 Use this to let me know if there is anything messed up with the bot.
@@ -87,10 +124,19 @@ Use this to let me know if there is anything messed up with the bot.
 
     !tb report [report]
 
-    ---- examples ----
+
+    ---- Server Examples ----
+
     !tb bug This bug is broken!
 
     !tb report It's still broken!
+
+
+    ---- Direct Message Examples ----
+
+    bug This bug is broken!
+
+    report It's still broken!
 
 ## Permissions
 On installation, Tally Bot will allow any user to run any command. Admins can set permissions for commands to allow only users with a certain role to run them.
@@ -100,7 +146,7 @@ Set all permissions to a specific server role. Server administrators can _always
 
     !tb -role [Role]
 
-    ---- examples ----
+    ---- Server Examples ----
     !tb -role MyRole
 
 ### **Set A Specific Permission**
@@ -108,7 +154,7 @@ Set a permission for a specific command. Server administrators can _always_ run 
 
     !tb [command] -role [Role]
 
-    ---- examples ----
+    ---- Server Examples ----
     !tb bump -role MyRole
 
 ### **Display Permissions**
@@ -116,7 +162,7 @@ Display all current permissions.
 
     !tb permissions
 
-    ---- examples ----
+    ---- Server Examples ----
     !tb permissions
 
 ### **Granting Permission Admin Access**
@@ -124,7 +170,7 @@ If you would like to grant users the ability to change permission levels, you ca
 
     !tb -role -role [Role]
 
-    ---- examples ----
+    ---- Server Examples ----
     !tb -role -role MyRole
 
 ## Tallies
@@ -134,9 +180,13 @@ Tallies are defined as *Channel Tallies* when initially created. You will see th
 
 All relevent tally commands can be either used for channel tallies or global tallies. Simply add `-g` after the command.
 
+**Note**: _This does not apply to direct message tallies._
+
 For example, if I wanted to bump a **global** tally named *test*, I would issue this command
 
     !tb bump -g test
+
+
 
 ### **Create A Tally**
 Create a tally that has a specified _name_ and _description_. A name is a unique identifier that is used to increase or decrease the tally's _count_. Tally counts can be positive or negative.
@@ -145,10 +195,19 @@ Create a tally that has a specified _name_ and _description_. A name is a unique
     -or-
     !tb add [name] [description]
 
-    ---- examples ----
-    !tb create test-tally My tally that I will count things with.
     
+    ---- Server Examples ----
+
+    !tb create test-tally My tally that I will count things with.
+
     !tb add test-tally My tally that I will count things with.
+
+    
+    ---- Direct Message Examples ----
+
+    create my-dm-tally I will count things... privately!
+
+    add my-dm-tally I will count things... privately!
 
 ### **Create a Keyword Tally**
 Create a tally that has all the attributes of the above regular tally, but can be configured to increase or decrease based off of a _keyword_. A keyword is a word (or words) that will trigger this event.
@@ -157,7 +216,9 @@ Create a tally that has all the attributes of the above regular tally, but can b
     -or-
     !tb kw [name] [keyword] [description]
 
-    ---- examples ----
+    
+    ---- Server Examples ----
+
     !tb keyword my-kw-tally poisoned Trigger everytime someone has been poisoned.
     
     !tb kw my-kw-tally poisoned,cursed,dead Trigger everytime someone has been poisoned, cursed, or dies.
@@ -169,7 +230,7 @@ This tally has all the attributes of a regular keyword tally, but will _decrease
     -or-
     !tb kw dump [name] [keyword] [description]
 
-    ---- examples ----
+    ---- Server Examples ----
     !tb keyword dump my-kw-tally poisoned Trigger everytime someone has been poisoned.
     
     !tb kw dump my-kw-tally poisoned,cursed,dead Trigger everytime someone has been poisoned, cursed, or dies.
@@ -179,7 +240,7 @@ Convert a Tally to be globally scoped. If a tally already exists in the current 
 
     !tb global [name]
 
-    ---- examples ----
+    ---- Server Examples ----
     !tb global my-tally
 
 ### **Make a Tally Channel Visible**
@@ -187,7 +248,7 @@ Convert a Tally to be channel scoped. If a tally already exists in the current g
 
     !tb channel [name]
 
-    ---- examples ----
+    ---- Server Examples ----
     !tb channel my-tally
 
 ### **Change Tally Description**
@@ -197,10 +258,19 @@ Update a tally's description. Note, this will work on all tally types.
     -or-
     !tb update [name] [description]
 
-    ---- examples ----
+
+    ---- Server Examples ----
+
     !tb describe my-tally Wow a brand new tally description!
 
     !tb update my-tally Wow another brand new tally description!!! :)
+
+    
+    ---- Direst Message Examples ----
+
+    describe my-tally Wow a brand new tally description!
+
+    update my-tally Wow another brand new tally description!!! :)
 
 ### **Increase a Tally**
 Tallies can be increased by one (default) or by an amount.
@@ -209,10 +279,19 @@ Tallies can be increased by one (default) or by an amount.
     -or-
     !tb bump [name] [amount]
 
-    ---- example ----
+
+    ---- Server Examples ----
+
     !tb bump my-tally
 
     !tb bump my-tally 100
+
+
+    ---- Direct Message Examples -----
+
+    bump my-tally
+
+    bump my-tally 100
 
 ### **Decrease a Tally**
 Tallies can be decreased by one (default) or by an amount.
@@ -221,27 +300,47 @@ Tallies can be decreased by one (default) or by an amount.
     -or-
     !tb dump [name] [amount]
 
-    ---- example ----
+
+    ---- Server Examples ----
+
     !tb dump my-tally
 
     !tb dump my-tally 100
+
+
+    ---- Direct Message Examples -----
+
+    dump my-tally
+
+    dump my-tally 100
 
 ### **Set a Tally's Count**
 Manually set a tally to be a specific count.
 
     !tb set [name] [count]
 
-    ---- examples ----
+    
+    ---- Server Examples ----
+
     !tb set my-tally 100
+
+
+    ---- Direct Message Examples ----
+
+    set my-tally 100
 
 
 ### **Show All Tallies**
 List all tallies created in this channel.
 
+    ---- Server Examples ----
+
     !tb show
 
-    ---- examples ----
-    !tb show
+
+    ---- Direct Message Examples ----
+
+    show
 
 ### **Get Tally Details**
 Get the details of a created tally.
@@ -250,10 +349,19 @@ Get the details of a created tally.
      -or-
     !tb get [name]
 
-    ---- examples ----
+
+    ---- Server Examples ----
+
     !tb details my-tally
 
     !tb get my-tally
+
+
+    ---- Direct Message Examples ----
+
+    details my-tally
+
+    get my-tally
 
 ### **Delete A Tally**
 Delete a tally. This actually, sincerely, will destroy the record in the database _permanently_. I do have plans to add a restore functionality but it's not implemented yet.
@@ -262,34 +370,63 @@ Delete a tally. This actually, sincerely, will destroy the record in the databas
     -or-
     !tb rm [name]
 
-    ---- examples ----
+
+    ---- Server Examples ----
+
     !tb delete my-tally
 
     !tb rm my-tally
+
+
+    ---- Direct Message Examples ----
+
+    details my-tally
+
+    get my-tally
 
 ### **Delete all Tallies**
 Same as above but will delete all channel/global tallies.
 
     !tb delete-all
 
-    ---- examples ----
+
+    ---- Server Examples ----
+
     !tb delete-all
+
+    ---- Direct Message Examples ----
+
+    delete-all
 
 ### **Reset Tally to 0**
 You can empty a tally and set the value to 0.
 
     !tb empty [name]
 
-    ---- examples ----
+
+    ---- Server Examples ----
+
     !tb empty my-tally
+
+
+    ---- Direct Message Examples ----
+
+    empty my-tally
 
 ### **Reset All Tallies to 0**
 You can also reset all tallies to 0.
 
     !tb empty-all
 
-    ---- examples ----
+
+    ---- Server Examples ----
+
     !tb empty-all
+
+
+    ---- Direct Message Examples ----
+
+    empty-all
 
 ## Announcements
 All announcement schedules are run in `America/Los_Angeles` timezone. I have plans to do channel specific timezones but it is low priority. Please schedule accordingly!
@@ -304,7 +441,7 @@ Create an announcement with a _name_ and _description_. This command can also be
 
     !tb announce [name] [description]
 
-    ---- examples ----
+    ---- Server Examples ----
     !tb announce new-years In the future!
 
 ### **Set Announcement Tally Goal**
@@ -312,7 +449,7 @@ You can set an announcement to fire when a tally reaches a certain goal.
 
     !tb announce [name] -t [tally name] [tally goal]
 
-    ---- examples ----
+    ---- Server Examples ----
     !tb announce new-record -t ryan-apm 9001
 
 ### **Set an Announcement Date**
@@ -320,7 +457,7 @@ You can also set an announcement to fire on a specific date. [See here for help]
 
     !tb announce [name] -d [date]
 
-    ---- examples ----
+    ---- Server Examples ----
     !tb announce new-years -d 01-01-2042
 
 ### **Set an Announcement Cron**
@@ -328,7 +465,7 @@ If you are looking to set a repeating announcement, then you can use cron expres
 
     !tb announce [name] -d [cron]
 
-    ---- examples ----
+    ---- Server Examples ----
     !tb announce new-years -d 0 0 1 1 *
 
 ### **Stop Announcement**
@@ -336,7 +473,7 @@ Stop an announcement from running anymore.
 
     !tb announce [name] -kill
 
-    ---- examples ----
+    ---- Server Examples ----
     !tb announce new-years -kill
 
 
@@ -345,7 +482,7 @@ Delete an announcement from the database.
 
     !tb announce [name] -delete
 
-    ---- examples ----
+    ---- Server Examples ----
     !tb announce new-years -delete
 
 ### **Activate Announcement**
@@ -353,7 +490,7 @@ Activate an announcement to be able to run again.
 
     !tb announce [name] -activate
 
-    ---- examples ----
+    ---- Server Examples ----
     !tb announce new-years -activate
 
 ## Timers
@@ -368,7 +505,7 @@ Create a new timer with a _name_ and an optional _description_.
 
     !tb timer [name] [description]
 
-    ---- examples ----
+    ---- Server Examples ----
     !tb timer my-timer It times stuff!
 
 ### **Delete a Timer**
@@ -376,7 +513,7 @@ Delete a timer from the database.
 
     !tb timer rm [name]
     
-    ---- examples ----
+    ---- Server Examples ----
     !tb timer rm my-timer
 
 ### **Start a Timer**
@@ -384,7 +521,7 @@ Start a timer.
 
     !tb start [name]
 
-    ---- examples ----
+    ---- Server Examples ----
     !tb start my-timer
 
 ### **Stop a Timer**
@@ -392,7 +529,7 @@ Stop a timer.
 
     !tb stop [name]
 
-    ---- examples ----
+    ---- Server Examples ----
     !tb stop my-timer
 
 ### **Reset a Timer**
@@ -400,5 +537,5 @@ Reset a timer to 0:00
 
     !tb reset [name]
 
-    ---- examples ----
+    ---- Server Examples ----
     !tb reset my-timer

@@ -3,6 +3,7 @@ import {
 } from "discord.js";
 import helper from '../util/cmd-helper';
 import DB from '../util/db';
+import logger from "../util/logger";
 
 export default async (message: Message) => {
     const db = new DB();
@@ -20,11 +21,11 @@ export default async (message: Message) => {
         helper.finalize(message);
         message.channel.send(helper.buildRichMsg(richEmbed));
     } catch (e) {
-        console.log(`error while updating patchnotes settings for server ${e}`);
+        logger.info(`error while updating patchnotes settings for server ${e}`);
     }
 
     async function enable() {
-        console.log(`Enabling patch announcements for ${message.channel.id}`);
+        logger.info(`Enabling patch announcements for ${message.channel.id}`);
         const server: any = await db.Server.findOne({
             where: {
                 id: message.guild.id
@@ -36,7 +37,7 @@ export default async (message: Message) => {
     }
 
     async function disable() {
-        console.log(`Disabling patch announcements for ${message.channel.id}`);
+        logger.info(`Disabling patch announcements for ${message.channel.id}`);
         const server: any = await db.Server.findOne({
             where: {
                 id: message.guild.id

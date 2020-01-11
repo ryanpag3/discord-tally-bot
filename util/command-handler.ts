@@ -4,6 +4,7 @@ import { EventEmitter } from 'events';
 import Config from '../config';
 import CommandEventBuilder from './command-event-builder';
 import Commands from '../static/Commands';
+import logger from './logger';
 
 export default class CommandHandler {
     private emitter: EventEmitter;
@@ -17,8 +18,8 @@ export default class CommandHandler {
 
     async setOnError() {
         this.emitter.on('error', (err) => {
-            console.log('error from emitter');
-            console.log(err);
+            logger.info('error from emitter');
+            logger.info(err);
         });
     }
 
@@ -55,7 +56,6 @@ export default class CommandHandler {
      * @param message - message command belongs to
      */
     emit(command: string, message: any) {
-        // TODO: make more data driven as more added
         if (this.isBotIncludedCommand(command)) {
             this.emitter.emit(command, {
                 message: message,

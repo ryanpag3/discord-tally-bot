@@ -1,6 +1,7 @@
 import Discord from 'discord.js';
 import config from '../config';
 import PatchAnnouncer from './patch-announcer';
+import logger from './logger';
 
 export default {
     removePrefixCommand: (messageContent: string, commandLength) => {
@@ -83,7 +84,9 @@ export default {
      * run any finalization logic for the particular message
      */
     finalize: async (msg: any) => {
-        PatchAnnouncer.announcePatch(msg);
+        if (msg.channel.type == 'dm') return;
+        // TODO: make opt-in
+        // PatchAnnouncer.announcePatch(msg);
         deleteCommandMsg(msg);
     },
 
@@ -125,6 +128,6 @@ const deleteCommandMsg = async (msg: any) => {
         setTimeout(async () => await msg.delete(), config.delete_timeout);
     } catch (e) {
         if (e.toString().indexOf('Missing Permissions') == -1)
-            console.log(e);
+            logger.info(e);
     }
 }
