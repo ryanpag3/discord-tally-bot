@@ -431,7 +431,14 @@ export default class TallyHandler {
         const split = message.content.split(' ');
         const count: any = isDm ? split[1] : split[2];
         let j = 0;
+        const promises = [];
         for (let i = 0; i < count; i++, j++) {
+            promises.push(generateTally());
+        }
+        
+        return Promise.all(promises);
+
+        async function generateTally() {
             const name = randomstring.generate(16);
             const description = randomstring.generate(255);
             let tally;

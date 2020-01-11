@@ -281,6 +281,9 @@ export default class DB {
         if (isGlobal === true) delete where.channelId;
         const tallies = await this.Tally.findAll({
             where,
+            order: [
+                ['count', 'DESC']
+            ],
             limit,
             offset
         });
@@ -295,6 +298,9 @@ export default class DB {
             where: {
                 userId
             },
+            order: [
+                ['count', 'DESC']
+            ],
             limit,
             offset
         });
@@ -415,9 +421,9 @@ export default class DB {
     }
 
     async getTallyCount() {
-        return this.Tally.findAll({
+        return await this.Tally.count({
             where: {}
-        }).then(tallies => tallies.length);
+        });
     }
 
     async getCount(name: string, channelId: string) {
