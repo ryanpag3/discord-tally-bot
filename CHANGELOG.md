@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## 1.3
 ### Added
-- Added direct message support for a number of commands. See README.md for more details.
+- Added direct message support for a number of commands. See [README.md](https://github.com/ryanpag3/discord-tally-bot/blob/master/README.md) for more details.
 - Improved help command by adding navigation links
 
 
