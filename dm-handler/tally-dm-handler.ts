@@ -27,7 +27,7 @@ export default class TallyDmHandler {
     }
 
     static async runGet(message: Message) {
-        // TODO:
+        return await TallyHandler.runDetails(message, IS_DM_MESSAGE);
     }
 
     static async runBump(message: Message) {
@@ -56,6 +56,10 @@ export default class TallyDmHandler {
 
     static async runSuggest(message: Message) {
         // TODO:
+    }
+
+    static async runGenerate(message: Message) {
+        return await TallyHandler.runGenerate(message, IS_DM_MESSAGE);
     }
 
     static unMarshall(message: Message, amountRequired: boolean = false, tallyNameRequired: boolean = true) {

@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 import Commands from '../static/Commands';
 import TallyDmHandler from '../dm-handler/tally-dm-handler';
+import Env from './env';
 
 /**
  * Build DM events separate until we have reached feature equality
@@ -22,5 +23,16 @@ export default class DmEventBuilder {
         // show existing tallies
         emitter.on(Commands.SHOW, TallyDmHandler.runShow);
 
+        // get tally details
+        emitter.on(Commands.DETAILS, TallyDmHandler.runGet);
+        emitter.on(Commands.GET, TallyDmHandler.runGet);
+
+
+        /**
+         * The following commands are only exposed when bot is run without `production` flag
+         */
+        if (Env.isProduction() === false) {
+            emitter.on(Commands.GENERATE, TallyDmHandler.runGenerate);
+        }
     }
 }

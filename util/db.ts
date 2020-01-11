@@ -323,7 +323,6 @@ export default class DB {
                 userId
             }
         });
-        logger.info(count);
         return count;
     }
 
