@@ -11,46 +11,66 @@ export default class TallyHandler {
     /**
      * Execute a bump command
      */
-    static async runBump(message: Message) {
-        return await TallyHandler.bumpOrDump(true, message);
+    static async runBump(message: Message, isDm: boolean = false) {
+        return await TallyHandler.bumpOrDump(true, message, isDm);
     }
 
     /**
      * Execute a dump command
      */
-    static async runDump(message: Message) {
-        return await TallyHandler.bumpOrDump(false, message);
+    static async runDump(message: Message, isDm: boolean = false) {
+        return await TallyHandler.bumpOrDump(false, message, isDm);
     }
 
     /**
      * Execute either a bump or dump depending on isBump
+     * TODO: this is some old code that could use some TLC
      */
-    static async bumpOrDump(isBump: boolean, message: Message) {
+    static async bumpOrDump(isBump: boolean, message: Message, isDm: boolean = false) {
         let richEmbed;
         try {
-            const { isGlobal, command, tallyName, amount, channelId, serverId } = TallyHandler.unMarshall(message);
-            const tally = await TallyHandler.db.getCmdTally(message.channel.id, message.guild.id, isGlobal, tallyName);
-            if (!tally) throw new Error(`Could not find tally named **${tallyName}**.`);
-            const previous = tally.count;
-            await TallyHandler.updateTallyByAmount(isBump, channelId, serverId, isGlobal, tallyName, previous, amount);
-            await tally.reload();
-            logger.info(`
-            ${TallyHandler.getBumpOrDump(isBump, 'ed')} ${tallyName}
-            ------------------
-            ${previous} >>> ${tally.count}
-            channel ID: ${channelId}
-            server ID: ${serverId}    
-            user: ${message.author.tag}
-            `);
-
-            richEmbed = CmdHelper.getRichEmbed(message.author.username)
-                .setTitle(`${isBump ? ':small_red_triangle:' : ':small_red_triangle_down:'} ${command}`)
-                .setDescription(`${isGlobal ? '[G]' : '[C]'} ${tally.name} | **${previous}** >>> **${tally.count}** \n\n${TallyHandler.getTallyDescription(tally)}`);
+            const { tallyName, command } = TallyHandler.getFieldsByTallyType(message, isDm, ['tallyName', 'command']);
+            const couldNotFindErrorMsg = `Could not find tally named **${tallyName}**`;
+            richEmbed = CmdHelper.getRichEmbed(message.author.username).setTitle(`${isBump ? ':small_red_triangle:' : ':small_red_triangle_down:'} ${command}`);
+            if (isDm) {
+                const { amount }: any = TallyDmHandler.unMarshall(message);
+                const tally = await TallyHandler.db.getDmTally(message.author.id, tallyName);
+                if (!tally) throw new Error(couldNotFindErrorMsg);
+                const previous = tally.count;
+                await TallyHandler.db.updateDmTally(message.author.id, tallyName, {
+                    count: isBump ? previous + amount : previous - amount
+                });
+                await tally.reload();
+                logger.info(`
+                ${TallyHandler.getBumpOrDump(isBump, 'ed')} ${tallyName}
+                ------------------
+                ${previous} >>> ${tally.count}
+                user: ${message.author.tag}
+                id: ${message.author.id}
+                `);
+                richEmbed.setDescription(`${tally.name} | **${previous}** >>> **${tally.count}** \n\n${TallyHandler.getTallyDescription(tally)}`);
+            } else {
+                const { isGlobal, tallyName, amount, channelId, serverId } = TallyHandler.unMarshall(message);
+                const tally = await TallyHandler.db.getCmdTally(message.channel.id, message.guild.id, isGlobal, tallyName);
+                if (!tally) throw new Error(couldNotFindErrorMsg);
+                const previous = tally.count;
+                await TallyHandler.updateCmdTallyByAmount(isBump, channelId, serverId, isGlobal, tallyName, previous, amount);
+                await tally.reload();
+                logger.info(`
+                ${TallyHandler.getBumpOrDump(isBump, 'ed')} ${tallyName}
+                ------------------
+                ${previous} >>> ${tally.count}
+                channel ID: ${channelId}
+                server ID: ${serverId}    
+                user: ${message.author.tag}
+                `);
+                richEmbed.setDescription(`${isGlobal ? '[G]' : '[C]'} ${tally.name} | **${previous}** >>> **${tally.count}** \n\n${TallyHandler.getTallyDescription(tally)}`);
+            }
 
             if (isBump) await Counter.bumpTotalBumps();
             else await Counter.bumpTotalDumps();
         } catch (e) {
-            logger.info(`Error while running bumpOrDump: ` + e);
+            logger.error(`Error while running bumpOrDump: ` + e);
             richEmbed = CmdHelper.getRichEmbed(message.author.username)
                 .setTitle(`I could not ${TallyHandler.getBumpOrDump(isBump)}.`)
                 .setDescription(`${e.message}`);
@@ -60,8 +80,8 @@ export default class TallyHandler {
         CmdHelper.finalize(message);
     }
 
-    static async updateTallyByAmount(isBump: boolean, channelId: string, serverId: string, isGlobal: boolean, tallyName: string, previousAmount: number, amount: number) {
-        await TallyHandler.db.updateTally(channelId, serverId, isGlobal, tallyName, {
+    static async updateCmdTallyByAmount(isBump: boolean, channelId: string, serverId: string, isGlobal: boolean, tallyName: string, previousAmount: number, amount: number) {
+        await TallyHandler.db.updateCmdTally(channelId, serverId, isGlobal, tallyName, {
             count: isBump ? previousAmount + amount : previousAmount - amount
         });
     }
@@ -107,25 +127,40 @@ export default class TallyHandler {
         return tally.description ? CmdHelper.truncate(Buffer.from(tally.description, 'base64'), 128) : 'No description.';
     }
 
-    static async runSet(message: Message) {
-        let richEmbed;
-        const { isGlobal, command, tallyName, amount, channelId, serverId } = TallyHandler.unMarshall(message, true);
+    static async runSet(message: Message, isDm: boolean = false) {
+        const { tallyName, command } = TallyHandler.getFieldsByTallyType(message, isDm, ['tallyName', 'command']);
+        let richEmbed = CmdHelper.getRichEmbed(message.author.username).setTitle(`:small_blue_diamond: ${command}`);
+        const couldNotFindMsg = `Could not find tally with name **${tallyName}**.`;
         try {
-            const tally = await TallyHandler.db.getCmdTally(channelId, serverId, isGlobal, tallyName);
-            if (!tally) throw new Error(`Could not find tally with name **${tallyName}**.`);
-            const description = tally.description;
-            tally.count = amount;
-            await TallyHandler.db.saveTally(tally);
-            logger.info(`
+            if (isDm) {
+                const { amount } = TallyDmHandler.unMarshall(message, true);
+                const tally = await TallyHandler.db.getDmTally(message.author.id, tallyName);
+                if (!tally) throw new Error(couldNotFindMsg);
+                const description = tally.description;
+                tally.count = amount;
+                await TallyHandler.db.saveTally(tally);
+                logger.info(`
                 ${tallyName} has been set.
                 ------------
                 previous: ${tally.count}
                 new: ${amount}
                 `);
-
-            richEmbed = CmdHelper.getRichEmbed(message.author.username)
-                .setTitle(`:small_blue_diamond: ${command}`)
-                .setDescription(`${isGlobal ? '[G]' : '[C]'} **${tallyName}** has been set to ${amount}.\n\n${description}`);
+                richEmbed.setDescription(`**${tallyName}** has been set to ${amount}.\n\n${description}`);
+            } else {
+                const { isGlobal, tallyName, amount, channelId, serverId } = TallyHandler.unMarshall(message, true);
+                const tally = await TallyHandler.db.getCmdTally(channelId, serverId, isGlobal, tallyName);
+                if (!tally) throw new Error(couldNotFindMsg);
+                const description = tally.description;
+                tally.count = amount;
+                await TallyHandler.db.saveTally(tally);
+                logger.info(`
+                ${tallyName} has been set.
+                ------------
+                previous: ${tally.count}
+                new: ${amount}
+                `);
+                richEmbed.setDescription(`${isGlobal ? '[G]' : '[C]'} **${tallyName}** has been set to ${amount}.\n\n${description}`);
+            }
         } catch (e) {
             logger.info(e);
             richEmbed = CmdHelper.getRichEmbed(message.author.username)
@@ -194,10 +229,17 @@ export default class TallyHandler {
             richEmbed = CmdHelper.getRichEmbed(message.author.username)
                 .setTitle(`:bar_chart: ${tally.command}`)
                 .setDescription(
-                    `**name:** ${isDm ? '' : TallyHandler.getIsGlobalIcon(tally.isGlobal)} ${tally.name}\n\n**description:** ${tally.description}\n\nfor commands: [click here](https://github.com/ryanpag3/discord-tally-bot/blob/master/README.md)`
+                    `**name:** ${isDm ? '' : TallyHandler.getIsGlobalIcon(tally.isGlobal)} ${tally.name}\n\n**description:** ${
+                        tally.description
+                    }\n\nfor commands: [click here](https://github.com/ryanpag3/discord-tally-bot/blob/master/README.md)`
                 );
-        } catch (e) { 
-            if (e.toString().toLowerCase().includes('validation error'))
+        } catch (e) {
+            if (
+                e
+                    .toString()
+                    .toLowerCase()
+                    .includes('validation error')
+            )
                 e = `Tally already exists.`;
             logger.error(e);
             const fields = TallyHandler.getFieldsByTallyType(message, isDm, ['command', 'tallyName']);
@@ -232,7 +274,7 @@ export default class TallyHandler {
         } else {
             for (let field of fields) {
                 o[field] = TallyHandler.unMarshall(message, false, false)[field];
-            }      
+            }
         }
         return o;
     }
@@ -263,18 +305,17 @@ export default class TallyHandler {
         }
         if (richEmbed) message.channel.send(richEmbed);
         CmdHelper.finalize(message);
-        
+
         function getDestroyedMsg(name: string) {
             return `Tally ${name} has been destroyed.`;
         }
     }
 
     static async runDescribe(message: Message, isDm: boolean = false) {
-        let emoji = ':pencil2:'
+        let emoji = ':pencil2:';
 
         const { tallyName, command } = TallyHandler.getFieldsByTallyType(message, isDm, ['tallyName', 'command']);
-        let richEmbed = CmdHelper.getRichEmbed(message.author.username)
-            .setTitle(`${emoji} ${command}`);
+        let richEmbed = CmdHelper.getRichEmbed(message.author.username).setTitle(`${emoji} ${command}`);
         try {
             if (isDm) {
                 const { description } = TallyDmHandler.unMarshall(message);
@@ -302,7 +343,7 @@ export default class TallyHandler {
         let richEmbed;
         try {
             logger.debug(`setting cmd tally to be channel-scoped`);
-            await TallyHandler.db.updateTally(channelId, serverId, true, tallyName, {
+            await TallyHandler.db.updateCmdTally(channelId, serverId, true, tallyName, {
                 isGlobal: false,
                 channelId: message.channel.id
             });
@@ -331,7 +372,7 @@ export default class TallyHandler {
         const { command, tallyName, channelId, serverId } = TallyHandler.unMarshall(message);
         let richEmbed;
         try {
-            await TallyHandler.db.updateTally(channelId, serverId, false, tallyName, {
+            await TallyHandler.db.updateCmdTally(channelId, serverId, false, tallyName, {
                 isGlobal: true
             });
             richEmbed = CmdHelper.getRichEmbed(message.author.username)
@@ -369,16 +410,14 @@ export default class TallyHandler {
                 offset = TallyHandler.getDmShowOffset(message);
                 if (offset < 0) offset = 0;
                 tallies = await TallyHandler.db.getDmTallies(message.author.id, limit, offset * limit);
-                richEmbed = CmdHelper.getRichEmbed(message.author.username)
-                    .setTitle(`:abacus: ${command} • ${count} total`);
+                richEmbed = CmdHelper.getRichEmbed(message.author.username).setTitle(`:abacus: ${command} • ${count} total`);
             } else {
                 const { channelId, serverId, isGlobal } = TallyHandler.unMarshall(message, false, false);
                 offset = TallyHandler.getShowOffset(message, isGlobal);
                 if (offset < 0) offset = 0;
                 count = await TallyHandler.db.getCmdTalliesCount(channelId, serverId, isGlobal);
                 tallies = await TallyHandler.db.getCmdTallies(channelId, serverId, isGlobal, limit, offset * limit);
-                richEmbed = CmdHelper.getRichEmbed(message.author.username)
-                    .setTitle(`:abacus: ${command} • ${TallyHandler.getIsGlobalIcon(isGlobal)} ${count} total`);
+                richEmbed = CmdHelper.getRichEmbed(message.author.username).setTitle(`:abacus: ${command} • ${TallyHandler.getIsGlobalIcon(isGlobal)} ${count} total`);
             }
             tallies = TallyHandler.sortByCount(tallies);
             const page = offset + 1;
@@ -435,7 +474,7 @@ export default class TallyHandler {
         for (let i = 0; i < count; i++, j++) {
             promises.push(generateTally());
         }
-        
+
         return Promise.all(promises);
 
         async function generateTally() {
@@ -444,8 +483,7 @@ export default class TallyHandler {
             let tally;
             if (isDm) {
                 tally = await TallyHandler.db.createDmTally(message.author.id, name, description);
-            } else 
-                tally = await TallyHandler.db.createCmdTally(message.channel.id, message.guild.id, false, name, description);
+            } else tally = await TallyHandler.db.createCmdTally(message.channel.id, message.guild.id, false, name, description);
             tally.description = Buffer.from(tally.description).toString('base64');
             tally.count = randomstring.generate({
                 length: 5,
@@ -460,19 +498,18 @@ export default class TallyHandler {
         const { tallyName, command } = TallyHandler.getFieldsByTallyType(message, isDm, ['tallyName', 'command']);
         try {
             let tally;
-            richEmbed = CmdHelper.getRichEmbed(message.author.username)
-                .setTitle(`:printer: ${command}`)
+            richEmbed = CmdHelper.getRichEmbed(message.author.username).setTitle(`:printer: ${command}`);
             if (isDm) {
                 tally = await TallyHandler.db.getDmTally(message.author.id, tallyName);
                 if (!tally) throw new Error(`Tally ${tallyName}** does not exist.`);
-
             } else {
                 const { isGlobal, tallyName, channelId, serverId } = TallyHandler.unMarshall(message);
                 tally = await TallyHandler.db.getCmdTally(channelId, serverId, isGlobal, tallyName);
                 if (!tally) throw new Error(`Tally **${TallyHandler.getIsGlobalIcon(isGlobal)} ${tallyName}** does not exist.`);
                 richEmbed.addField(`Type`, `${TallyHandler.getIsGlobalKeyword(isGlobal)}`);
             }
-            richEmbed.addField(`Name`, `${tallyName}`)
+            richEmbed
+                .addField(`Name`, `${tallyName}`)
                 .addField(`Count`, `${tally.count}`)
                 .addField(`Description`, `${tally.description}`)
                 .addField(`Created On`, `${tally.createdOn ? new Date(tally.createdOn).toLocaleDateString() : 'Not found.'}`);

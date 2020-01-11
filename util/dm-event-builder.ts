@@ -27,6 +27,14 @@ export default class DmEventBuilder {
         emitter.on(Commands.DETAILS, TallyDmHandler.runGet);
         emitter.on(Commands.GET, TallyDmHandler.runGet);
 
+        // bump a tally
+        emitter.on(Commands.BUMP, TallyDmHandler.runBump);
+
+        // dump a tally
+        emitter.on(Commands.DUMP, TallyDmHandler.runDump);
+
+        // set a tally to an amount
+        emitter.on(Commands.SET, TallyDmHandler.runSet);
 
         /**
          * The following commands are only exposed when bot is run without `production` flag

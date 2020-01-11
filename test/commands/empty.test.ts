@@ -31,7 +31,7 @@ describe('empty command', function() {
         const fakeMsg = TestHelper.getFakeMessage();
         fakeMsg['content'] = '!tb empty ' + TALLY_NAME;
         await db.createCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, '');
-        await db.updateTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, {
+        await db.updateCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), false, TALLY_NAME, {
             count: 100
         });
         await TallyHandler.runEmpty(fakeMsg as any);

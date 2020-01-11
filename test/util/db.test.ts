@@ -117,7 +117,7 @@ describe('db.ts', function() {
     it('.updateTally should throw an error if tally doesnt exist', async () => {
         let err;
         try {
-            await db.updateTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME, {});
+            await db.updateCmdTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME, {});
         } catch (e) {
             err = e;
         }
@@ -129,7 +129,7 @@ describe('db.ts', function() {
         const up = {
             serverId: '1234'
         };
-        await db.updateTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME, up);
+        await db.updateCmdTally(CHANNEL_ID, SERVER_ID, IS_GLOBAL, NAME, up);
         const tally = await db.getCmdTally(CHANNEL_ID, up.serverId, IS_GLOBAL, NAME);
         expect(tally).to.exist;
     });

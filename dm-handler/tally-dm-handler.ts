@@ -18,6 +18,10 @@ export default class TallyDmHandler {
         return await TallyHandler.runDelete(message, IS_DM_MESSAGE);
     }
 
+    static async runDeleteAll(message: Message) {
+        // TODO
+    }
+
     static async runDescribe(message: Message) {
         return await TallyHandler.runDescribe(message, IS_DM_MESSAGE);
     }
@@ -31,15 +35,15 @@ export default class TallyDmHandler {
     }
 
     static async runBump(message: Message) {
-        // TODO:
+        return await TallyHandler.runBump(message, IS_DM_MESSAGE);
     }
 
     static async runDump(message: Message) {
-        // TODO:
+        return await TallyHandler.runDump(message, IS_DM_MESSAGE);
     }
 
     static async runSet(message: Message) {
-        // TODO:
+        return await TallyHandler.runSet(message, IS_DM_MESSAGE);
     }
 
     static async runEmpty(message: Message) {
@@ -68,7 +72,7 @@ export default class TallyDmHandler {
         if (!command) throw new Error(`Command required.`);
         const tallyName = split[1];
         if (tallyNameRequired && !tallyName) throw new Error(`Tally name required.`);
-        const amount = split[2] ? split[2] : Number.parseInt(split[3]);
+        const amount = split[2] ? Number.parseInt(split[2]) : 1;
         if (amountRequired && !split[2]) throw new Error(`Ammount required.`);
         const description = split.slice(2, split.length).join(' ');
         return { command, tallyName, amount, description };

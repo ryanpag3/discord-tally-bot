@@ -368,10 +368,16 @@ export default class DB {
         }
     }
 
-    async updateTally(channelId, serverId, isGlobal, name, updateObj) {
+    async updateCmdTally(channelId, serverId, isGlobal, name, updateObj) {
         const tally = await this.getCmdTally(channelId, serverId, isGlobal, name);
-        if (!tally) throw new Error(`could not find tally to update`);
+        if (!tally) throw new Error(`could not find cmd tally to update`);
         return await tally.update(updateObj);
+    }
+
+    async updateDmTally(userId: string, name: string, update: any) {
+        const tally = await this.getDmTally(userId, name);
+        if (!tally) throw new Error(`could not find dm tally to update`);
+        return await tally.update(update);
     }
 
     async updateTallies(serverId: string, channelId: string, isGlobal: boolean, update: any) {
