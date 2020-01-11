@@ -19,7 +19,7 @@ export default class TallyDmHandler {
     }
 
     static async runDeleteAll(message: Message) {
-        return await TallyHandler.runDelete(message, IS_DM_MESSAGE);
+        return await TallyHandler.deleteAll(message, IS_DM_MESSAGE);
     }
 
     static async runDescribe(message: Message) {

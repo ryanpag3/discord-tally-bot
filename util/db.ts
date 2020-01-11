@@ -281,9 +281,7 @@ export default class DB {
         if (isGlobal === true) delete where.channelId;
         const tallies = await this.Tally.findAll({
             where,
-            order: [
-                ['count', 'DESC']
-            ],
+            order: [['count', 'DESC']],
             limit,
             offset
         });
@@ -298,9 +296,7 @@ export default class DB {
             where: {
                 userId
             },
-            order: [
-                ['count', 'DESC']
-            ],
+            order: [['count', 'DESC']],
             limit,
             offset
         });
@@ -353,7 +349,7 @@ export default class DB {
     async setCmdTallyDescription(channelId, serverId, isGlobal, name, newDescription) {
         this.checkValidTallyDescription(newDescription);
         const tally = await this.getCmdTally(channelId, serverId, isGlobal, name);
-        await this.setTallyDescription(tally, newDescription)
+        await this.setTallyDescription(tally, newDescription);
     }
 
     async setTallyDescription(tally: any, newDescription: string) {
@@ -384,7 +380,8 @@ export default class DB {
         const where: any = {
             serverId,
             channelId,
-            isGlobal
+            isGlobal,
+            userId: Default.CMD_TALLY_USERID
         };
         if (isGlobal) delete where.channelId;
         await this.Tally.update(update, {
@@ -400,10 +397,16 @@ export default class DB {
 
     async updateDmTallies(userId: string, update: any) {
         await this.Tally.update(update, {
-            userId
+            where: {
+                userId,
+                serverId: Default.USER_TALLY_SERVERID,
+                channelId: Default.USER_TALLY_CHANNELID
+            }
         });
         const tallies = await this.Tally.findAll({
-            userId
+            where: {
+                userId
+            }
         });
         logger.info(`${tallies.length} tallies have been updated with ${JSON.stringify(update)}`);
         return tallies;

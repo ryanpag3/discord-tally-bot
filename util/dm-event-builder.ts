@@ -6,6 +6,7 @@ import bug from '../commands/bug';
 import suggest from '../commands/suggest';
 import help from '../commands/help';
 import test from '../commands/test';
+import CmdHandler from '../command-handlers/cmd-handler';
 
 /**
  * Build DM events separate until we have reached feature equality
@@ -63,6 +64,10 @@ export default class DmEventBuilder {
         // give help
         emitter.on(Commands.HELP, help);
         emitter.on(Commands.H, help);
+
+        // get invite link
+        emitter.on(Commands.INVITE, CmdHandler.runInvite);
+
 
         /**
          * The following commands are only exposed when bot is run without `production` flag
