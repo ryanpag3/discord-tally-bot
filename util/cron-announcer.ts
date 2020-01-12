@@ -1,6 +1,4 @@
-import {
-    CronJob
-} from 'cron';
+import { CronJob } from 'cron';
 import DB from './db';
 import helper from './cmd-helper';
 import logger from './logger';
@@ -48,20 +46,36 @@ export default class Cron {
         logger.info(`creating new cron job for ${announceName} on ${channelId} at ${date}`);
         let repeating = true;
         if (typeof date !== 'string') repeating = false;
-        cronCache[announceName] = new CronJob(date, () => {
-            Cron.announce(announceName, channelId);
-            if (!repeating) Cron.destroyCronJob(announceName, channelId);
-        }, null, true, 'America/Los_Angeles');
+        try {
+            cronCache[announceName] = new CronJob(
+                date,
+                () => {
+                    Cron.announce(announceName, channelId);
+                    if (!repeating) Cron.destroyCronJob(announceName, channelId);
+                },
+                null,
+                true,
+                'America/Los_Angeles'
+            );
+        } catch (e) {
+            logger.error(e);
+            if (e.message.toString().includes('Date in past. Will never be fired')) {
+                const db = new DB();
+                await db.deleteAnnounce(channelId, announceName); 
+            }
+        }
     }
 
     static async destroyCronJob(announceName, channelId) {
         const db = new DB();
         if (!cronCache[announceName]) return;
         logger.info(`Destroying cron job for ${announceName}`);
-        const announce: any = await db.Announcement.findOne({ where :{
-            channelId: channelId,
-            name: announceName
-        }});
+        const announce: any = await db.Announcement.findOne({
+            where: {
+                channelId: channelId,
+                name: announceName
+            }
+        });
         if (announce) {
             announce.active = false;
             announce.save();
@@ -71,7 +85,7 @@ export default class Cron {
     }
 
     /**
-     * run an announcement 
+     * run an announcement
      */
     static async announce(announceName, channelId) {
         const db = new DB();
@@ -83,22 +97,24 @@ export default class Cron {
             }
         });
 
-        if (!announcement){
+        if (!announcement) {
             delete cronCache[announceName];
             return;
         }
 
         const richEmbed = {
             title: `:trumpet: New Announcement! :trumpet:`,
-            fields: [{
-                title: `Title`,
-                value: announceName
-            },
-            {
-                title: 'Announcement',
-                value: announcement.description
-            }]
-        }
+            fields: [
+                {
+                    title: `Title`,
+                    value: announceName
+                },
+                {
+                    title: 'Announcement',
+                    value: announcement.description
+                }
+            ]
+        };
         const channel = await Cron.getChannel(channelId);
         if (channel === null) {
             await announcement.destroy();
