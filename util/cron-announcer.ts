@@ -61,7 +61,7 @@ export default class Cron {
             logger.error(e);
             if (e.message.toString().includes('Date in past. Will never be fired')) {
                 const db = new DB();
-                await db.deleteAnnounce(channelId, announceName); 
+                await db.deleteAnnounce(channelId, announceName);
             }
         }
     }
