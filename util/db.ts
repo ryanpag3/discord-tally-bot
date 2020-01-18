@@ -316,7 +316,7 @@ export default class DB {
         const where = {
             channelId,
             serverId,
-            isGlobal
+            isGlobal 
         };
         if (isGlobal === true) delete where.channelId;
         const count = await this.Tally.count({
@@ -654,23 +654,30 @@ export default class DB {
             }
         });
     }
-
+  
     /**
      * normalize tallies by adding their serverId to any tally that belonds to a channel
      * @param channels
      */
     async normalizeTallies(channels) {
         const tallies = await this.getUnnormalizedTallies();
-        if (tallies.length > 0) logger.info(`Normalizing tally schemas for ${tallies.length} tallies.`);
+        let i = 0;
         for (let tally of tallies) {
             const channel = channels.get(tally.channelId);
-            if (!channel) continue;
+            if (!channel) {
+                // thought about destroying records but decided to keep them
+                // just in case a user invites the bot back to a server...
+                continue;
+            }
             const server = channel.guild;
             tally.serverId = server.id;
             tally.isGlobal = false;
             tally.save();
             logger.info(`Assigned channel [${channel.id}] to server [${server.id}]`);
+            i++;
         }
+        if (i != 0)
+            logger.info(`Normalizing tally schemas for ${tallies.length} tallies.`);
         await this.encodeTallyDescriptions();
     }
 
@@ -691,8 +698,8 @@ export default class DB {
                 }
             }
         });
-        return tallies;
-    }
+        return tallies; 
+    } 
 
     async encodeTallyDescriptions() {
         const Tally = this.Tally;
@@ -737,15 +744,17 @@ export default class DB {
         await tally.save();
     }
 
-    async createUser(id: string) {
-        return null;
+    async createUser(id: string, tag: string) {
+        return await this.User.create({ id, tag });
     }
 
     async getUser(id: string) {
-        return null;
+        return await this.User.findOne({ where: { id }});
     }
     
-    async updateUser(id: string, update: any) {
-        return null;
+    async updateUser(id: string, newVals: any) {
+        const user = await this.getUser(id);
+        if (!user) throw new Error(`cannot find user to update!`);
+        await user.update(newVals);
     }
 }

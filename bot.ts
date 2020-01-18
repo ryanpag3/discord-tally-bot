@@ -11,6 +11,7 @@ import Counter from './util/counter';
 import logger from './util/logger';
 import DmManager from './message/dm-manager';
 import Env from './util/env';
+import UserUtil from './util/user';
 
 class Bot {
     static client: Client = new Discord.Client();
@@ -33,14 +34,16 @@ class Bot {
         Bot.client.on('ready', async () => {
             try {
                 logger.info(`Tally Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);
+                await UserUtil.initAll(Bot.client.users); // run each reconnect to keep updated
                 if (!Bot.initialReady) return;
                 setTimeout(() => Bot.startBroadcasting(), 5000);
                 CronAnnouncer.setBot({
                     bot: Bot.client
                 });
-                CronAnnouncer.initCronJobs();
+                // we have to wait to init once login is complete
                 await Bot.db.initServers(Bot.client.guilds);
                 await Bot.db.normalizeTallies(Bot.client.channels);
+                await CronAnnouncer.initCronJobs();
                 Bot.initialReady = false;
             } catch (e) {
                 logger.info(`An error occured while running post-launch behavior ${e}`);

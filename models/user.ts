@@ -7,6 +7,9 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
             allowNull: false,
             primaryKey: true
         },
+        tag: {
+            type: DataTypes.STRING
+        },
         isActive: {
             type: DataTypes.BOOLEAN,
             allowNull: false,

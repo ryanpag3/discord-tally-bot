@@ -10,6 +10,7 @@ import CommandManager from './message/command-manager';
 import Counter from './util/counter';
 import logger from './util/logger';
 import DmManager from './message/dm-manager';
+import UserUtil from './util/user';
 
 const bot = new Discord.Client();
 const commandHandler = new CommandManager(bot);
@@ -17,7 +18,7 @@ DmManager.setBotClient(bot);
 
 let dbl;
 if (process.env.NODE_ENV == 'production')
-    // don't POST stats in dev
+    // don't POST stats in dev 
     dbl = new DBL(ConfigPrivate.dbots_token, bot);
 
 const db = new DB();
@@ -33,6 +34,7 @@ bot.on('ready', async () => {
             bot: bot
         });
         CronAnnouncer.initCronJobs();
+        await UserUtil.initAll(bot.users);
         await db.initServers(bot.guilds);
         await db.normalizeTallies(bot.channels);
         initialReady = false;
