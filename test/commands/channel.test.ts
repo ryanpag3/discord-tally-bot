@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import TestHelper from '../test-helper';
 import DB from '../../util/db';
 import Counter from '../../util/counter';
-import TallyHandler from '../../command-handlers/tally-handler';
+import TallyHandler from '../../message/command/tally-handler';
 import logger from '../../util/logger';
 
 describe('channel command', function() {

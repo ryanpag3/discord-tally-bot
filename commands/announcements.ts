@@ -2,8 +2,8 @@ import {
     Message
 } from "discord.js";
 import DB from '../util/db';
-import helper from '../util/cmd-helper';
-import cmdHelper from "../util/cmd-helper";
+import helper from '../message/cmd-helper';
+import cmdHelper from "../message/cmd-helper";
 import logger from "../util/logger";
 
 const db = new DB();

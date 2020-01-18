@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import DB from '../../util/db';
 import TestHelper from '../test-helper';
-import CommandHandler from '../../util/command-handler';
+import CommandManager from '../../message/command-manager';
 import Counter from '../../util/counter';
 import Bluebird = require('bluebird');
 
@@ -12,7 +12,7 @@ describe('dump command', function() {
     let serverId;
     
     const db = new DB();
-    const commandHandler = new CommandHandler();
+    const commandHandler = new CommandManager();
 
     before(async () => {
         TestHelper.exportDBEnvironmentVar();

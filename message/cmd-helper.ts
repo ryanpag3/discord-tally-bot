@@ -1,7 +1,6 @@
 import Discord from 'discord.js';
 import config from '../config';
-import PatchAnnouncer from './patch-announcer';
-import logger from './logger';
+import logger from '../util/logger';
 
 export default {
     removePrefixCommand: (messageContent: string, commandLength) => {
@@ -13,34 +12,7 @@ export default {
     },
 
     /**
-     * build a rich embed message object
-     * sample msg object
-     *     const msg = {
-                title: `_Tally Bot Command Reference_`,
-                description: `For full documentation, please refer to https://github.com/ryanpage42/discord-tally-bot`,
-                color: `#42f486`,
-                fields: [
-                    {
-                       title: `Basic Utilities`,
-                        value: `\`!tb help\` - show this dialog
-                                \`!tb show\` - show all current tallies
-                       `
-                    },
-                    {
-                        title: `Manage Tallies`,
-                        value: `
-                                \`!tb create <name> <description>\`
-                                \`!tb add <name> <description>\`
-                                \`!tb delete <name>\`
-                                \`!tb rm <name>\`
-                                \`!tb bump <name>\`
-                                \`!tb dump <name>\`
-                                \`!tb set <name> <value>\`
-                                \`!tb empty <name>\`
-                               `
-                    }
-                ]
-            }
+     * @deprecated Please use .getRichEmbed
      */
     buildRichMsg: (msg: any) => {
         const embed = new Discord.RichEmbed()

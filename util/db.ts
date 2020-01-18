@@ -21,6 +21,7 @@ export default class DB {
     Timer;
     Announcement;
     Channel;
+    User;
     Server;
     Permission;
 
@@ -139,6 +140,7 @@ export default class DB {
         this.Announcement = this.sequelize.import('../models/announcement');
         this.Channel = this.sequelize.import('../models/channel');
         this.Server = this.sequelize.import('../models/server');
+        this.User = this.sequelize.import('../models/user');
         this.Permission = this.sequelize.import('../models/permission');
     }
 
@@ -157,6 +159,10 @@ export default class DB {
         });
         logger.info('creating and/or altering Channel table');
         await this.Channel.sync({
+            alter: true
+        });
+        logger.info('creating and/or altering User table');
+        await this.User.sync({
             alter: true
         });
         logger.info('creating and/or altering Server table');
@@ -729,5 +735,17 @@ export default class DB {
     async saveTally(tally: any) {
         tally.description = Buffer.from(tally.description).toString('base64');
         await tally.save();
+    }
+
+    async createUser(id: string) {
+        return null;
+    }
+
+    async getUser(id: string) {
+        return null;
+    }
+    
+    async updateUser(id: string, update: any) {
+        return null;
     }
 }

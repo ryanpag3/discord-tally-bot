@@ -1,4 +1,4 @@
-import helper from '../util/cmd-helper';
+import helper from '../message/cmd-helper';
 import pConfig from '../config-private';
 import logger from '../util/logger';
 import Config from '../config';

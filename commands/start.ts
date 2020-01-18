@@ -4,7 +4,7 @@ import {
 } from "discord.js";
 import moment from 'moment';
 import DB from '../util/db';
-import helper from '../util/cmd-helper';
+import helper from '../message/cmd-helper';
 
 // create a timer
 export default async (message: Message) => {

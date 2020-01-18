@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import DB from "../util/db";
+import DB from "../../util/db";
 
 
 export default class AnnounceCmdHandler {

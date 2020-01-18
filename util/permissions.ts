@@ -1,4 +1,4 @@
-import cmdHelper from "./cmd-helper";
+import cmdHelper from "../message/cmd-helper";
 import DB from './db';
 import Commands from '../static/Commands';
 
