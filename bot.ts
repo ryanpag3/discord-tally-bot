@@ -122,7 +122,10 @@ const startBroadcasting = () => {
             if (dbl) dbl.postStats(bot.guilds.size);
         },
         () => {
-            bot.user.setActivity(`!tb help for commands.`);
+            bot.user.setActivity(`"!tb help" for commands.`);
+        },
+        () => {
+            bot.user.setActivity(`DM "help" for commands.`);
         },
         async () => {
             const tallyCnt = await db.getTallyCount();
