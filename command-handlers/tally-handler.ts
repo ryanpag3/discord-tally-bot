@@ -1,4 +1,4 @@
-import { Message } from 'discord.js';
+import { Message, ReactionEmoji } from 'discord.js';
 import CmdHelper from '../util/cmd-helper';
 import DB from '../util/db';
 import Counter from '../util/counter';
@@ -75,8 +75,13 @@ export default class TallyHandler {
                 .setTitle(`I could not ${TallyHandler.getBumpOrDump(isBump)}.`)
                 .setDescription(`${e.message}`);
         }
-
-        if (richEmbed) message.channel.send(richEmbed);
+        const sentMsg: any = await message.channel.send(richEmbed);
+        try {
+            await sentMsg.react('🔼');
+            await sentMsg.react('🔽')
+        } catch (e) {
+            logger.error(`error occured while attempting to react...`, e);
+        }
         CmdHelper.finalize(message);
     }
 
