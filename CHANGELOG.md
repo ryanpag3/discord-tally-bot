@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Added direct message support for a number of commands. See [README.md](https://github.com/ryanpag3/discord-tally-bot/blob/master/README.md) for more details.
 - Improved help command by adding navigation links
+- Add up and downvote to bump and dump commands
 
 
 ### Fixed

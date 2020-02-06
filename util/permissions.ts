@@ -89,7 +89,7 @@ export default class Permissions {
             mArr.splice(0, 3);
             let roleStr = mArr.join(' ');
 
-            const command = Commands[rawCommand.toUpperCase()];
+            const command = Commands[rawCommand.toUpperCase().replace('-', '_')];
             if (!command) throw `Invalid command listed for permission definition.`;
 
             const isValid = Permissions.isValidServerRole(message.guild, roleStr);
