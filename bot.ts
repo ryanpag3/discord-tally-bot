@@ -34,7 +34,6 @@ class Bot {
         Bot.client.on('ready', async () => {
             try {
                 logger.info(`Tally Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);
-                await UserUtil.initAll(Bot.client.users); // run each reconnect to keep updated
                 if (!Bot.initialReady) return;
                 setTimeout(() => Bot.startBroadcasting(), 5000);
                 CronAnnouncer.setBot({
@@ -53,6 +52,7 @@ class Bot {
         Bot.client.on('message', async (message: Message) => {
             try {
                 if (message.channel.type == 'dm') {
+                    await UserUtil.init(message.author.id, message.author.tag);
                     return DmManager.handle(message);
                 }
         
@@ -63,7 +63,7 @@ class Bot {
                 }
                 const isBot = message.author.bot;
                 if (isBot) return;
-        
+                await UserUtil.init(message.author.id, message.author.tag);
                 await Bot.db.initServer(message.guild.id);
                 await Bot.commandManager.handle(message);
             } catch (e) {

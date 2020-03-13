@@ -18,16 +18,16 @@ describe('user.test.ts', function() {
         await db.dropDatabase();
     })
 
-    it('should handle a lot of users', async function() {
-        this.timeout(120000);
-        const users = [];
-        const amt = 10000;
-        for (let i = 1; i <= amt; i++) {
-            users.push({
-                id: i,
-                tag: `ryan-` + i
-            });
-        }
-        await UserUtil.initAll(users);
-    });
+    // it('should handle a lot of users', async function() {
+    //     this.timeout(120000);
+    //     const users = [];
+    //     const amt = 10000;
+    //     for (let i = 1; i <= amt; i++) {
+    //         users.push({
+    //             id: i,
+    //             tag: `ryan-` + i
+    //         });
+    //     }
+    //     await UserUtil.initAll(users);
+    // });
 })
