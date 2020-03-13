@@ -1,9 +1,9 @@
-import { Message, ReactionEmoji } from 'discord.js';
-import CmdHelper from '../util/cmd-helper';
-import DB from '../util/db';
-import Counter from '../util/counter';
-import logger from '../util/logger';
-import TallyDmHandler from '../dm-handler/tally-dm-handler';
+import { Message } from 'discord.js';
+import CmdHelper from '../../message/cmd-helper';
+import DB from '../../util/db';
+import Counter from '../../util/counter';
+import logger from '../../util/logger';
+import TallyDmHandler from '../dm/tally-dm-handler';
 
 export default class TallyHandler {
     static db = new DB();

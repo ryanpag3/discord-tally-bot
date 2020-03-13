@@ -1,17 +1,17 @@
 import { Message } from 'discord.js';
 import { EventEmitter } from 'events';
-import logger from './logger';
+import logger from '../util/logger';
 import Config from '../config';
-import cmdHelper from './cmd-helper';
+import cmdHelper from '../message/cmd-helper';
 import DmEventBuilder from './dm-event-builder';
 import Commands from '../static/Commands';
 
-export default class DmHandler {
-    static emitter: EventEmitter = DmHandler.buildEventEmitter();
+export default class DmManager {
+    static emitter: EventEmitter = DmManager.buildEventEmitter();
     static bot;
 
     static setBotClient(client) {
-        DmHandler.bot = client;
+        DmManager.bot = client;
     }
 
     static buildEventEmitter(): EventEmitter {
@@ -34,11 +34,11 @@ export default class DmHandler {
                 );
             }
 
-            if (DmHandler.isGlobalMessage(message)) {
+            if (DmManager.isGlobalMessage(message)) {
                 throw new Error(`Global flags are not needed for direct messages. See here for more information: REPLACE_ME`);
             }
 
-            DmHandler.emit(message)
+            DmManager.emit(message)
         } catch (e) {
             const richEmbed = cmdHelper.getRichEmbed()
                 .setTitle(`:fire_extinguisher: Error`)
@@ -61,8 +61,8 @@ export default class DmHandler {
         const command = mSplit[0];
         logger.debug(`emitting dm: ${command}`);
         if (command === Commands.SUGGEST || command === Commands.BUG || command === Commands.INVITE)
-            DmHandler.emitter.emit(command, { message, bot: this.bot });    
+            DmManager.emitter.emit(command, { message, bot: this.bot });    
         else
-            DmHandler.emitter.emit(command, message);
+            DmManager.emitter.emit(command, message);
     }
 }
