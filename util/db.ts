@@ -182,6 +182,7 @@ export default class DB {
         await this.Channel.truncate();
         await this.Server.truncate();
         await this.Permission.truncate();
+        await this.User.truncate();
     }
 
     async createTally(tally: any) {
@@ -679,6 +680,7 @@ export default class DB {
         if (i != 0)
             logger.info(`Normalizing tally schemas for ${tallies.length} tallies.`);
         await this.encodeTallyDescriptions();
+
     }
 
     async getUnnormalizedTallies() {
