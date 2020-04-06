@@ -18,10 +18,10 @@ import announcements from '../commands/announcements';
 import patchnotes from '../commands/patchnotes';
 import permissions from '../commands/permissions';
 import crash from '../commands/crash';
-import Env from './env';
-import TallyHandler from '../command-handlers/tally-handler';
-import CmdHandler from '../command-handlers/cmd-handler';
-import logger from './logger';
+import Env from '../util/env';
+import TallyHandler from './command/tally-handler';
+import CmdHandler from './command/cmd-handler';
+import logger from '../util/logger';
 
 export default class CommandEventBuilder {
     static build(emitter: EventEmitter) {

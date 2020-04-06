@@ -367,6 +367,46 @@ describe('db.ts', function() {
         expect(announce).eqls(null);
     });
 
+    it('.createUser should create a valid user', async () => {
+        const userId = 'id';
+        const userTag = 'tag';
+        await db.createUser(userId, userTag);
+        const user = await db.getUser(userId);
+        expect(user.id).eqls(userId);
+        expect(user.tag).eqls(userTag);
+    })
+
+    it ('.createUser should raise exception if id is too long', async () => {
+        const userId = '*'.repeat(256);
+        try {
+            await db.createUser(userId, 'tag');
+            expect.fail();
+        } catch (e) {
+            expect(e).to.exist;
+        }
+    })
+
+    it('.getUser should get a valid user', async () => {
+        const userId = 'id';
+        await db.createUser(userId, 'tag');
+        const user = await db.getUser(userId);
+        expect(user).to.exist;
+    });
+
+    it('.getUser should return undefined or null for invalid user', async () => {
+        const u = await db.getUser('idontexist');
+        expect(u).to.be.null;
+    })
+
+    it('.updateUser should throw error if user doesnt exist', async () => {
+        try {
+            await db.updateUser('i dont exist', { tag: 'thisdoesntmatter' });
+            expect.fail();
+        } catch (e) {
+            expect(e).to.exist;
+        }
+    });
+
     async function createTestAnnouncement(name?: string, description?: string) {
         return await db.createAnnouncement(CHANNEL_ID, name || NAME, description || DESCRIPTION);
     }

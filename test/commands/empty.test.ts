@@ -3,7 +3,7 @@ import TestHelper from '../test-helper';
 import DB from '../../util/db';
 import Counter from '../../util/counter';
 import Bluebird = require('bluebird');
-import TallyHandler from '../../command-handlers/tally-handler';
+import TallyHandler from '../../message/command/tally-handler';
 
 describe('empty command', function() {
     const TALLY_NAME = 'empty-test';

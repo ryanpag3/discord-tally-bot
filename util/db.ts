@@ -21,6 +21,7 @@ export default class DB {
     Timer;
     Announcement;
     Channel;
+    User;
     Server;
     Permission;
 
@@ -139,6 +140,7 @@ export default class DB {
         this.Announcement = this.sequelize.import('../models/announcement');
         this.Channel = this.sequelize.import('../models/channel');
         this.Server = this.sequelize.import('../models/server');
+        this.User = this.sequelize.import('../models/user');
         this.Permission = this.sequelize.import('../models/permission');
     }
 
@@ -159,6 +161,10 @@ export default class DB {
         await this.Channel.sync({
             alter: true
         });
+        logger.info('creating and/or altering User table');
+        await this.User.sync({
+            alter: true
+        });
         logger.info('creating and/or altering Server table');
         await this.Server.sync({
             alter: true
@@ -176,6 +182,7 @@ export default class DB {
         await this.Channel.truncate();
         await this.Server.truncate();
         await this.Permission.truncate();
+        await this.User.truncate();
     }
 
     async createTally(tally: any) {
@@ -310,7 +317,7 @@ export default class DB {
         const where = {
             channelId,
             serverId,
-            isGlobal
+            isGlobal 
         };
         if (isGlobal === true) delete where.channelId;
         const count = await this.Tally.count({
@@ -648,24 +655,32 @@ export default class DB {
             }
         });
     }
-
+  
     /**
      * normalize tallies by adding their serverId to any tally that belonds to a channel
      * @param channels
      */
     async normalizeTallies(channels) {
         const tallies = await this.getUnnormalizedTallies();
-        if (tallies.length > 0) logger.info(`Normalizing tally schemas for ${tallies.length} tallies.`);
+        let i = 0;
         for (let tally of tallies) {
             const channel = channels.get(tally.channelId);
-            if (!channel) continue;
+            if (!channel) {
+                // thought about destroying records but decided to keep them
+                // just in case a user invites the bot back to a server...
+                continue;
+            }
             const server = channel.guild;
             tally.serverId = server.id;
             tally.isGlobal = false;
             tally.save();
             logger.info(`Assigned channel [${channel.id}] to server [${server.id}]`);
+            i++;
         }
+        if (i != 0)
+            logger.info(`Normalizing tally schemas for ${tallies.length} tallies.`);
         await this.encodeTallyDescriptions();
+
     }
 
     async getUnnormalizedTallies() {
@@ -685,8 +700,8 @@ export default class DB {
                 }
             }
         });
-        return tallies;
-    }
+        return tallies; 
+    } 
 
     async encodeTallyDescriptions() {
         const Tally = this.Tally;
@@ -729,5 +744,19 @@ export default class DB {
     async saveTally(tally: any) {
         tally.description = Buffer.from(tally.description).toString('base64');
         await tally.save();
+    }
+
+    async createUser(id: string, tag: string) {
+        return await this.User.create({ id, tag });
+    }
+
+    async getUser(id: string) {
+        return await this.User.findOne({ where: { id }});
+    }
+    
+    async updateUser(id: string, newVals: any) {
+        const user = await this.getUser(id);
+        if (!user) throw new Error(`cannot find user to update!`);
+        await user.update(newVals);
     }
 }

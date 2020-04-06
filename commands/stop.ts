@@ -2,7 +2,7 @@
 import { Message } from "discord.js";
 import moment from 'moment';
 import DB from '../util/db';
-import helper from '../util/cmd-helper';
+import helper from '../message/cmd-helper';
 import TimerUtil from '../util/timer';
 
 const tUtil = new TimerUtil();

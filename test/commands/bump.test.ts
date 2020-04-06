@@ -1,6 +1,6 @@
 import sinon from 'sinon';
 import { expect } from 'chai';
-import CommandHandler from '../../util/command-handler';
+import CommandManager from '../../message/command-manager';
 import DB from '../../util/db';
 import Bluebird = require('bluebird');
 import Counter from '../../util/counter';
@@ -10,7 +10,7 @@ describe('bump command', function() {
     TestHelper.exportDBEnvironmentVar();
     const db = new DB();
     const TALLY_NAME = 'test';
-    const commandHandler = new CommandHandler();
+    const commandHandler = new CommandManager();
     let fakeMessage;
     let channelId;
     let serverId;

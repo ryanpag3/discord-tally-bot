@@ -1,6 +1,6 @@
 import { CronJob } from 'cron';
 import DB from './db';
-import helper from './cmd-helper';
+import helper from '../message/cmd-helper';
 import logger from './logger';
 
 let cronCache = {}; // global singleton cache

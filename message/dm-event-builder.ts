@@ -1,12 +1,12 @@
 import { EventEmitter } from 'events';
 import Commands from '../static/Commands';
-import TallyDmHandler from '../dm-handler/tally-dm-handler';
-import Env from './env';
+import TallyDmHandler from './dm/tally-dm-handler';
+import Env from '../util/env';
 import bug from '../commands/bug';
 import suggest from '../commands/suggest';
 import help from '../commands/help';
 import test from '../commands/test';
-import CmdHandler from '../command-handlers/cmd-handler';
+import CmdHandler from './command/cmd-handler';
 
 /**
  * Build DM events separate until we have reached feature equality

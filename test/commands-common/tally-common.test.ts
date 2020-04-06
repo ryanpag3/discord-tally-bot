@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import TallyHandler from '../../command-handlers/tally-handler';
+import TallyHandler from '../../message/command/tally-handler';
 import TestHelper from '../test-helper';
 import DB from '../../util/db';
 import Counter from '../../util/counter';

@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import DB from '../../util/db';
 import TestHelper from '../test-helper';
 import Counter from '../../util/counter';
-import TallyHandler from '../../command-handlers/tally-handler';
+import TallyHandler from '../../message/command/tally-handler';
 
 describe('delete command', function() {
     const TALLY_NAME = 'empty-test';
