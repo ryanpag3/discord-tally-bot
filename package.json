@@ -29,7 +29,7 @@
         "erlpack": "github:discordapp/erlpack",
         "later": "^1.2.0",
         "log4js": "^6.1.0",
-        "minimist": "0.2.1",
+        "minimist": "1.2.3",
         "moment-timezone": "^0.5.23",
         "mysql": "^2.16.0",
         "mysql2": "^1.6.1",
