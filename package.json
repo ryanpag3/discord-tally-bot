@@ -5,9 +5,9 @@
     "main": "dist/bot.js",
     "scripts": {
         "build": "tsc",
-        "start": "tsc && node -r source-map-support/register dist/bot.js",
-        "start-prod": "node -r source-map-support/register dist/bot.js",
-        "watch": "nodemon -e \".ts\" --exec \"tsc && node -r dotenv/config -r source-map-support/register dist/bot.js || true\"",
+        "start": "ts-node bot.ts",
+        "start-prod": "ts-node -T bot.ts",
+        "watch": "tsnd --watch --notify=false bot.ts",
         "test": "export TEST_ENV=\"1\" && ts-mocha -r dotenv/config --recursive --exit --timeout 5000 ./**/*.test.ts",
         "coverage": "export TEST_ENV=\"1\" && nyc mocha -r dotenv/config --recursive --exit --timeout 5000 ./**/*.test.ts",
         "run-test": "export TEST_ENV=\"1\" && ts-mocha -r dotenv/config --recursive --exit --timeout 5000"

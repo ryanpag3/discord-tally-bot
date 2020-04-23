@@ -1,5 +1,7 @@
 import Discord, { Message, Guild, Client } from 'discord.js';
 import DBL from 'dblapi.js';
+import dotenv from 'dotenv';
+dotenv.config();
 import Config from './config';
 import ConfigPrivate from './config-private';
 import DB from './util/db';
