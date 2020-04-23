@@ -1,0 +1,1 @@
+I started a refactor of rewriting commands and placing them into handler objects in ../message but that is ongoing.

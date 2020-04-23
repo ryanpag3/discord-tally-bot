@@ -47,7 +47,7 @@ class Bot {
                 await CronAnnouncer.initCronJobs();
                 Bot.initialReady = false;
             } catch (e) {
-                logger.info(`An error occured while running post-launch behavior ${e}`);
+                logger.error(`An error occured while running post-launch behavior.`, e);
             }
         });
         
