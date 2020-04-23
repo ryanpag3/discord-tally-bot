@@ -756,9 +756,7 @@ export default class DB {
         const user = await this.User.findOne({ where: { id }});
         if (!user) return null;
         const decodedTag = StringUtil.base64Decode(user.tag);
-        logger.info(decodedTag);
         user.tag = decodedTag;
-        logger.info(user);
         return user;
     }
     
