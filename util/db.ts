@@ -8,6 +8,7 @@ import Sqlize from './sqlize';
 import logger from './logger';
 import Default from '../static/Default';
 import tally from '../models/tally';
+import StringUtil from './string-util';
 
 export default class DB {
     private TALLY_NAME_MAXLEN = 16;
@@ -751,7 +752,10 @@ export default class DB {
     }
 
     async getUser(id: string) {
-        return await this.User.findOne({ where: { id }});
+        const user = await this.User.findOne({ where: { id }});
+        if (!user) throw new Error(`cannot find user with id ${id}`);
+        user.tag = StringUtil.base64Decode(user.tag);
+        return user;
     }
     
     async updateUser(id: string, newVals: any) {

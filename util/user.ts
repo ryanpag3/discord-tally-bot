@@ -1,5 +1,6 @@
 import DB from './db';
 import logger from './logger';
+import StringUtil from './string-util';
 
 export default class UserUtil {
     static db: DB = new DB();
@@ -8,7 +9,7 @@ export default class UserUtil {
         try {
             const user = await UserUtil.db.getUser(id);
             if (user && user.tag != tag) {
-                user.tag = tag;
+                user.tag = StringUtil.base64Encode(tag);
                 await user.save();
                 return;
             } else if (user) {
