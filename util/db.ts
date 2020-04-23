@@ -1,8 +1,8 @@
 import Sequelize from 'sequelize';
 import mysql from 'mysql';
 import dedent from 'dedent-js';
-import Config from '../config';
-import PrivateConfig from '../config-private';
+import Config from './config';
+import PrivateConfig from './config-private';
 import Counter from './counter';
 import Sqlize from './sqlize';
 import logger from './logger';
@@ -748,13 +748,17 @@ export default class DB {
     }
 
     async createUser(id: string, tag: string) {
+        tag = StringUtil.base64Encode(tag);
         return await this.User.create({ id, tag });
     }
 
     async getUser(id: string) {
         const user = await this.User.findOne({ where: { id }});
-        if (!user) throw new Error(`cannot find user with id ${id}`);
-        user.tag = StringUtil.base64Decode(user.tag);
+        if (!user) return null;
+        const decodedTag = StringUtil.base64Decode(user.tag);
+        logger.info(decodedTag);
+        user.tag = decodedTag;
+        logger.info(user);
         return user;
     }
     

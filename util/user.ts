@@ -15,6 +15,7 @@ export default class UserUtil {
             } else if (user) {
                 return;
             }
+            // we handle b64 in createUser already
             await UserUtil.db.createUser(id, tag);
             logger.info(`initialized new user with id ${id} and tag ${tag}`);
         } catch (e) {

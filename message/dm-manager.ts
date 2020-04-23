@@ -1,7 +1,7 @@
 import { Message } from 'discord.js';
 import { EventEmitter } from 'events';
 import logger from '../util/logger';
-import Config from '../config';
+import Config from '../util/config';
 import cmdHelper from '../message/cmd-helper';
 import DmEventBuilder from './dm-event-builder';
 import Commands from '../static/Commands';

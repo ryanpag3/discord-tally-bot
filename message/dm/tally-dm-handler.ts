@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
 import CmdHelper from '../../message/cmd-helper';
-import Config from "../../config";
+import Config from "../../util/config";
 import logger from "../../util/logger";
 import DB from "../../util/db";
 import TallyHandler from "../command/tally-handler";

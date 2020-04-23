@@ -1,7 +1,7 @@
 import helper from '../message/cmd-helper';
-import pConfig from '../config-private';
+import pConfig from '../util/config-private';
 import logger from '../util/logger';
-import Config from '../config';
+import Config from '../util/config';
 
 export default async (params) => {
     const message = params.message;
