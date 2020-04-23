@@ -1,13 +1,14 @@
 import Sequelize from 'sequelize';
 import mysql from 'mysql';
 import dedent from 'dedent-js';
-import Config from '../config';
-import PrivateConfig from '../config-private';
+import Config from './config';
+import PrivateConfig from './config-private';
 import Counter from './counter';
 import Sqlize from './sqlize';
 import logger from './logger';
 import Default from '../static/Default';
 import tally from '../models/tally';
+import StringUtil from './string-util';
 
 export default class DB {
     private TALLY_NAME_MAXLEN = 16;
@@ -747,11 +748,16 @@ export default class DB {
     }
 
     async createUser(id: string, tag: string) {
+        tag = StringUtil.base64Encode(tag);
         return await this.User.create({ id, tag });
     }
 
     async getUser(id: string) {
-        return await this.User.findOne({ where: { id }});
+        const user = await this.User.findOne({ where: { id }});
+        if (!user) return null;
+        const decodedTag = StringUtil.base64Decode(user.tag);
+        user.tag = decodedTag;
+        return user;
     }
     
     async updateUser(id: string, newVals: any) {

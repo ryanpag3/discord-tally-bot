@@ -1,6 +1,6 @@
 import Sequelize from 'sequelize';
-import PrivateConfig from '../config-private';
-import Config from '../config';
+import PrivateConfig from './config-private';
+import Config from './config';
 import logger from './logger';
 
 /**

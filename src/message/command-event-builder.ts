@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import Config from '../config';
+import Config from '../util/config';
 import Commands from '../static/Commands';
 
 import test from '../commands/test';

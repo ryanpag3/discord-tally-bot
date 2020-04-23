@@ -1,7 +1,9 @@
 import Discord, { Message, Guild, Client } from 'discord.js';
 import DBL from 'dblapi.js';
-import Config from './config';
-import ConfigPrivate from './config-private';
+import dotenv from 'dotenv';
+dotenv.config();
+import Config from './util/config';
+import ConfigPrivate from './util/config-private';
 import DB from './util/db';
 import CronAnnouncer from './util/cron-announcer';
 import keywordUtil from './util/keyword-util';
@@ -12,9 +14,11 @@ import logger from './util/logger';
 import DmManager from './message/dm-manager';
 import Env from './util/env';
 import UserUtil from './util/user';
+import HealthCheckServer from './util/healthcheck-server';
 
 class Bot {
     static client: Client = new Discord.Client();
+    static healthcheck = new HealthCheckServer(Bot.client);
     static commandManager: CommandManager = new CommandManager(Bot.client);
     static topgg = Env.isProduction() ? new DBL(ConfigPrivate.dbots_token, Bot.client) : null;
     static db: DB = new DB();
@@ -23,6 +27,7 @@ class Bot {
     static async start() {
         await Bot.setup();
         await Bot.client.login(ConfigPrivate.token);
+        Bot.healthcheck.start();
     }
 
     static async setup() {
@@ -45,7 +50,7 @@ class Bot {
                 await CronAnnouncer.initCronJobs();
                 Bot.initialReady = false;
             } catch (e) {
-                logger.info(`An error occured while running post-launch behavior ${e}`);
+                logger.error(`An error occured while running post-launch behavior.`, e);
             }
         });
         
@@ -91,7 +96,7 @@ class Bot {
         });
         
         Bot.client.on('error', function(error) {
-            console.error(`client's WebSocket encountered a connection error: ${JSON.stringify(error)}`);
+            logger.error(`client's WebSocket encountered a connection error`, error);
         });
         
         Bot.client.on('warn', function(info) {
@@ -101,6 +106,10 @@ class Bot {
         Bot.client.on('reconnecting', function(info) {
             logger.info(`reconnecting`);
         });
+
+        Bot.client.on('resume', function() {
+            logger.info('bot has successfully reconnected');
+        })
         
         Bot.client.on('disconnect', function(event) {
             logger.info(`The WebSocket has closed and will no longer attempt to reconnect`);

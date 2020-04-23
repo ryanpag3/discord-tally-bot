@@ -1,5 +1,5 @@
 import Discord from 'discord.js';
-import config from '../config';
+import config from '../util/config';
 import logger from '../util/logger';
 
 export default {
