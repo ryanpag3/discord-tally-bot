@@ -5,8 +5,6 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      SHORTSHA: $(git rev-parse --short=4 ${{ github.sha }})
 
     services:
       mysql:
@@ -57,5 +55,5 @@ jobs:
         docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
         # docker build . -t ryanpage/internal:tally-bot-${GITHUB_REF##*/}
         # docker push ryanpage/internal:tally-bot-${GITHUB_REF##*/}
-        docker build . -t ryanpage/internal:tally-bot-$SHORTSHA
-        docker push ryanpage/internal:tally-bot-$SHORTSHA
+        docker build . -t ryanpage/internal:tally-bot-${GITHUB_SHA::8}
+        docker push ryanpage/internal:tally-bot-${GITHUB_SHA::8}
