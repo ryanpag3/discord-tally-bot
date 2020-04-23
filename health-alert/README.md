@@ -8,4 +8,4 @@ The tally bot container checks itself every 5 seconds and queries its connection
 TBD
 
 ## Configuration
-TBD
+To be determined
