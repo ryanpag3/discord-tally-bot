@@ -1,5 +1,9 @@
 {
   "name": "parent",
   "license": "APACHE",
-  "private": true
+  "private": true,
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^13.13.2"
+  }
 }

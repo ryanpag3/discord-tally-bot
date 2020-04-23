@@ -1,6 +1,0 @@
-bot/node_modules
-bot/dist
-bot/config-private.json
-bot/coverage
-bot/.nyc_output
-bot/.env
