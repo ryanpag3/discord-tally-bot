@@ -14,9 +14,11 @@ import logger from './util/logger';
 import DmManager from './message/dm-manager';
 import Env from './util/env';
 import UserUtil from './util/user';
+import HealthCheckServer from './util/healthcheck-server';
 
 class Bot {
     static client: Client = new Discord.Client();
+    static healthcheck = new HealthCheckServer(Bot.client);
     static commandManager: CommandManager = new CommandManager(Bot.client);
     static topgg = Env.isProduction() ? new DBL(ConfigPrivate.dbots_token, Bot.client) : null;
     static db: DB = new DB();
@@ -25,6 +27,7 @@ class Bot {
     static async start() {
         await Bot.setup();
         await Bot.client.login(ConfigPrivate.token);
+        Bot.healthcheck.start();
     }
 
     static async setup() {
@@ -93,7 +96,7 @@ class Bot {
         });
         
         Bot.client.on('error', function(error) {
-            console.error(`client's WebSocket encountered a connection error: ${JSON.stringify(error)}`);
+            logger.error(`client's WebSocket encountered a connection error`, error);
         });
         
         Bot.client.on('warn', function(info) {
@@ -103,6 +106,10 @@ class Bot {
         Bot.client.on('reconnecting', function(info) {
             logger.info(`reconnecting`);
         });
+
+        Bot.client.on('resume', function() {
+            logger.info('bot has successfully reconnected');
+        })
         
         Bot.client.on('disconnect', function(event) {
             logger.info(`The WebSocket has closed and will no longer attempt to reconnect`);

@@ -2,6 +2,7 @@ version: '3'
 services:
   tally-bot:
     image: ryanpage/internal:tally-bot-dev
+    build: .
     network_mode: "host"
     restart: always
     env_file:
