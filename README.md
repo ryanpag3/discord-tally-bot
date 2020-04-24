@@ -9,9 +9,6 @@ to send some beer money this way -> https://paypal.me/ryanpage42
 
 This will help offset the cost of running the bot. Thank you 👊
 
-## Changelog
-[Click here](https://github.com/ryanpage42/discord-tally-bot/blob/master/CHANGELOG.md)
-
 # Commands
 
 - [General Commands](#General)
