@@ -1,0 +1,13 @@
+version: '3'
+services:
+  tally-bot:
+    image: ryanpage/internal:tally-bot-ee9f9b2b
+    network_mode: "host"
+    env_file:
+      - ./bot/.env
+  health-alert:
+    image: ryanpage/internal:tally-bot-health-alert-ee9f9b2b
+    env_file:
+      - ./health-alert/.env
+    volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
