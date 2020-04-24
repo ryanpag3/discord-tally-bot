@@ -69,8 +69,8 @@ const run = async () => {
     try {
         await alertBot.login();
 
-        new CronJob(healthCheckPattern, healthCheckJob, null, true, 'America/Los_Angeles');
-
+        const job = new CronJob(healthCheckPattern, healthCheckJob, null, false, 'America/Los_Angeles');
+        setTimeout(() => job.start(), 30000);
         logger.info('Houston, we have lift off. Health check service started.');
     } catch (e) {
         logger.error(`Oh no, something went terribly wrong.`, e);
