@@ -1,0 +1,10 @@
+version: '3'
+services:
+  health-check:
+    image: ryanpage/internal:tally-bot-healthcheck
+    build: .
+    restart: always
+    env_file:
+      - ./.env
+    volumes:
+        - /var/run/docker.sock:/var/run/docker.sock

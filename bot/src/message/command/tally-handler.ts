@@ -1,5 +1,5 @@
 import { Message } from 'discord.js';
-import CmdHelper from '../../message/cmd-helper';
+import CmdHelper from '../cmd-helper';
 import DB from '../../util/db';
 import Counter from '../../util/counter';
 import logger from '../../util/logger';

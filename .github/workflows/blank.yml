@@ -1,7 +1,7 @@
 name: CICD
 
 on: [push]
-
+ 
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -31,9 +31,10 @@ jobs:
         npm i -g mocha
         npm i -g typescript
         npm i -g dotenv
-        yarn install
-    - name: Run tests
+    - name: Run Tally Bot Tests
       run: |
+        cd bot/
+        yarn install
         yarn coverage
       env:
         DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
@@ -45,11 +46,21 @@ jobs:
         TEST_SUGGEST_CHANNEL: ${{ secrets.TEST_SUGGEST_CHANNEL }}
         BUGS_CHANNEL: ${{ secrets.BUGS_CHANNEL }}
         TEST_BUGS_CHANNEL: ${{ secrets.TEST_BUGS_CHANNEL }}
-    - name: Build Docker image
+    - name: Tally Bot - Docker Build
       env:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       run: |
         docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
-        docker build . -t ryanpage/internal:tally-bot-${GITHUB_REF##*/}
-        docker push ryanpage/internal:tally-bot-${GITHUB_REF##*/}
+        cd bot/
+        docker build . -t ryanpage/internal:tally-bot-${GITHUB_SHA::8}
+        docker push ryanpage/internal:tally-bot-${GITHUB_SHA::8}
+    - name: Health Check - Docker Build
+      env:
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      run: |
+        docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
+        cd health-alert/
+        docker build . -t ryanpage/internal:tally-bot-health-alert-${GITHUB_SHA::8}
+        docker push ryanpage/internal:tally-bot-health-alert-${GITHUB_SHA::8}
