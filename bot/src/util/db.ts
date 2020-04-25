@@ -765,4 +765,9 @@ export default class DB {
         if (!user) throw new Error(`cannot find user to update!`);
         await user.update(newVals);
     }
+
+    async getServer(id: string) {
+        logger.debug(`getting server by id ${id}`)
+        return await this.Server.findOne({ where: { id }});
+    }
 }

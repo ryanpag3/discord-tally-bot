@@ -4,9 +4,9 @@ import Config from "../../util/config";
 import logger from "../../util/logger";
 import DB from "../../util/db";
 import TallyHandler from "../command/tally-handler";
-import { handleDmError } from "./util/util";
 import MsgHelper from "../msg-helper";
 import { getEmoji } from "../../static/MsgEmojis";
+import Counter from "../../util/counter";
 
 const IS_DM_MESSAGE = true;
 
@@ -57,8 +57,9 @@ export default class TallyDmHandler {
             for info run \`get ${tallyName}\`
             `);
             MsgHelper.sendMessage(message, richEmbed);
+            Counter.bumpTotalBumps();
         } catch (e) {
-            handleDmError(`Error while bumping DM tally.`, e, message);
+            MsgHelper.handleError(`Error while bumping DM tally.`, e, message);
         }
     }
 
@@ -69,20 +70,21 @@ export default class TallyDmHandler {
             const richEmbed = MsgHelper.getRichEmbed(message.author.username)
                 .setTitle(`${getEmoji(command)} ${command}`);
             const tally = await TallyDmHandler.db.getDmTally(message.author.id, tallyName);
-            if (!tally) throw new Error(`Could not find DM tally with name ${tallyName}`);
+            if (!tally) throw new Error(`Could not find DM tally with name **${tallyName}**`);
             const previousCount = tally.count;
             const update = {
                 count: previousCount - amount
             };
             await TallyDmHandler.db.updateDmTally(message.author.id, tallyName, update);
             await tally.reload();
-            logger.info(`dumped ${tallyName} by ${amount} for user ${message.author.id}`);
+            logger.info(`dumped DM tally ${tallyName} by ${amount} for user ${message.author.id}`);
             richEmbed.setDescription(`**${tallyName}** has been updated from **${previousCount}** to **${update.count}**.
 
             for info run \`get ${tallyName}\``);
             MsgHelper.sendMessage(message, richEmbed);
+            Counter.bumpTotalDumps();
         } catch (e) {
-            handleDmError(`Error while dumping DM tally.`, e, message);
+            MsgHelper.handleError(`Error while dumping DM tally.`, e, message);
         }
     }
 

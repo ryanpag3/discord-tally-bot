@@ -4,101 +4,74 @@ import DB from '../../util/db';
 import Counter from '../../util/counter';
 import logger from '../../util/logger';
 import TallyDmHandler from '../dm/tally-dm-handler';
+import MsgHelper from '../msg-helper';
+import Commands from '../../static/Commands';
+import { getEmoji } from '../../static/MsgEmojis';
 
 export default class TallyHandler {
     static db = new DB();
 
-    /**
-     * Execute a bump command
-     */
     static async runBump(message: Message, isDm: boolean = false) {
-        return await TallyHandler.bumpOrDump(true, message, isDm);
+        try {
+            const { isGlobal, tallyName, amount, channelId, serverId } = TallyHandler.unMarshall(message);
+            const richEmbed = MsgHelper.getRichEmbed(message.author.username)
+                .setTitle(`${getEmoji(Commands.BUMP)} ${Commands.BUMP}`);
+            const tally = await TallyHandler.db.getCmdTally(message.channel.id, message.guild.id, isGlobal, tallyName);
+            if (!tally) throw new Error(`Cannot find tally with name ${tallyName} to bump.`);
+            const previous = tally.count;
+            await TallyHandler.updateCmdTallyByAmount(true, channelId, serverId, isGlobal, tallyName, previous, amount);
+            await tally.reload();
+            logger.info(`bumped tally ${tallyName} by ${amount} for user ${message.author.id}`);
+            richEmbed.setDescription(`**${tallyName}** has been updated from **${previous}** to **${tally.count}**.
+
+            for info run \`!tb get ${tallyName}\``);
+            const sentMsg = await MsgHelper.sendMessage(message, richEmbed);
+            TallyHandler.reactIfEnabled(serverId, sentMsg);
+            Counter.bumpTotalBumps();
+        } catch (e) {
+            MsgHelper.handleError(`Error while bumping tally.`, e, message);
+        }
     }
 
     /**
      * Execute a dump command
      */
     static async runDump(message: Message, isDm: boolean = false) {
-        return await TallyHandler.bumpOrDump(false, message, isDm);
+        try {
+            const { isGlobal, tallyName, amount, channelId, serverId } = TallyHandler.unMarshall(message);
+            const richEmbed = MsgHelper.getRichEmbed(message.author.username)
+                .setTitle(`${getEmoji(Commands.BUMP)} ${Commands.BUMP}`);
+            const tally = await TallyHandler.db.getCmdTally(message.channel.id, message.guild.id, isGlobal, tallyName);
+            if (!tally) throw new Error(`Cannot find tally with name ${tallyName} to dump.`);
+            const previous = tally.count;
+            await TallyHandler.updateCmdTallyByAmount(true, channelId, serverId, isGlobal, tallyName, previous, amount);
+            await tally.reload();
+            logger.info(`bumped tally ${tallyName} by ${amount} for user ${message.author.id}`);
+            richEmbed.setDescription(`**${tallyName}** has been updated from **${previous}** to **${tally.count}**.
+
+            for info run \`!tb get ${tallyName}\``);
+            const sentMsg = await MsgHelper.sendMessage(message, richEmbed);
+            TallyHandler.reactIfEnabled(serverId, sentMsg);
+            Counter.bumpTotalBumps();
+        } catch (e) {
+            MsgHelper.handleError(`Error while bumping tally.`, e, message);
+        }
     }
 
-    /**
-     * Execute either a bump or dump depending on isBump
-     * TODO: this is some old code that could use some TLC
-     */
-    static async bumpOrDump(isBump: boolean, message: Message, isDm: boolean = false) {
-        let richEmbed;
-        try {
-            const { tallyName, command } = TallyHandler.getFieldsByTallyType(message, isDm, ['tallyName', 'command']);
-            const couldNotFindErrorMsg = `Could not find tally named **${tallyName}**`;
-            richEmbed = CmdHelper.getRichEmbed(message.author.username).setTitle(`${isBump ? ':small_red_triangle:' : ':small_red_triangle_down:'} ${command}`);
-            if (isDm) {
-                const { amount }: any = TallyDmHandler.unMarshall(message);
-                const tally = await TallyHandler.db.getDmTally(message.author.id, tallyName);
-                if (!tally) throw new Error(couldNotFindErrorMsg);
-                const previous = tally.count;
-                await TallyHandler.db.updateDmTally(message.author.id, tallyName, {
-                    count: isBump ? previous + amount : previous - amount
-                });
-                await tally.reload();
-                logger.info(`
-                ${TallyHandler.getBumpOrDump(isBump, 'ed')} ${tallyName}
-                ------------------
-                ${previous} >>> ${tally.count}
-                user: ${message.author.tag}
-                id: ${message.author.id}
-                `);
-                richEmbed.setDescription(`${tally.name} | **${previous}** >>> **${tally.count}** \n\n${TallyHandler.getTallyDescription(tally)}`);
-            } else {
-                const { isGlobal, tallyName, amount, channelId, serverId } = TallyHandler.unMarshall(message);
-                const tally = await TallyHandler.db.getCmdTally(message.channel.id, message.guild.id, isGlobal, tallyName);
-                if (!tally) throw new Error(couldNotFindErrorMsg);
-                const previous = tally.count;
-                await TallyHandler.updateCmdTallyByAmount(isBump, channelId, serverId, isGlobal, tallyName, previous, amount);
-                await tally.reload();
-                logger.info(`
-                ${TallyHandler.getBumpOrDump(isBump, 'ed')} ${tallyName}
-                ------------------
-                ${previous} >>> ${tally.count}
-                channel ID: ${channelId}
-                server ID: ${serverId}    
-                user: ${message.author.tag}
-                `);
-                richEmbed.setDescription(`${isGlobal ? '[G]' : '[C]'} ${tally.name} | **${previous}** >>> **${tally.count}** \n\n${TallyHandler.getTallyDescription(tally)}`);
-            }
-
-            if (isBump) await Counter.bumpTotalBumps();
-            else await Counter.bumpTotalDumps();
-        } catch (e) {
-            logger.error(`Error while running bumpOrDump: ` + e);
-            richEmbed = CmdHelper.getRichEmbed(message.author.username)
-                .setTitle(`I could not ${TallyHandler.getBumpOrDump(isBump)}.`)
-                .setDescription(`${e.message}`);
+    static async reactIfEnabled(serverId, sentMsg) {
+        if (await TallyHandler.hasReactionsEnabled(serverId)) {
+            await TallyHandler.addTallyReactions(sentMsg);
         }
-        const sentMsg: any = await message.channel.send(richEmbed);
-        try {
-            await sentMsg.react('🔼');
-            await sentMsg.react('🔽')
-        } catch (e) {
-            logger.error(`error occured while attempting to react...`, e);
-        }
-        CmdHelper.finalize(message);
     }
 
-    static async bump(message: Message, isDm: boolean = false) {
-        try {
-            const { tallyName, command } = TallyHandler.getFieldsByTallyType(message, isDm, ['tallyName', 'command']);
-            const richEmbed = CmdHelper.getRichEmbed(message.author.username).setTitle(`:small_red_triangle: ${command}`);
+    static async hasReactionsEnabled(serverId: string) {
+        const server = await TallyHandler.db.getServer(serverId);
+        return server.tallyReactionsEnabled;
+    }
 
-
-        } catch (e) {
-            logger.error(`An error occured while trying to bump for user [${message.author.id}]`, e);
-            const richEmbed = CmdHelper.getRichEmbed(message.author.username)
-                .setTitle(`I could not bump.`)
-                .setDescription(e.message);
-            message.channel.send(richEmbed);
-        }
-        CmdHelper.finalize(message);
+    static async addTallyReactions(sentMsg: any) {
+        await sentMsg.react('🔼');
+        await sentMsg.react('🔽');
     }
 
     static async updateTallyAmount(isBump: boolean, isDm: boolean, props: {

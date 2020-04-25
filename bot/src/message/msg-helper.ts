@@ -12,9 +12,20 @@ const MsgHelper = {
     },
 
     async sendMessage(message: Message, richEmbed: any) {
+        logger.debug(`sending message to ${message.channel.id}`);
+        logger.trace(JSON.stringify(richEmbed));
         const sent = await message.channel.send(richEmbed);
         MsgHelper.finalize(message);
         return sent;
+    },
+
+    async handleError(msg: string, e: Error, message: Message) {
+        logger.error(msg, e);
+        const richEmbed = MsgHelper.getRichEmbed(message.author.username)
+            .setTitle(msg)
+            .setDescription(e.message);
+        await message.channel.send(richEmbed);
+        MsgHelper.finalize(message);
     },
 
     /**
