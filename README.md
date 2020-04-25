@@ -38,7 +38,7 @@ This will help offset the cost of running the bot. Thank you 👊
   - [Delete All Tallies](#delete-all-tallies)
   - [Reset Tally](#reset-tally-to-0)
   - [Reset All Tallies](#reset-all-tallies-to-0)
-  - [Enable/Disable Tally Reactions](#enable/disable-tally-reactions)
+  - [Enable/Disable Tally Reactions](#toggle-tally-reactions)
 - [Announcements](#announcements)
   - [Create Announcement](#create-an-announcement)
   - [Set Announcement Tally Goal](#set-announcement-tally-goal)
@@ -426,7 +426,7 @@ You can also reset all tallies to 0.
 
     empty-all
 
-### **Enable/Disable Tally Reactions**
+### **Toggle Tally Reactions**
 This setting is disabled by default. It allows you to have Tally Bot react with an upvote and downvote arrow each time a user runs bump and dump.
 
     !tb tally-reactions [true|false]
