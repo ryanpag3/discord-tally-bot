@@ -19,7 +19,7 @@ export default class Sqlize {
     }
 
     getSequelize(dbName: string) {
-        logger.info('getting new sequelize instance for db ' + dbName);
+        logger.debug('getting new sequelize instance for db ' + dbName);
         return new Sequelize({
             host: PrivateConfig.database.url,
             database: dbName,

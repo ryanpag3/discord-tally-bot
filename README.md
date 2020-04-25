@@ -38,6 +38,7 @@ This will help offset the cost of running the bot. Thank you 👊
   - [Delete All Tallies](#delete-all-tallies)
   - [Reset Tally](#reset-tally-to-0)
   - [Reset All Tallies](#reset-all-tallies-to-0)
+  - [Enable/Disable Tally Reactions](#toggle-tally-reactions)
 - [Announcements](#announcements)
   - [Create Announcement](#create-an-announcement)
   - [Set Announcement Tally Goal](#set-announcement-tally-goal)
@@ -424,6 +425,19 @@ You can also reset all tallies to 0.
     ---- Direct Message Examples ----
 
     empty-all
+
+### **Toggle Tally Reactions**
+This setting is disabled by default. It allows you to have Tally Bot react with an upvote and downvote arrow each time a user runs bump and dump.
+
+    !tb tally-reactions [true|false]
+
+
+    ---- Server Examples ----
+
+    !tb tally-reactions true
+
+    !tb tally-reactions false
+
 
 ## Announcements
 All announcement schedules are run in `America/Los_Angeles` timezone. I have plans to do channel specific timezones but it is low priority. Please schedule accordingly!

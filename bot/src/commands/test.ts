@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import helper from '../message/cmd-helper';
+import helper from '../message/msg-helper';
 import logger from "../util/logger";
 
 export default (message: Message) => {

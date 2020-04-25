@@ -1,7 +1,7 @@
 import {
     Message
 } from "discord.js";
-import helper from '../message/cmd-helper';
+import helper from '../message/msg-helper';
 import DB from '../util/db';
 import logger from "../util/logger";
 

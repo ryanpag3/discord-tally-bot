@@ -7,7 +7,7 @@ import ConfigPrivate from './util/config-private';
 import DB from './util/db';
 import CronAnnouncer from './util/cron-announcer';
 import keywordUtil from './util/keyword-util';
-import cmdHelper from './message/cmd-helper';
+import cmdHelper from './message/msg-helper';
 import CommandManager from './message/command-manager';
 import Counter from './util/counter';
 import logger from './util/logger';
