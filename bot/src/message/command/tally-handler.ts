@@ -22,9 +22,10 @@ export default class TallyHandler {
             await TallyHandler.updateCmdTallyByAmount(true, channelId, serverId, isGlobal, tallyName, previous, amount);
             await tally.reload();
             logger.info(`bumped tally ${tallyName} by ${amount} for user ${message.author.id}`);
-            richEmbed.setDescription(`**${tallyName}** has been updated from **${previous}** to **${tally.count}**.
+            const tallyScopeId = isGlobal ? '[G]' : '[C]';
+            richEmbed.setDescription(`**${tallyScopeId} ${tallyName}** has been updated from **${previous}** to **${tally.count}**.
 
-            for info run \`!tb get ${tallyName}\``);
+            for info run \`!tb get ${isGlobal ? '-g ' : ''}${tallyName}\``);
             const sentMsg = await MsgHelper.sendMessage(message, richEmbed);
             TallyHandler.reactIfEnabled(serverId, sentMsg);
             Counter.bumpTotalBumps();
@@ -47,9 +48,10 @@ export default class TallyHandler {
             await TallyHandler.updateCmdTallyByAmount(false, channelId, serverId, isGlobal, tallyName, previous, amount);
             await tally.reload();
             logger.info(`dumped tally ${tallyName} by ${amount} for user ${message.author.id}`);
-            richEmbed.setDescription(`**${tallyName}** has been updated from **${previous}** to **${tally.count}**.
+            const tallyScopeId = isGlobal ? '[G]' : '[C]';
+            richEmbed.setDescription(`**${tallyScopeId} ${tallyName}** has been updated from **${previous}** to **${tally.count}**.
 
-            for info run \`!tb get ${tallyName}\``);
+            for info run \`!tb get ${isGlobal ? '-g ' : ''}${tallyName}\``);
             const sentMsg = await MsgHelper.sendMessage(message, richEmbed);
             TallyHandler.reactIfEnabled(serverId, sentMsg);
             Counter.bumpTotalDumps();
