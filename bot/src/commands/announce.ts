@@ -3,7 +3,7 @@ import {
 } from "discord.js";
 import cronParser from 'cron-parser';
 import { CronJob } from 'cron';
-import helper from '../message/cmd-helper';
+import helper from '../message/msg-helper';
 import DB from '../util/db';
 import CronAnnouncer from '../util/cron-announcer';
 import logger from "../util/logger";

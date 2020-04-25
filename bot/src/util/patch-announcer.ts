@@ -1,6 +1,6 @@
 import path from 'path';
 import DB from './db';
-import helper from '../message/cmd-helper';
+import helper from '../message/msg-helper';
 import logger from './logger';
 
 export default class PatchAnnouncer {

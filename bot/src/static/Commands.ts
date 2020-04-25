@@ -40,6 +40,7 @@ export default {
     STOP: 'stop',
     SUGGEST: 'suggest',
     T: 't',
+    TALLY_REACTIONS: 'tally-reactions',
     TEST: 'test',
     TIMER: 'timer',
     TIMERS: 'timers',

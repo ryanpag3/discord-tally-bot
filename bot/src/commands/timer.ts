@@ -2,7 +2,7 @@ import {
     Message
 } from "discord.js";
 import DB from '../util/db';
-import helper from '../message/cmd-helper';
+import helper from '../message/msg-helper';
 
 // create a timer
 export default async (message: Message) => {

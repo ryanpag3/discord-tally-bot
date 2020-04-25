@@ -1,5 +1,5 @@
 import { Message, Client, Permissions } from "discord.js";
-import CmdHelper from '../cmd-helper';
+import CmdHelper from '../msg-helper';
 
 export default class CmdHandler {
     static async runInvite(params: any) {
