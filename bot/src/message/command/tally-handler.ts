@@ -1,5 +1,5 @@
 import { Message } from 'discord.js';
-import CmdHelper from '../cmd-helper';
+import CmdHelper from '../msg-helper';
 import DB from '../../util/db';
 import Counter from '../../util/counter';
 import logger from '../../util/logger';
@@ -83,6 +83,38 @@ export default class TallyHandler {
             logger.error(`error occured while attempting to react...`, e);
         }
         CmdHelper.finalize(message);
+    }
+
+    static async bump(message: Message, isDm: boolean = false) {
+        try {
+            const { tallyName, command } = TallyHandler.getFieldsByTallyType(message, isDm, ['tallyName', 'command']);
+            const richEmbed = CmdHelper.getRichEmbed(message.author.username).setTitle(`:small_red_triangle: ${command}`);
+
+
+        } catch (e) {
+            logger.error(`An error occured while trying to bump for user [${message.author.id}]`, e);
+            const richEmbed = CmdHelper.getRichEmbed(message.author.username)
+                .setTitle(`I could not bump.`)
+                .setDescription(e.message);
+            message.channel.send(richEmbed);
+        }
+        CmdHelper.finalize(message);
+    }
+
+    static async updateTallyAmount(isBump: boolean, isDm: boolean, props: {
+        channelId?: string,
+        serverId?: string,
+        isGlobal?: string,
+        userId: string,
+        tallyName: string,
+        previous: number,
+        amount: number,
+    }) {
+        if (isDm) {
+            return await TallyHandler.db.updateDmTally(props.userId, name, {
+                count: isBump ? props.previous + props.amount : props.previous - props.amount
+            });
+        }
     }
 
     static async updateCmdTallyByAmount(isBump: boolean, channelId: string, serverId: string, isGlobal: boolean, tallyName: string, previousAmount: number, amount: number) {

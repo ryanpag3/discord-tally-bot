@@ -1,14 +1,20 @@
-import Discord from 'discord.js';
+import Discord, { Message } from 'discord.js';
 import config from '../util/config';
 import logger from '../util/logger';
 
-export default {
+const MsgHelper = {
     removePrefixCommand: (messageContent: string, commandLength) => {
         let msgArr = messageContent.split(' ');
         for (let i = 0; i < commandLength; i++) {
             msgArr.shift();
         }
         return msgArr.join(' ');
+    },
+
+    async sendMessage(message: Message, richEmbed: any) {
+        const sent = await message.channel.send(richEmbed);
+        MsgHelper.finalize(message);
+        return sent;
     },
 
     /**
@@ -103,3 +109,5 @@ const deleteCommandMsg = async (msg: any) => {
             logger.info(e);
     }
 }
+
+export default MsgHelper;
