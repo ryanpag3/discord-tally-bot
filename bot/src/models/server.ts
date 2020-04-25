@@ -11,7 +11,7 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
         },
         lastPatchAnnounced: { type: DataTypes.STRING, defaultValue: null },
         patchNotesEnabled: { type: DataTypes.BOOLEAN, defaultValue: true },
-        tallyReactionsEnabled: { type: DataTypes.BOOLEAN, defaultValue: true }
+        tallyReactionsEnabled: { type: DataTypes.BOOLEAN, defaultValue: false }
     }, {
         timestamps: false
     });

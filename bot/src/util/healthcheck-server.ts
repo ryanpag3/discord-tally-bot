@@ -21,10 +21,14 @@ export default class HealthCheckServer {
     }
 
     public start() {
+        try {
         if (!this.server) throw new Error('healthcheck server was not properly setup.');
         this.server.listen(4200, () => {
-            logger.info('healthcheck server started on port 4200');
+            logger.debug('Healthcheck server started on port 4200');
         });
+    } catch (e) {
+        logger.error(`An error occured while starting internal heathcheck server`, e);
+    }
     }
 
     private getStatus(): Status {

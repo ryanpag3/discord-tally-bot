@@ -119,6 +119,9 @@ export default class CommandEventBuilder {
             // get invite link
             emitter.on(Config.prefix + Commands.INVITE, CmdHandler.runInvite);
 
+            // set tally reaction setting
+            emitter.on(Config.prefix + Commands.TALLY_REACTIONS, TallyHandler.runSetTallyReactionsEnabled);
+
             /**
              * The following commands are only exposed when bot is run without `production` flag
              */

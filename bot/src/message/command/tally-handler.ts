@@ -589,4 +589,24 @@ export default class TallyHandler {
         if (richEmbed) message.channel.send(richEmbed);
         CmdHelper.finalize(message);
     }
+
+    static async runSetTallyReactionsEnabled(message: Message) {
+        try {
+            const split = message.content.split(' ');
+            if (!split[2]) throw new Error(`**true** or **false** required.`);
+            const server = await TallyHandler.db.getServer(message.guild.id);
+            const boolStr = split[2].toLowerCase();
+            if (boolStr !== 'true' && boolStr !== 'false')
+                throw new Error('Only **true** or **false** may be provided for this setting.');
+            const bool = boolStr === 'true';
+            server.tallyReactionsEnabled = bool;
+            await server.save();
+            const richEmbed = MsgHelper.getRichEmbed(message.author.username)
+                .setTitle(`${getEmoji(Commands.TALLY_REACTIONS)} ${Commands.TALLY_REACTIONS}`)
+                .setDescription(`Tally reactions have been ${bool ? 'enabled' : 'disabled'}.`);
+            MsgHelper.sendMessage(message, richEmbed);
+        } catch(e) {
+            MsgHelper.handleError(`An error occured while setting tally reaction setting.`, e, message)
+        }
+    }
 }

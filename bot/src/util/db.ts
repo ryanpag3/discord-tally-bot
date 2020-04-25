@@ -80,7 +80,7 @@ export default class DB {
     }
 
     async createDatabaseIfNotExists(dbName: string) {
-        logger.info(`attempting to create database ${dbName}`);
+        logger.debug(`attempting to create database ${dbName}`);
         return new Promise(async (resolve, reject) => {
             const conn = await this.getMysqlConn();
             conn.query(`CREATE DATABASE IF NOT EXISTS ${dbName}`, (err, result) => {
@@ -146,31 +146,31 @@ export default class DB {
     }
 
     async upsertTables() {
-        logger.info('creating and/or altering Tally table');
+        logger.debug('creating and/or altering Tally table');
         await this.Tally.sync({
             alter: true
         });
-        logger.info('creating and/or altering Timer table');
+        logger.debug('creating and/or altering Timer table');
         await this.Timer.sync({
             alter: true
         });
-        logger.info('creating and/or altering Announcement table');
+        logger.debug('creating and/or altering Announcement table');
         await this.Announcement.sync({
             alter: true
         });
-        logger.info('creating and/or altering Channel table');
+        logger.debug('creating and/or altering Channel table');
         await this.Channel.sync({
             alter: true
         });
-        logger.info('creating and/or altering User table');
+        logger.debug('creating and/or altering User table');
         await this.User.sync({
             alter: true
         });
-        logger.info('creating and/or altering Server table');
+        logger.debug('creating and/or altering Server table');
         await this.Server.sync({
             alter: true
         });
-        logger.info('creating and/or altering Permission table');
+        logger.debug('creating and/or altering Permission table');
         await this.Permission.sync({
             alter: true
         });
