@@ -40,19 +40,19 @@ export default class TallyHandler {
         try {
             const { isGlobal, tallyName, amount, channelId, serverId } = TallyHandler.unMarshall(message);
             const richEmbed = MsgHelper.getRichEmbed(message.author.username)
-                .setTitle(`${getEmoji(Commands.BUMP)} ${Commands.BUMP}`);
+                .setTitle(`${getEmoji(Commands.DUMP)} ${Commands.DUMP}`);
             const tally = await TallyHandler.db.getCmdTally(message.channel.id, message.guild.id, isGlobal, tallyName);
             if (!tally) throw new Error(`Cannot find tally with name ${tallyName} to dump.`);
             const previous = tally.count;
-            await TallyHandler.updateCmdTallyByAmount(true, channelId, serverId, isGlobal, tallyName, previous, amount);
+            await TallyHandler.updateCmdTallyByAmount(false, channelId, serverId, isGlobal, tallyName, previous, amount);
             await tally.reload();
-            logger.info(`bumped tally ${tallyName} by ${amount} for user ${message.author.id}`);
+            logger.info(`dumped tally ${tallyName} by ${amount} for user ${message.author.id}`);
             richEmbed.setDescription(`**${tallyName}** has been updated from **${previous}** to **${tally.count}**.
 
             for info run \`!tb get ${tallyName}\``);
             const sentMsg = await MsgHelper.sendMessage(message, richEmbed);
             TallyHandler.reactIfEnabled(serverId, sentMsg);
-            Counter.bumpTotalBumps();
+            Counter.bumpTotalDumps();
         } catch (e) {
             MsgHelper.handleError(`Error while bumping tally.`, e, message);
         }
@@ -595,6 +595,7 @@ export default class TallyHandler {
             const split = message.content.split(' ');
             if (!split[2]) throw new Error(`**true** or **false** required.`);
             const server = await TallyHandler.db.getServer(message.guild.id);
+            if (!server) throw new Error(`Cannot find server to update.`);
             const boolStr = split[2].toLowerCase();
             if (boolStr !== 'true' && boolStr !== 'false')
                 throw new Error('Only **true** or **false** may be provided for this setting.');
