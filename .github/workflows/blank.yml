@@ -62,5 +62,5 @@ jobs:
       run: |
         docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
         cd health-alert/
-        docker build . -t ryanpage/internal:tally-bot-health-alert-${GITHUB_SHA::8}
-        docker push ryanpage/internal:tally-bot-health-alert-${GITHUB_SHA::8}
+        docker build . -t ryanpage/internal:tally-bot-health-alert-${GITHUB_SHA::7}
+        docker push ryanpage/internal:tally-bot-health-alert-${GITHUB_SHA::7}
