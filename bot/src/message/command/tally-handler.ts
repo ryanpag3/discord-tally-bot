@@ -292,7 +292,9 @@ export default class TallyHandler {
     }
 
     static async createDmTally(message: Message) {
+        
         const { command, tallyName, description } = TallyDmHandler.unMarshall(message);
+        logger.info(`creating dm tally with ${tallyName} ${description} ${message.author.id}`);
         let tally = await TallyDmHandler.db.createDmTally(message.author.id, tallyName, description);
         tally.command = command;
         return tally;
