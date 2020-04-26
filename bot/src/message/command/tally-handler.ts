@@ -14,6 +14,7 @@ export default class TallyHandler {
     static async runBump(message: Message, isDm: boolean = false) {
         try {
             const { isGlobal, tallyName, amount, channelId, serverId } = TallyHandler.unMarshall(message);
+            if (Number.isNaN(amount)) throw new Error('Please provide a valid number (i.e 10)');
             const richEmbed = MsgHelper.getRichEmbed(message.author.username)
                 .setTitle(`${getEmoji(Commands.BUMP)} ${Commands.BUMP}`);
             const tally = await TallyHandler.db.getCmdTally(message.channel.id, message.guild.id, isGlobal, tallyName);
@@ -40,6 +41,7 @@ export default class TallyHandler {
     static async runDump(message: Message, isDm: boolean = false) {
         try {
             const { isGlobal, tallyName, amount, channelId, serverId } = TallyHandler.unMarshall(message);
+            if (Number.isNaN(amount)) throw new Error('Please provide a valid number (i.e 10)');
             const richEmbed = MsgHelper.getRichEmbed(message.author.username)
                 .setTitle(`${getEmoji(Commands.DUMP)} ${Commands.DUMP}`);
             const tally = await TallyHandler.db.getCmdTally(message.channel.id, message.guild.id, isGlobal, tallyName);
