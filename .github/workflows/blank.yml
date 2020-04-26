@@ -53,8 +53,8 @@ jobs:
       run: |
         docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
         cd bot/
-        docker build . -t ryanpage/internal:tally-bot-${GITHUB_SHA::8}
-        docker push ryanpage/internal:tally-bot-${GITHUB_SHA::8}
+        docker build . -t ryanpage/internal:tally-bot-${GITHUB_SHA::7}
+        docker push ryanpage/internal:tally-bot-${GITHUB_SHA::7}
     - name: Health Check - Docker Build
       env:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
