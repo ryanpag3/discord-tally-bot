@@ -112,6 +112,7 @@ export default class TallyDmHandler {
         if (tallyNameRequired && !tallyName) throw new Error(`Tally name required.`);
         const amount = split[2] ? Number.parseInt(split[2]) : 1;
         if (amountRequired && !split[2]) throw new Error(`Ammount required.`);
+        if (Number.isNaN(amount)) throw new Error('Please provide a valid number (i.e 10)');
         const description = split.slice(2, split.length).join(' ');
         return { command, tallyName, amount, description };
     }

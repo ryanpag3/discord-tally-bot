@@ -124,6 +124,7 @@ export default class TallyHandler {
         if (!tallyName && tallyNameRequired) throw new Error('Tally name is required.');
         const amount = split[3] ? Number.parseInt(split[3]) : 1;
         if (amountRequired === true && !split[3]) throw new Error(`Amount is required.`);
+        if (Number.isNaN(amount)) throw new Error('Please provide a valid number (i.e 10)');
         return {
             isGlobal,
             command,
