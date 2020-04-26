@@ -41,6 +41,7 @@ export default class TallyDmHandler {
         try {
             const amountRequired = false, tallyNameRequired = true;
             const { tallyName, command, amount } = TallyDmHandler.unMarshall(message, amountRequired, tallyNameRequired);
+            if (Number.isNaN(amount)) throw new Error('Please provide a valid number (i.e 10)');
             const richEmbed = MsgHelper.getRichEmbed(message.author.username)
                 .setTitle(`${getEmoji(command)} ${command}`);
             const tally = await TallyDmHandler.db.getDmTally(message.author.id, tallyName);
@@ -67,6 +68,7 @@ export default class TallyDmHandler {
         try {
             const amountRequired = false, tallyNameRequired = true;
             const { tallyName, command, amount } = TallyDmHandler.unMarshall(message, amountRequired, tallyNameRequired);
+            if (Number.isNaN(amount)) throw new Error('Please provide a valid number (i.e 10)');
             const richEmbed = MsgHelper.getRichEmbed(message.author.username)
                 .setTitle(`${getEmoji(command)} ${command}`);
             const tally = await TallyDmHandler.db.getDmTally(message.author.id, tallyName);
@@ -112,7 +114,6 @@ export default class TallyDmHandler {
         if (tallyNameRequired && !tallyName) throw new Error(`Tally name required.`);
         const amount = split[2] ? Number.parseInt(split[2]) : 1;
         if (amountRequired && !split[2]) throw new Error(`Ammount required.`);
-        if (Number.isNaN(amount)) throw new Error('Please provide a valid number (i.e 10)');
         const description = split.slice(2, split.length).join(' ');
         return { command, tallyName, amount, description };
     }
