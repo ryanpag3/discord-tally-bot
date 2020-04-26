@@ -272,8 +272,10 @@ export default class TallyHandler {
                     .toString()
                     .toLowerCase()
                     .includes('validation error')
-            )
+            ) {
+                logger.error(e);
                 e = `Tally already exists.`;
+            }
             logger.error(e);
             const fields = TallyHandler.getFieldsByTallyType(message, isDm, ['command', 'tallyName']);
             richEmbed = CmdHelper.getRichEmbed(message.author.username)
