@@ -13,7 +13,6 @@ import reset from '../commands/reset';
 import timers from '../commands/timers';
 import suggest from '../commands/suggest';
 import bug from '../commands/bug';
-import announce from '../commands/announce';
 import announcements from '../commands/announcements';
 import patchnotes from '../commands/patchnotes';
 import permissions from '../commands/permissions';
