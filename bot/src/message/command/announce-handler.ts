@@ -4,6 +4,7 @@ import MsgHelper from '../msg-helper';
 import logger from '../../util/logger';
 import { getEmoji } from '../../static/MsgEmojis';
 import Commands from '../../static/Commands';
+import CronAnnouncer from '../../util/cron-announcer';
 import CronParser from 'cron-parser';
 
 /**
@@ -28,8 +29,7 @@ enum SubCommands {
     C = '-c',
     DELETE = '-delete',
     D = '-d',
-    GOAL = '-goal',
-    G = '-g',
+    GOAL = '-goal', // -g is reserved for global flags
     ENABLE = '-enable',
     DISABLE = '-disable'
 }
@@ -45,7 +45,6 @@ export default class AnnounceHandler {
                 case SubCommands.D:
                 case SubCommands.DELETE:
                     return await AnnounceHandler.runDeleteAnnouncement(message);
-                case SubCommands.G:
                 case SubCommands.GOAL:
                     return await AnnounceHandler.runSetAnnouncementGoal(message);
                 case SubCommands.ENABLE:
@@ -214,26 +213,47 @@ export default class AnnounceHandler {
     }
 
     static async setAnnouncementDateGoal(message: Message) {
+        const { command, datePattern, name } = AnnounceHandler.unmarshallDateGoalMessage(message);
+        let date: Date;
+        if (AnnounceHandler.isValidDate(datePattern))
+            date = new Date(datePattern);
+        await db.setAnnounceDate(message.channel.id, name, datePattern);
+        CronAnnouncer.createCronJob(name, message.channel.id, date || datePattern);
+        const richEmbed = MsgHelper.getRichEmbed(message.author.username)
+            .setTitle(`:trumpet: ${command}`)
+            .setDescription(`The announcement **${name}** will run on **${getFormattedDateStr()}**`);
+        MsgHelper.sendMessage(message, richEmbed);
 
+        function getFormattedDateStr() {
+            return date ? date.toLocaleDateString() + ' ' + date.toLocaleTimeString() : datePattern;
+        }
     }
 
-    static unmarshallDataGoalMessage(message: Message): {
+    static unmarshallDateGoalMessage(message: Message): {
         command: string,
-        datePattern: string
+        datePattern: string,
+        name: string
     } {
         const { isValidDate, isValidCron } = AnnounceHandler;
         const split = message.content.split(' ');
         const command = [split[0], split[1], split[2]].join(' ');
-        const datePattern = split.slice(4, split.length).join(' ');
+        const name = split[3];
+        if (!name) throw new Error(`Announcement name is required for setting date goal.`);
+        const datePattern = split.slice(5, split.length).join(' ');
         if (!isValidDate(datePattern) && !isValidCron(datePattern)) {
-            throw new Error(`Invalid date pattern provided.\n` +
-            `If your event fires once, please use a valid date. If it repeats, please make sure it is a valid CRON pattern.\n` +
-            `You can refer here for help: https://crontab.guru/`);
+            AnnounceHandler.raiseInvalidDatePattern();
         }
         return {
             command,
-            datePattern
+            datePattern,
+            name
         }
+    }
+
+    static raiseInvalidDatePattern() {
+        throw new Error(`Invalid date pattern provided.\n` +
+        `If your event fires once, please use a valid date. If it repeats, please make sure it is a valid CRON pattern.\n` +
+        `You can refer here for help: https://crontab.guru/`);
     }
 
     static isValidDate(d: string) {
@@ -241,13 +261,66 @@ export default class AnnounceHandler {
         return isNaN(parsed) === false;
     }
 
-    static isValidCron(cron: string)
+    static isValidCron(cron: string) {
+        try {
+            CronParser.parseExpression(cron);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
 
     static async runEnableAnnouncement(message: Message) {
-
+        try {
+            const { name, command } = AnnounceHandler.unmarshallToggleMessage(message);
+            const a = await db.activateAnnouncement(message.channel.id, name);
+            if (!a) throw new Error(`Could not find announcement to enable.`);
+            CronAnnouncer.createCronJob(name, message.channel.id, a.datePattern);
+            const richEmbed = MsgHelper.getRichEmbed(message.author.username)
+                .setTitle(`:trumpet: :flashlight: ${command}`)
+                .setDescription(`Announcement **${name}** has been enabled.`);
+            MsgHelper.sendMessage(message, richEmbed);
+        } catch (e) {
+            MsgHelper.handleError(`An error occured while enabling announcement.`, e, message)
+        }
     }
 
     static async runDisableAnnouncement(message: Message) {
+        try {
+            const { name, command } = AnnounceHandler.unmarshallToggleMessage(message);
+            const a = await db.deactivateAnnouncement(message.channel.id, name);
+            if (!a) throw new Error(`Could not find announcement to disable.`);
+            CronAnnouncer.destroyCronJob(name, message.channel.id);
+            const richEmbed = MsgHelper.getRichEmbed(message.author.username)
+                .setTitle(`:trumpet: :gun: ${command}`)
+                .setDescription(`Announcement **${name}** has been disabled.`);
+        MsgHelper.sendMessage(message, richEmbed);
+        } catch (e) {
+            MsgHelper.handleError(`An error occured while disabling announcement.`, e, message);
+        }
+    }
 
+    static unmarshallToggleMessage?(message: Message): {
+        enabled: boolean,
+        name: string,
+        command: string
+    } {
+        enum Options {
+            ENABLE = '-enable',
+            DISABLE = '-disable'
+        };
+        const split = message.content.split(' ');
+        const command = [split[0], split[1], split[2]].join(' ');
+        const toggle = split[2];
+        if (!Object.values(Options).includes(toggle as any))
+            throw new Error(`Please specify either -enable or -disable. See [here]() for more details.`)
+        const name = split[3];
+        if (!name)
+            throw new Error(`Please specify a valid announcement name.`);
+        return {
+            enabled: toggle === Options.ENABLE,
+            name,
+            command
+        }
     }
 }

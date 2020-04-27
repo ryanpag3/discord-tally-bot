@@ -588,9 +588,20 @@ export default class DB {
                 name: name
             }
         });
-        if (!announcement) throw new Error('No announcement found to update.');
+        if (!announcement) throw new Error('Cannot find announcement to enable.');
         announcement.active = true;
         await announcement.save();
+        return announcement;
+    }
+
+    async deactivateAnnouncement(channelId: string, name: string) {
+        const announcement = await this.Announcement.findOne({
+            where: { channelId, name }
+        });
+        if (!announcement) throw new Error('Cannot find announcement to disable.');
+        announcement.active = false;
+        await announcement.save();
+        return announcement;
     }
 
     async setAnnounceName(channelId, name, newName) {
