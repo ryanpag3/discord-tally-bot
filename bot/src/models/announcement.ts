@@ -12,6 +12,7 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
         datePattern: { type: DataTypes.STRING, defaultValue: null },
         tallyName: { type: DataTypes.STRING, defaultValue: null },
         tallyGoal: { type: DataTypes.INTEGER, defaultValue: null },
+        tallyGoalReached: { type: DataTypes.BOOLEAN, defaultValue: false },
         active: {type: DataTypes.BOOLEAN, defaultValue: true }
     }, {
         timestamps: false,
