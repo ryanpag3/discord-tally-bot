@@ -540,6 +540,13 @@ export default class DB {
         return announce;
     }
 
+    async getAnnouncements(where: any) {
+        const announcements = await this.Announcement.findAll({
+            where
+        });
+        return announcements;
+    }
+
     async createAnnouncement(channelId, name, description) {
         const announce = await this.Announcement.create({
             channelId: channelId,
@@ -639,6 +646,7 @@ export default class DB {
         announcement.datePattern = null;
         announcement.tallyGoal = tallyGoal;
         announcement.tallyName = tallyName;
+        announcement.tallyGoalReached = false;
         await announcement.save();
     }
 

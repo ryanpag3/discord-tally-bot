@@ -7,6 +7,7 @@ import TallyDmHandler from '../dm/tally-dm-handler';
 import MsgHelper from '../msg-helper';
 import Commands from '../../static/Commands';
 import { getEmoji } from '../../static/MsgEmojis';
+import AnnounceUtil from '../../util/announce-util';
 
 export default class TallyHandler {
     static db = new DB();
@@ -30,6 +31,7 @@ export default class TallyHandler {
             const sentMsg = await MsgHelper.sendMessage(message, richEmbed);
             TallyHandler.reactIfEnabled(serverId, sentMsg);
             Counter.bumpTotalBumps();
+            AnnounceUtil.announceTallyGoalIfExists(message, tallyName);
         } catch (e) {
             MsgHelper.handleError(`Error while bumping tally.`, e, message);
         }
@@ -57,6 +59,7 @@ export default class TallyHandler {
             const sentMsg = await MsgHelper.sendMessage(message, richEmbed);
             TallyHandler.reactIfEnabled(serverId, sentMsg);
             Counter.bumpTotalDumps();
+            AnnounceUtil.announceTallyGoalIfExists(message, tallyName);
         } catch (e) {
             MsgHelper.handleError(`Error while bumping tally.`, e, message);
         }
@@ -174,6 +177,7 @@ export default class TallyHandler {
                 new: ${amount}
                 `);
                 richEmbed.setDescription(`${isGlobal ? '[G]' : '[C]'} **${tallyName}** has been set to ${amount}.\n\n${description}`);
+                AnnounceUtil.announceTallyGoalIfExists(message, tallyName);
             }
         } catch (e) {
             logger.info(e);
