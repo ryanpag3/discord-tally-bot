@@ -134,19 +134,7 @@ class Bot {
             },
             () => {
                 Bot.client.user.setActivity(`!tb help`);
-            },
-            // async () => {
-            //     const tallyCnt = await Bot.db.getTallyCount();
-            //     Bot.client.user.setActivity(`${tallyCnt} total tallies managed.`);
-            // },
-            // async () => {
-            //     const bumpCnt = await Counter.getBumpCount();
-            //     Bot.client.user.setActivity(`${bumpCnt} total bumps.`);
-            // },
-            // async () => {
-            //     const dumpCnt = await Counter.getDumpCount();
-            //     Bot.client.user.setActivity(`${dumpCnt} total dumps.`);
-            // }
+            }
         ];
     
         let i = 0;
