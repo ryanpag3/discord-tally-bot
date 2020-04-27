@@ -32,6 +32,7 @@ enum SubCommands {
     GOAL = '-goal', // -g is reserved for global flags
     ENABLE = '-enable',
     DISABLE = '-disable',
+    GET = '-get'
 }
 
 export default class AnnounceHandler {
@@ -45,6 +46,8 @@ export default class AnnounceHandler {
                 case SubCommands.D:
                 case SubCommands.DELETE:
                     return await AnnounceHandler.runDeleteAnnouncement(message);
+                case SubCommands.GET:
+                    return await AnnounceHandler.runGetAnnouncement(message);
                 case SubCommands.GOAL:
                     return await AnnounceHandler.runSetAnnouncementGoal(message);
                 case SubCommands.ENABLE:
@@ -321,7 +324,7 @@ export default class AnnounceHandler {
         const split = message.content.split(' ');
         const command = [split[0], split[1], split[2]].join(' ');
         const toggle = split[2];
-        if (!Object.values(Options).includes(toggle as any)) throw new Error(`Please specify either -enable or -disable. See [here]() for more details.`);
+        if (!Object.values(Options).includes(toggle as any)) throw new Error(`Please specify either -enable or -disable. See [here](https://github.com/ryanpag3/discord-tally-bot#activate-announcement) for more details.`);
         const name = split[3];
         if (!name) throw new Error(`Please specify a valid announcement name.`);
         return {
@@ -335,10 +338,44 @@ export default class AnnounceHandler {
         try {
             const richEmbed = MsgHelper.getRichEmbed(message.author.username)
                 .setTitle(`:trumpet: !tb announce`)
-                .setDescription(`Announcement commands required a subcommand. Please refer [here]() for more information.`);
+                .setDescription(`Announcement commands required a subcommand. Please refer [here](https://github.com/ryanpag3/discord-tally-bot#announcements) for more information.`);
             MsgHelper.sendMessage(message, richEmbed);
         } catch (e) {
             MsgHelper.handleError(`An error occured while displaying announcement help.`, e, message);
+        }
+    }
+
+    static async runGetAnnouncement(message: Message) {
+        try {
+            const { name, command } = AnnounceHandler.unmarshallGetMessage(message);
+            const announcement = await db.getAnnouncement(message.channel.id, name);
+            const richEmbed = MsgHelper.getRichEmbed(message.author.username)
+                .setTitle(`:trumpet: ${command}`)
+                .setDescription(`Announcement found!`)
+                .addField(`Name`, announcement.name)
+                .addField('Description', announcement.description || 'none');
+            if (announcement.datePattern) {
+                richEmbed.addField('Date', announcement.datePattern)
+            } else if (announcement.tallyName) {
+                richEmbed.addField('Tally Goal', `${announcement.tallyName} - ${announcement.tallyGoal}`);
+            }
+            MsgHelper.sendMessage(message, richEmbed);
+        } catch (e) {
+            MsgHelper.handleError(`There was an error while getting announcement.`, e, message)
+        }
+    }
+
+    static unmarshallGetMessage(message: Message): {
+        name: string,
+        command: string
+    } {
+        const split = message.content.split(' ');
+        const command = [split[0], split[1], split[2]].join(' ');
+        const name = split[3];
+        if (!name) throw new Error(`Valid announcement name is required.`);
+        return {
+            name,
+            command
         }
     }
 }
