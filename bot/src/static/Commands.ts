@@ -2,7 +2,7 @@
  * Use this bad boy to keep this sorted: https://github.com/Tyriar/vscode-sort-lines
  */
 
-export default {
+const Commands = {
     A: 'a',
     ADD: 'add',
     ANNOUNCE: 'announce',
@@ -46,3 +46,5 @@ export default {
     TIMERS: 'timers',
     UPDATE: 'update'
 }
+
+export default Commands;

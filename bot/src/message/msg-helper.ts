@@ -1,6 +1,7 @@
 import Discord, { Message } from 'discord.js';
 import config from '../util/config';
 import logger from '../util/logger';
+import Env from '../util/env';
 
 const MsgHelper = {
     removePrefixCommand: (messageContent: string, commandLength) => {
@@ -22,7 +23,7 @@ const MsgHelper = {
     async handleError(msg: string, e: Error, message: Message) {
         logger.error(msg, e);
         const richEmbed = MsgHelper.getRichEmbed(message.author.username)
-            .setTitle(msg)
+            .setTitle(`:x: ` + msg)
             .setDescription(e.message);
         await message.channel.send(richEmbed);
         MsgHelper.finalize(message);
@@ -76,7 +77,8 @@ const MsgHelper = {
         if (msg.channel.type == 'dm') return;
         // TODO: make opt-in
         // PatchAnnouncer.announcePatch(msg);
-        deleteCommandMsg(msg);
+        if (Env.isProduction())
+            deleteCommandMsg(msg);
     },
 
     truncate(string, len){

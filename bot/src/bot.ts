@@ -124,23 +124,16 @@ class Bot {
             () => {
                 let users = 0;
                 Bot.client.guilds.map(guild => (users += guild.members.size));
-                Bot.client.user.setActivity(`Counting things for ${Bot.client.guilds.size} servers and ${users} users.`);
+                Bot.client.user.setActivity(`${Bot.client.guilds.size} servers.`);
                 if (Bot.topgg) Bot.topgg.postStats(Bot.client.guilds.size);
             },
             () => {
-                Bot.client.user.setActivity(`!tb help for commands.`);
+                let users = 0;
+                Bot.client.guilds.map(guild => (users += guild.members.size));
+                Bot.client.user.setActivity(`${users} users.`);
             },
-            async () => {
-                const tallyCnt = await Bot.db.getTallyCount();
-                Bot.client.user.setActivity(`${tallyCnt} total tallies managed.`);
-            },
-            async () => {
-                const bumpCnt = await Counter.getBumpCount();
-                Bot.client.user.setActivity(`${bumpCnt} total bumps.`);
-            },
-            async () => {
-                const dumpCnt = await Counter.getDumpCount();
-                Bot.client.user.setActivity(`${dumpCnt} total dumps.`);
+            () => {
+                Bot.client.user.setActivity(`!tb help`);
             }
         ];
     
