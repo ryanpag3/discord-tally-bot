@@ -22,6 +22,7 @@ import Env from '../util/env';
 import TallyHandler from './command/tally-handler';
 import CmdHandler from './command/cmd-handler';
 import logger from '../util/logger';
+import AnnounceHandler from './command/announce-handler';
 
 export default class CommandEventBuilder {
     static build(emitter: EventEmitter) {
@@ -104,8 +105,8 @@ export default class CommandEventBuilder {
             emitter.on(Config.prefix + Commands.REPORT, bug);
 
             // manage announcements
-            emitter.on(Config.prefix + Commands.ANNOUNCE, announce);
-            emitter.on(Config.prefix + Commands.A, announce);
+            emitter.on(Config.prefix + Commands.ANNOUNCE, AnnounceHandler.runAnnounce);
+            emitter.on(Config.prefix + Commands.A, AnnounceHandler.runAnnounce);
 
             // show announcements
             emitter.on(Config.prefix + Commands.ANNOUNCEMENTS, announcements);

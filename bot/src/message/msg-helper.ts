@@ -1,6 +1,7 @@
 import Discord, { Message } from 'discord.js';
 import config from '../util/config';
 import logger from '../util/logger';
+import Env from '../util/env';
 
 const MsgHelper = {
     removePrefixCommand: (messageContent: string, commandLength) => {
@@ -76,7 +77,8 @@ const MsgHelper = {
         if (msg.channel.type == 'dm') return;
         // TODO: make opt-in
         // PatchAnnouncer.announcePatch(msg);
-        deleteCommandMsg(msg);
+        if (Env.isProduction())
+            deleteCommandMsg(msg);
     },
 
     truncate(string, len){
