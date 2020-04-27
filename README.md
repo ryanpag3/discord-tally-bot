@@ -41,6 +41,7 @@ This will help offset the cost of running the bot. Thank you 👊
   - [Enable/Disable Tally Reactions](#toggle-tally-reactions)
 - [Announcements](#announcements)
   - [Create Announcement](#create-an-announcement)
+  - [Get Announcement Details](#get-an-announcement)
   - [Set Announcement Tally Goal](#set-announcement-tally-goal)
   - [Set Announcement Date Goal](#set-an-announcement-date)
   - [Set Announcement Cron](#set-an-announcement-cron)
@@ -454,6 +455,14 @@ Create an announcement with a _name_ and _description_. This command can also be
 
     ---- Server Examples ----
     !tb announce -create new-years In the future!
+
+### **Get an Announcement**
+Get details on a specified announcement.
+
+    !tb announce -get [name]
+
+    ---- Server Examples ----
+    !tb announce -get new-years
 
 ### **Set Announcement Tally Goal**
 You can set an announcement to fire when a tally reaches a certain goal.
