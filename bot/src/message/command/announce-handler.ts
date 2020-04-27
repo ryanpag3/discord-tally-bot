@@ -31,7 +31,7 @@ enum SubCommands {
     D = '-d',
     GOAL = '-goal', // -g is reserved for global flags
     ENABLE = '-enable',
-    DISABLE = '-disable'
+    DISABLE = '-disable',
 }
 
 export default class AnnounceHandler {
@@ -52,7 +52,7 @@ export default class AnnounceHandler {
                 case SubCommands.DISABLE:
                     return await AnnounceHandler.runDisableAnnouncement(message);
                 default:
-                    AnnounceHandler.raiseInvalidSubcommand();
+                    return await AnnounceHandler.runDisplayHelp(message);
             }
         } catch (e) {
             MsgHelper.handleError(`An error occured while running an announcement command.`, e, message);
@@ -62,7 +62,8 @@ export default class AnnounceHandler {
     static getSubcommand(message: Message) {
         const split = message.content.split(' ');
         const subcommand = split[2];
-        if (!subcommand || !Object.values(SubCommands).includes(subcommand as any)) AnnounceHandler.raiseInvalidSubcommand();
+        if (!subcommand) return;
+        if (!Object.values(SubCommands).includes(subcommand as any)) AnnounceHandler.raiseInvalidSubcommand();
         return subcommand;
     }
 
@@ -120,13 +121,8 @@ export default class AnnounceHandler {
         try {
             const { name, command } = AnnounceHandler.unmarshallDeleteMessage(message);
             const resultCode = await db.deleteAnnounce(message.channel.id, name);
-            if (resultCode === 0)
-                throw new Error(`No announcement found with name [${name}] to delete.`)
-            const richEmbed = MsgHelper.getRichEmbed(message.author.username)
-                .setTitle(`:x: ${command}`)
-                .setDescription(
-                    `Announcement with name **${name}** has been deleted.`
-                );
+            if (resultCode === 0) throw new Error(`No announcement found with name [${name}] to delete.`);
+            const richEmbed = MsgHelper.getRichEmbed(message.author.username).setTitle(`:x: ${command}`).setDescription(`Announcement with name **${name}** has been deleted.`);
             logger.info(`Deleted announcement with name [${name}] and author id [${message.author.id}]`);
             MsgHelper.sendMessage(message, richEmbed);
         } catch (e) {
@@ -134,18 +130,19 @@ export default class AnnounceHandler {
         }
     }
 
-    static unmarshallDeleteMessage(message: Message): {
-        name: string,
-        command: string
+    static unmarshallDeleteMessage(
+        message: Message
+    ): {
+        name: string;
+        command: string;
     } {
         const split = message.content.split(' ');
         const command = [split[0], split[1], split[2]].join(' ');
-        if (!split[3])
-            throw new Error(`Name is required for announcement deletion.`);
+        if (!split[3]) throw new Error(`Name is required for announcement deletion.`);
         return {
             name: split[3],
-            command
-        }
+            command,
+        };
     }
 
     static async runSetAnnouncementGoal(message: Message) {
@@ -169,16 +166,18 @@ export default class AnnounceHandler {
     /**
      * !tb announce -goal [name] -[date] [date-pattern]
      * !tb announce -goal [name] -[tally] [tally_name] [amount]
-     * @param message 
+     * @param message
      */
-    static unmarshallAnnouncementGoalMessage(message: Message): {
-        type: string
+    static unmarshallAnnouncementGoalMessage(
+        message: Message
+    ): {
+        type: string;
     } {
         const split = message.content.split(' ');
         const type = split[4];
         if (!type) AnnounceHandler.raiseInvalidType();
         return {
-            type
+            type,
         };
     }
 
@@ -192,31 +191,35 @@ export default class AnnounceHandler {
         MsgHelper.sendMessage(message, richEmbed);
     }
 
-    static unmarshallTallyGoalMessage(message: Message): {
-        command: string,
-        name: string,
-        tallyName: string,
-        count: number
+    static unmarshallTallyGoalMessage(
+        message: Message
+    ): {
+        command: string;
+        name: string;
+        tallyName: string;
+        count: number;
     } {
         const split = message.content.split(' ');
         const command = [split[0], split[1], split[2]].join(' ');
-        const name = split[3], tallyName = split[5], count = Number.parseInt(split[6]);
+        const name = split[3],
+            tallyName = split[5],
+            count = Number.parseInt(split[6]);
         if (!name) throw new Error(`A valid announcement name is required. For more info click [here](https://github.com/ryanpag3/discord-tally-bot#set-announcement-tally-goal)`);
         if (!tallyName) throw new Error(`A valid tally name is required. For more info click [here](https://github.com/ryanpag3/discord-tally-bot#set-announcement-tally-goal)`);
-        if (!count || Number.isNaN(count)) throw new Error('A valid count is required. For more info click [here](https://github.com/ryanpag3/discord-tally-bot#set-announcement-tally-goal)');
+        if (!count || Number.isNaN(count))
+            throw new Error('A valid count is required. For more info click [here](https://github.com/ryanpag3/discord-tally-bot#set-announcement-tally-goal)');
         return {
             command,
             name,
             tallyName,
-            count
-        }
+            count,
+        };
     }
 
     static async setAnnouncementDateGoal(message: Message) {
         const { command, datePattern, name } = AnnounceHandler.unmarshallDateGoalMessage(message);
         let date: Date;
-        if (AnnounceHandler.isValidDate(datePattern))
-            date = new Date(datePattern);
+        if (AnnounceHandler.isValidDate(datePattern)) date = new Date(datePattern);
         await db.setAnnounceDate(message.channel.id, name, datePattern);
         CronAnnouncer.createCronJob(name, message.channel.id, date || datePattern);
         const richEmbed = MsgHelper.getRichEmbed(message.author.username)
@@ -229,10 +232,12 @@ export default class AnnounceHandler {
         }
     }
 
-    static unmarshallDateGoalMessage(message: Message): {
-        command: string,
-        datePattern: string,
-        name: string
+    static unmarshallDateGoalMessage(
+        message: Message
+    ): {
+        command: string;
+        datePattern: string;
+        name: string;
     } {
         const { isValidDate, isValidCron } = AnnounceHandler;
         const split = message.content.split(' ');
@@ -246,14 +251,16 @@ export default class AnnounceHandler {
         return {
             command,
             datePattern,
-            name
-        }
+            name,
+        };
     }
 
     static raiseInvalidDatePattern() {
-        throw new Error(`Invalid date pattern provided.\n` +
-        `If your event fires once, please use a valid date. If it repeats, please make sure it is a valid CRON pattern.\n` +
-        `You can refer here for help: https://crontab.guru/`);
+        throw new Error(
+            `Invalid date pattern provided.\n` +
+                `If your event fires once, please use a valid date. If it repeats, please make sure it is a valid CRON pattern.\n` +
+                `You can refer here for help: https://crontab.guru/`
+        );
     }
 
     static isValidDate(d: string) {
@@ -281,7 +288,7 @@ export default class AnnounceHandler {
                 .setDescription(`Announcement **${name}** has been enabled.`);
             MsgHelper.sendMessage(message, richEmbed);
         } catch (e) {
-            MsgHelper.handleError(`An error occured while enabling announcement.`, e, message)
+            MsgHelper.handleError(`An error occured while enabling announcement.`, e, message);
         }
     }
 
@@ -291,36 +298,45 @@ export default class AnnounceHandler {
             const a = await db.deactivateAnnouncement(message.channel.id, name);
             if (!a) throw new Error(`Could not find announcement to disable.`);
             CronAnnouncer.destroyCronJob(name, message.channel.id);
-            const richEmbed = MsgHelper.getRichEmbed(message.author.username)
-                .setTitle(`:trumpet: :gun: ${command}`)
-                .setDescription(`Announcement **${name}** has been disabled.`);
-        MsgHelper.sendMessage(message, richEmbed);
+            const richEmbed = MsgHelper.getRichEmbed(message.author.username).setTitle(`:trumpet: :gun: ${command}`).setDescription(`Announcement **${name}** has been disabled.`);
+            MsgHelper.sendMessage(message, richEmbed);
         } catch (e) {
             MsgHelper.handleError(`An error occured while disabling announcement.`, e, message);
         }
     }
 
-    static unmarshallToggleMessage?(message: Message): {
-        enabled: boolean,
-        name: string,
-        command: string
+    static unmarshallToggleMessage?(
+        message: Message
+    ): {
+        enabled: boolean;
+        name: string;
+        command: string;
     } {
         enum Options {
             ENABLE = '-enable',
-            DISABLE = '-disable'
-        };
+            DISABLE = '-disable',
+        }
         const split = message.content.split(' ');
         const command = [split[0], split[1], split[2]].join(' ');
         const toggle = split[2];
-        if (!Object.values(Options).includes(toggle as any))
-            throw new Error(`Please specify either -enable or -disable. See [here]() for more details.`)
+        if (!Object.values(Options).includes(toggle as any)) throw new Error(`Please specify either -enable or -disable. See [here]() for more details.`);
         const name = split[3];
-        if (!name)
-            throw new Error(`Please specify a valid announcement name.`);
+        if (!name) throw new Error(`Please specify a valid announcement name.`);
         return {
             enabled: toggle === Options.ENABLE,
             name,
-            command
+            command,
+        };
+    }
+
+    static runDisplayHelp(message: Message) {
+        try {
+            const richEmbed = MsgHelper.getRichEmbed(message.author.username)
+                .setTitle(`:trumpet: !tb announce`)
+                .setDescription(`Announcement commands required a subcommand. Please refer [here]() for more information.`);
+            MsgHelper.sendMessage(message, richEmbed);
+        } catch (e) {
+            MsgHelper.handleError(`An error occured while displaying announcement help.`, e, message);
         }
     }
 }
