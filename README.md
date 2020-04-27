@@ -450,59 +450,65 @@ List all announcements created for this channel.
 ### **Create an Announcement**
 Create an announcement with a _name_ and _description_. This command can also be used to update the description of an existing announcement.
 
-    !tb announce [name] [description]
+    !tb announce -create [name] [description]
 
     ---- Server Examples ----
-    !tb announce new-years In the future!
+    !tb announce -create new-years In the future!
 
 ### **Set Announcement Tally Goal**
 You can set an announcement to fire when a tally reaches a certain goal.
 
-    !tb announce [name] -t [tally name] [tally goal]
+    !tb announce -goal [name] -t [tally name] [tally goal]
 
     ---- Server Examples ----
-    !tb announce new-record -t ryan-apm 9001
+    !tb announce -goal new-record -t ryan-apm 9001
+
+    !tb announce -goal new-record -tally ryan-apm 9001
 
 ### **Set an Announcement Date**
 You can also set an announcement to fire on a specific date. [See here for help](https://www.w3schools.com/js/js_date_formats.asp)
 
-    !tb announce [name] -d [date]
+    !tb announce -goal [name] -d [date]
 
     ---- Server Examples ----
-    !tb announce new-years -d 01-01-2042
+    !tb announce -goal new-years -d 01-01-2042
+
+    !tb announce -goal new-years -date 01-01-2042
 
 ### **Set an Announcement Cron**
 If you are looking to set a repeating announcement, then you can use cron expressions. [See here for help](https://crontab.guru/)
 
-    !tb announce [name] -d [cron]
+    !tb announce -goal [name] -d [cron]
 
     ---- Server Examples ----
-    !tb announce new-years -d 0 0 1 1 *
+    !tb announce -goal new-years -d 0 0 1 1 *
+
+    !tb announce -goal new-years -date 0 0 1 1 *
 
 ### **Stop Announcement**
 Stop an announcement from running anymore.
 
-    !tb announce [name] -kill
+    !tb announce -disable [name] 
 
     ---- Server Examples ----
-    !tb announce new-years -kill
+    !tb announce -disable new-years
 
 
 ### **Delete Announcement**
 Delete an announcement from the database. 
 
-    !tb announce [name] -delete
+    !tb announce -delete [name] 
 
     ---- Server Examples ----
-    !tb announce new-years -delete
+    !tb announce -delete new-years
 
 ### **Activate Announcement**
 Activate an announcement to be able to run again.
 
-    !tb announce [name] -activate
+    !tb announce -enable [name] 
 
     ---- Server Examples ----
-    !tb announce new-years -activate
+    !tb announce -enable new-years 
 
 ## Timers
 

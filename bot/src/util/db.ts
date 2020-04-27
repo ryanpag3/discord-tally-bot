@@ -636,9 +636,7 @@ export default class DB {
             }
         });
         if (!announcement) throw new Error('No announcement found to update.');
-        announcement.announcementRan = null;
-        announcement.dateQuery = null;
-        announcement.date = null;
+        announcement.datePattern = null;
         announcement.tallyGoal = tallyGoal;
         announcement.tallyName = tallyName;
         await announcement.save();
@@ -652,7 +650,6 @@ export default class DB {
             }
         });
         if (!announcement) throw new Error('No announcement found to update.');
-        announcement.announcementRan = null;
         announcement.datePattern = dateStr;
         announcement.tallyGoal = null;
         announcement.tallyName = null;

@@ -282,7 +282,8 @@ export default class AnnounceHandler {
             const { name, command } = AnnounceHandler.unmarshallToggleMessage(message);
             const a = await db.activateAnnouncement(message.channel.id, name);
             if (!a) throw new Error(`Could not find announcement to enable.`);
-            CronAnnouncer.createCronJob(name, message.channel.id, a.datePattern);
+            if (a.datePattern)
+                CronAnnouncer.createCronJob(name, message.channel.id, a.datePattern);
             const richEmbed = MsgHelper.getRichEmbed(message.author.username)
                 .setTitle(`:trumpet: :flashlight: ${command}`)
                 .setDescription(`Announcement **${name}** has been enabled.`);
@@ -297,7 +298,8 @@ export default class AnnounceHandler {
             const { name, command } = AnnounceHandler.unmarshallToggleMessage(message);
             const a = await db.deactivateAnnouncement(message.channel.id, name);
             if (!a) throw new Error(`Could not find announcement to disable.`);
-            CronAnnouncer.destroyCronJob(name, message.channel.id);
+            if (a.datePattern)
+                CronAnnouncer.destroyCronJob(name, message.channel.id);
             const richEmbed = MsgHelper.getRichEmbed(message.author.username).setTitle(`:trumpet: :gun: ${command}`).setDescription(`Announcement **${name}** has been disabled.`);
             MsgHelper.sendMessage(message, richEmbed);
         } catch (e) {
