@@ -146,7 +146,11 @@ export default class DataHandler {
     }
 
     static async queryTimers(message: Message) {
-        const timers = await this.db.getTimers({ channelId: message.channel.id });
+        let timers = await this.db.getTimers({ channelId: message.channel.id });
+        timers = timers.map (t => {
+            delete t.id;
+            return t;
+        });
         return timers;
     }
 
