@@ -1,4 +1,5 @@
-# [Tally Bot](https://top.gg/bot/494241511714586634) [![Discord Bots](https://top.gg/api/widget/servers/494241511714586634.svg)](https://top.gg/bot/494241511714586634)
+# [Tally Bot](https://top.gg/bot/494241511714586634) 
+[![Discord Bots](https://top.gg/api/widget/servers/494241511714586634.svg)](https://top.gg/bot/494241511714586634) [![Discord Bots](https://top.gg/api/widget/status/494241511714586634.svg)](https://top.gg/bot/494241511714586634)
 
 Tally Bot is built around keeping track of _stuff_. Like, how many times your coworker is late for a meeting, or how many times your guild wipes at 1%. Whatever you want. It also supports announcing events as well as timing whatever you want. It's highly customizable and 99.99% highly available 24/7.
 
