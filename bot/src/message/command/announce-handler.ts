@@ -37,7 +37,7 @@ enum SubCommands {
     GENERATE = '-generate'
 }
 
-const MAX_ANNOUNCEMENTS = 500;
+const MAX_ANNOUNCEMENTS = 50;
 
 export default class AnnounceHandler {
     static async runAnnounce(message: Message) {
@@ -388,7 +388,7 @@ export default class AnnounceHandler {
 
     static async checkIfMaxAnnouncementsReached(where: any) {
         if (await AnnounceHandler.isMaxAnnouncementsReached(where))
-            throw new Error(`Cannot create announcement. Maximum number of announcements (${MAX_ANNOUNCEMENTS}) has been reached.`);
+            throw new Error(`Cannot create announcement. Maximum number of announcements (${MAX_ANNOUNCEMENTS}) has been reached. This applies to each channel individually.`);
     }
 
     static async isMaxAnnouncementsReached(where: any) {
