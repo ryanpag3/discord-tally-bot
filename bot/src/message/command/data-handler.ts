@@ -148,6 +148,7 @@ export default class DataHandler {
     }
 
     static async runImport(message: Message) {
+        message.channel.startTyping(60);
         const jsonFile = message.attachments.first();
         DataHandler.validateJsonFile(jsonFile);
         const { data } = await DataHandler.downloadAttachment(jsonFile.url);
@@ -163,7 +164,7 @@ export default class DataHandler {
         let filepath;
         if (tallyRes.errors || announceRes.errors || timerRes.errors) {
             filepath = `/tmp/tallybot_import_errors_${message.guild.id}_${new Date().getTime()}.txt`;
-            await promiseFs.writeFile(filepath, `${tallyRes.errors}\n\n${announceRes.errors}\n\n${timerRes.errors}`, 'utf8');
+            await promiseFs.writeFile(filepath, `${tallyRes.errors || ''}\n\n${announceRes.errors || ''}\n\n${timerRes.errors || ''}`, 'utf8');
             richEmbed.addField(`Errors`, `Please see attached log for details.`);
             richEmbed.files = [filepath];
         }
