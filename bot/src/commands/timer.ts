@@ -3,6 +3,7 @@ import {
 } from "discord.js";
 import DB from '../util/db';
 import helper from '../message/msg-helper';
+import TimerHandler from "../message/command/timer-handler";
 
 // create a timer
 export default async (message: Message) => {
@@ -33,6 +34,7 @@ export default async (message: Message) => {
                 }
             });
         } else {
+            await TimerHandler.checkIfMaximumTimersReached({ channelId: message.channel.id });
             await Timer.create({
                 name: timerName,
                 description: timerDescription,

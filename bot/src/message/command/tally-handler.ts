@@ -10,6 +10,7 @@ import { getEmoji } from '../../static/MsgEmojis';
 import AnnounceUtil from '../../util/announce-util';
 
 export default class TallyHandler {
+    static MAX_TALLIES_PER = 500;
     static db = new DB();
 
     static async runBump(message: Message, isDm: boolean = false) {
@@ -292,20 +293,37 @@ export default class TallyHandler {
         CmdHelper.finalize(message);
     }
 
-    static async createCommandTally(message: Message) {
+    static async createCommandTally(message: Message) {        
         const { isGlobal, command, tallyName, channelId, serverId, description } = TallyHandler.unMarshall(message);
+        await TallyHandler.checkIfMaxTalliesReached({ isGlobal, channelId, serverId });
         let tally = await TallyHandler.db.createCmdTally(channelId, serverId, isGlobal, tallyName, description);
         tally.command = command;
         return tally;
     }
 
     static async createDmTally(message: Message) {
-        
+        await TallyHandler.checkIfMaxTalliesReached({ userId: message.author.id });
         const { command, tallyName, description } = TallyDmHandler.unMarshall(message);
         logger.info(`creating dm tally with ${tallyName} ${description} ${message.author.id}`);
         let tally = await TallyDmHandler.db.createDmTally(message.author.id, tallyName, description);
         tally.command = command;
         return tally;
+    }
+
+    static async checkIfMaxTalliesReached(where: { channelId?: string, serverId?: string, isGlobal?: boolean, userId?: string}) {
+        if (await TallyHandler.isMaxTalliesReached(where))
+            throw new Error(`Cannot create tally. Maximum tally amount of ${TallyHandler.MAX_TALLIES_PER} has been reached. This limit applies individually to channel tallies, global tallies, and DM tallies.`);
+    }
+
+    static async isMaxTalliesReached(where: { channelId?: string, serverId?: string, isGlobal?: boolean, userId?: string}) {
+        /**
+         * This definition represents the max amount of tallies a channel can 
+         * have, how many global tallies a server can have, and also the max 
+         * amount of DM tallies a user can have. 
+         */
+        const count = await TallyHandler.db.getTallyCount(where);
+        if (count >= TallyHandler.MAX_TALLIES_PER) return true;
+        return false;
     }
 
     static getFieldsByTallyType(message: Message, isDm: boolean, fields: string[]) {
@@ -503,7 +521,7 @@ export default class TallyHandler {
     private static buildTallyShowResults(tallies: any[]) {
         let str = ``;
         tallies.map(t => {
-            str += `**${t.name}** | ${t.count} | _${t.description ? CmdHelper.truncate(t.description, 24) : 'no description'}_\n`;
+            str += `${t.count} | **${t.name}** | _${t.description ? CmdHelper.truncate(t.description, 24) : 'no description'}_\n`;
         });
         return str;
     }

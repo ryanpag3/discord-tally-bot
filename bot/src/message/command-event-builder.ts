@@ -22,6 +22,7 @@ import TallyHandler from './command/tally-handler';
 import CmdHandler from './command/cmd-handler';
 import logger from '../util/logger';
 import AnnounceHandler from './command/announce-handler';
+import DataHandler from './command/data-handler';
 
 export default class CommandEventBuilder {
     static build(emitter: EventEmitter) {
@@ -121,6 +122,9 @@ export default class CommandEventBuilder {
 
             // set tally reaction setting
             emitter.on(Config.prefix + Commands.TALLY_REACTIONS, TallyHandler.runSetTallyReactionsEnabled);
+
+            // export/import data
+            emitter.on(Config.prefix + Commands.DATA, DataHandler.run);
 
             /**
              * The following commands are only exposed when bot is run without `production` flag
