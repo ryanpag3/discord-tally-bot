@@ -149,7 +149,7 @@ export default class DataHandler {
     }
 
     static async runImport(message: Message) {
-        message.channel.startTyping(60);
+        message.channel.startTyping();
         const jsonFile = message.attachments.first();
         DataHandler.validateJsonFile(jsonFile);
         const { data } = await DataHandler.downloadAttachment(jsonFile.url);
@@ -169,6 +169,7 @@ export default class DataHandler {
             richEmbed.addField(`Errors`, `Please see attached log for details.`);
             richEmbed.files = [filepath];
         }
+        message.channel.stopTyping();
         await MsgHelper.sendMessage(message, richEmbed);
         if (filepath)
             await promiseFs.unlink(filepath);

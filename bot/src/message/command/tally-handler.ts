@@ -521,7 +521,7 @@ export default class TallyHandler {
     private static buildTallyShowResults(tallies: any[]) {
         let str = ``;
         tallies.map(t => {
-            str += `**${t.name}** | ${t.count} | _${t.description ? CmdHelper.truncate(t.description, 24) : 'no description'}_\n`;
+            str += `${t.count} | **${t.name}** | _${t.description ? CmdHelper.truncate(t.description, 24) : 'no description'}_\n`;
         });
         return str;
     }
