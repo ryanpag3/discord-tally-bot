@@ -253,14 +253,6 @@ export default class DB {
         return tally;
     }
 
-    // async getTallyCount(where: any) {
-    //     const count = await this.Tally.count({
-    //         where
-    //     });
-
-    //     return count;
-    // }
-
     async getCmdTally(channelId, serverId, isGlobal, name) {
         const where = {
             channelId,
