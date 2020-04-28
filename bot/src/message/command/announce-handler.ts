@@ -6,6 +6,7 @@ import { getEmoji } from '../../static/MsgEmojis';
 import Commands from '../../static/Commands';
 import CronAnnouncer from '../../util/cron-announcer';
 import CronParser from 'cron-parser';
+import Env from '../../util/env';
 
 /**
  * !tb announce -create [name] [description]
@@ -32,8 +33,11 @@ enum SubCommands {
     GOAL = '-goal', // -g is reserved for global flags
     ENABLE = '-enable',
     DISABLE = '-disable',
-    GET = '-get'
+    GET = '-get',
+    GENERATE = '-generate'
 }
+
+const MAX_ANNOUNCEMENTS = 500;
 
 export default class AnnounceHandler {
     static async runAnnounce(message: Message) {
@@ -54,6 +58,8 @@ export default class AnnounceHandler {
                     return await AnnounceHandler.runEnableAnnouncement(message);
                 case SubCommands.DISABLE:
                     return await AnnounceHandler.runDisableAnnouncement(message);
+                case SubCommands.GENERATE:
+                    return await AnnounceHandler.runGenerateAnnouncements(message); // internal only
                 default:
                     return await AnnounceHandler.runDisplayHelp(message);
             }
@@ -81,6 +87,7 @@ export default class AnnounceHandler {
     static async runCreateAnnouncement(message: Message) {
         try {
             const { name, description, command } = AnnounceHandler.unmarshallCreateMessage(message);
+            await AnnounceHandler.checkIfMaxAnnouncementsReached({ channelId: message.channel.id });
             await db.upsertAnnouncement(message.channel.id, name, description);
             const announcement = await db.getAnnouncement(message.channel.id, name);
             if (!announcement) throw new Error('Announcement was not created successfully. Please try again.');
@@ -376,6 +383,27 @@ export default class AnnounceHandler {
         return {
             name,
             command
+        }
+    }
+
+    static async checkIfMaxAnnouncementsReached(where: any) {
+        if (await AnnounceHandler.isMaxAnnouncementsReached(where))
+            throw new Error(`Cannot create announcement. Maximum number of announcements (${MAX_ANNOUNCEMENTS}) has been reached.`);
+    }
+
+    static async isMaxAnnouncementsReached(where: any) {
+        const count = await db.getAnnouncementCount(where);
+        if (count >= MAX_ANNOUNCEMENTS)
+            return true;
+        return false;
+    }
+
+    static async runGenerateAnnouncements (message: Message) {
+        if (Env.isProduction()) return;
+        const count = Number.parseInt(message.content.split(' ')[3]);
+        const randomstring = require('randomstring');
+        for (let i = 0; i < count; i++) {
+            await db.createAnnouncement(message.channel.id, randomstring.generate(16), randomstring.generate(255));
         }
     }
 }

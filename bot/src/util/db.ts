@@ -467,6 +467,14 @@ export default class DB {
         });
     }
 
+    async getAnnouncementCount(where: any) {
+        return await this.Announcement.count({ where });
+    }
+
+    async getTimerCount(where: any) {
+        return await this.Timer.count({ where });
+    }
+
     async getCount(name: string, channelId: string) {
         try {
             let tally = await this.Tally.findOne({
