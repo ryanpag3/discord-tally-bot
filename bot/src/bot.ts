@@ -68,6 +68,7 @@ class Bot {
                 }
                 const isBot = message.author.bot;
                 if (isBot) return;
+                logger.info(message.content);
                 await UserUtil.init(message.author.id, message.author.tag);
                 await Bot.db.initServer(message.guild.id);
                 await Bot.commandManager.handle(message);
