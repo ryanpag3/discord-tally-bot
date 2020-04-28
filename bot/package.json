@@ -19,6 +19,7 @@
     "author": "Ryan Page",
     "license": "ISC",
     "dependencies": {
+        "axios": "^0.19.2",
         "chrono-node": "^1.3.5",
         "cron": "^1.6.0",
         "cron-parser": "^2.7.3",
@@ -33,6 +34,7 @@
         "moment-timezone": "^0.5.23",
         "mysql": "^2.16.0",
         "mysql2": "^1.6.1",
+        "request": "^2.88.2",
         "sequelize": "4.44.3",
         "source-map-support": "^0.5.12",
         "table": "^5.1.0",

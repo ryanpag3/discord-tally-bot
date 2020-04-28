@@ -194,7 +194,7 @@ export default class DB {
             throw new Error('description cannot be longer than ' + this.TALLY_DESCRIPTION_MAXLEN + ' characters, including emojis');
         tally.description = Buffer.from(tally.description).toString('base64');
         tally.base64Encoded = true;
-        tally.count = 0;
+        tally.count = tally.count || 0;
         tally.createdOn = new Date();
         tally = await this.Tally.create(tally);
         tally.description = Buffer.from(tally.description, 'base64'); // no need to keep it encoded in memory
@@ -223,7 +223,7 @@ export default class DB {
         return tally;
     }
 
-    async createCmdTally(channelId: string, serverId: string, isGlobal: boolean, name: string, description: string, keyword?: string, bumpOnKeyword?: boolean) {
+    async createCmdTally(channelId: string, serverId: string, isGlobal: boolean, name: string, description: string, keyword?: string, bumpOnKeyword?: boolean, count?: number) {
         const tally = await this.createTally({
             channelId,
             serverId,
@@ -232,7 +232,8 @@ export default class DB {
             name,
             description,
             keyword,
-            bumpOnKeyword
+            bumpOnKeyword,
+            count
         });
 
         logger.info(
@@ -547,11 +548,15 @@ export default class DB {
         return announcements;
     }
 
-    async createAnnouncement(channelId, name, description) {
+    async createAnnouncement(channelId, name, description, datePattern?: string, tallyName?: string, tallyGoal?: number, tallyGoalReached?: boolean) {
         const announce = await this.Announcement.create({
             channelId: channelId,
             name: name,
-            description: description
+            description: description,
+            datePattern,
+            tallyName,
+            tallyGoal,
+            tallyGoalReached
         });
         logger.info(`
             Created Announcement
@@ -744,7 +749,13 @@ export default class DB {
         });
     }
 
-    async createTimer(channelId: string, name: string, description?: string) {
+    async getTimers(where: any) {
+        return await this.Timer.findAll({
+            where
+        });
+    }
+
+    async createTimer(channelId: string, name: string, description?: string, startDate?: any, endDate?: any, totTime?: any) {
         return await this.Timer.create({
             channelId,
             name,

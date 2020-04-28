@@ -12,6 +12,7 @@ const Commands = {
     CHANNEL: 'channel',
     CRASH: 'crash',
     CREATE: 'create',
+    DATA: 'data',
     DELETE: 'delete',
     DELETE_ALL: 'delete-all',
     DESCRIBE: 'describe',
