@@ -4,6 +4,7 @@ import logger from '../../util/logger';
 import { Message, Attachment } from 'discord.js';
 import DB from '../../util/db';
 import MsgHelper from '../msg-helper';
+import TallyHandler from './tally-handler';
 
 enum SubCommands {
     IMPORT = '-import',
@@ -200,6 +201,7 @@ export default class DataHandler {
 
     static async importTally(message: Message, tally: any) {
         try {
+            await TallyHandler.checkIfMaxTalliesReached({ channelId: message.channel.id, serverId: message.guild.id });
             await DataHandler.db.createCmdTally(message.channel.id, message.guild.id, false, tally.name, tally.description, tally.keyword, tally.bumpOnKeyword, tally.count);
         } catch (e) {
             if (e.message.toLowerCase().includes('validation error')) {

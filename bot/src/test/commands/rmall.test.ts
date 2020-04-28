@@ -30,9 +30,9 @@ describe('rmall command', function() {
         const fakeMsg = TestHelper.getFakeMessage();
         fakeMsg.content = `!tb rmall`;
         await db.createCmdTally(fakeMsg.getChannelId(), fakeMsg.getGuildId(), true, TALLY_NAME, 'woop');
-        const count = await db.getTallyCount();
+        const count = await db.getTotTallyCount();
         await rmall(fakeMsg as any);
-        const newCount = await db.getTallyCount();
+        const newCount = await db.getTotTallyCount();
         expect(count).greaterThan(newCount);
     });
 });
