@@ -760,9 +760,9 @@ export default class DB {
             channelId,
             name,
             description,
-            startDate: null,
-            endDate: null,
-            totTime: null
+            startDate,
+            endDate,
+            totTime
         });
     }
 
