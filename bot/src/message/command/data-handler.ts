@@ -53,7 +53,7 @@ export default class DataHandler {
     static async runExport(message: Message) {
         const { command, subcommand, datatypes } = DataHandler.unmarshallExportMsg(message);
         const exportObject = await DataHandler.buildExport(message, datatypes);
-        const filepath = `/tmp/tallybot_${message.guild.id}_${new Date().getTime()}.json`;
+        const filepath = `/tmp/tallybot_export_${new Date().getTime()}.json`;
         await promiseFs.writeFile(filepath, JSON.stringify(exportObject, null, 4), 'utf8');
         await message.channel.send({
             files: [filepath],
