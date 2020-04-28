@@ -55,6 +55,9 @@ This will help offset the cost of running the bot. Thank you 👊
   - [Start a Timer](#start-a-timer)
   - [Stop a Timer](#stop-a-timer)
   - [Reset a Timer](#reset-a-timer)
+- [Import and Export Data](#managing-data)
+  - [Export Data](#export-data)
+  - [Import Data](#import-data)
 
 ## Direct Messages
 Direct messages can be used for a limited number of commands. There is no need to add the command prefix (ex. !tb) for direct messages.
@@ -565,3 +568,33 @@ Reset a timer to 0:00
 
     ---- Server Examples ----
     !tb reset my-timer
+
+## Managing Data
+
+### Export Data
+You can download data associated with the channel you have setup Tally Bot in. You can also optionally filter which data types you would like to export. 
+
+Valid datatypes are **tallies**, **timers**, and **announcements**
+
+```
+!tb data -export <data_types>
+
+# export all data
+!tb data -export
+
+# export only tallies
+!tb data -export tallies
+
+# export tallies and timers
+!tb data -export tallies,timers
+
+# export tallies, timers, and announcements
+!tb data -export tallies,timers,announcements
+```
+
+### Import Data
+If you have previously exported your data using the above export command, you can import it into another channel or server. Run the below command and attach the **.json** file to the message.
+
+```
+!tb data -import
+```
