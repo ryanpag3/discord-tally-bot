@@ -1,4 +1,4 @@
-import Sequelize from 'sequelize';
+import Sequelize, { Op } from 'sequelize';
 import mysql from 'mysql';
 import dedent from 'dedent-js';
 import Config from './config';
@@ -479,6 +479,17 @@ export default class DB {
         } catch (e) {
             logger.info(`Error while getting count for ${name}: ${e}`);
         }
+    }
+
+    async getKeywordTallies() {
+        const res = await this.Tally.findAll({
+            where: {
+                keyword: {
+                    [Op.ne]: null
+                }
+            }
+        });
+        return res;
     }
 
     async getKeywords(channelId: string, serverId: string) {
