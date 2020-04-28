@@ -4,6 +4,7 @@ import logger from '../../util/logger';
 import { Message, Attachment } from 'discord.js';
 import DB from '../../util/db';
 import MsgHelper from '../msg-helper';
+import TallyHandler from './tally-handler';
 
 enum SubCommands {
     IMPORT = '-import',
@@ -52,9 +53,11 @@ export default class DataHandler {
 
     static async runExport(message: Message) {
         const { command, subcommand, datatypes } = DataHandler.unmarshallExportMsg(message);
+        message.channel.startTyping();
         const exportObject = await DataHandler.buildExport(message, datatypes);
         const filepath = `/tmp/tallybot_export_${new Date().getTime()}.json`;
         await promiseFs.writeFile(filepath, JSON.stringify(exportObject, null, 4), 'utf8');
+        message.channel.stopTyping();
         await message.channel.send({
             files: [filepath],
         });
@@ -148,7 +151,7 @@ export default class DataHandler {
     }
 
     static async runImport(message: Message) {
-        message.channel.startTyping(60);
+        message.channel.startTyping();
         const jsonFile = message.attachments.first();
         DataHandler.validateJsonFile(jsonFile);
         const { data } = await DataHandler.downloadAttachment(jsonFile.url);
@@ -168,6 +171,7 @@ export default class DataHandler {
             richEmbed.addField(`Errors`, `Please see attached log for details.`);
             richEmbed.files = [filepath];
         }
+        message.channel.stopTyping();
         await MsgHelper.sendMessage(message, richEmbed);
         if (filepath)
             await promiseFs.unlink(filepath);
@@ -200,6 +204,7 @@ export default class DataHandler {
 
     static async importTally(message: Message, tally: any) {
         try {
+            await TallyHandler.checkIfMaxTalliesReached({ channelId: message.channel.id, serverId: message.guild.id });
             await DataHandler.db.createCmdTally(message.channel.id, message.guild.id, false, tally.name, tally.description, tally.keyword, tally.bumpOnKeyword, tally.count);
         } catch (e) {
             if (e.message.toLowerCase().includes('validation error')) {

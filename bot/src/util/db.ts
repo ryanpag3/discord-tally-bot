@@ -449,10 +449,22 @@ export default class DB {
         }
     }
 
-    async getTallyCount() {
+    async getTallyCount(where: any) {
+        return await this.Tally.count({ where });
+    }
+
+    async getTotTallyCount() {
         return await this.Tally.count({
             where: {}
         });
+    }
+
+    async getAnnouncementCount(where: any) {
+        return await this.Announcement.count({ where });
+    }
+
+    async getTimerCount(where: any) {
+        return await this.Timer.count({ where });
     }
 
     async getCount(name: string, channelId: string) {
