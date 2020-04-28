@@ -4,6 +4,7 @@ import {
 import cmdHelper from "../message/msg-helper";
 import DB from '../util/db';
 import logger from "../util/logger";
+import KeywordUtil from "../util/keyword-util";
 
 const db = new DB();
 
@@ -40,6 +41,13 @@ export default async (message: Message) => {
     }
 
     try {
+        let keywordMsg = '';
+        keyword.split(',').map((key) => { // check for comma separated
+            if (key == undefined || key == '') throw new Error('comma-separated keywords cannot be empty (i.e test,,key');
+            keywordMsg += '**' + key + '**, '
+        })
+        keywordMsg = keywordMsg.slice(0, -2); // remove trailing or
+
         await db.createCmdTally(
             message.channel.id,
             message.guild.id,
@@ -49,13 +57,7 @@ export default async (message: Message) => {
             keyword,
             isDump === false // tally boolean is bumpOnKeyword so we negate the flag
         )
-
-        let keywordMsg = '';
-        keyword.split(',').map((key) => { // check for comma separated
-            if (key == undefined || key == '') throw new Error('comma-separated keywords cannot be empty (i.e test,,key');
-            keywordMsg += '**' + key + '**, '
-        })
-        keywordMsg = keywordMsg.slice(0, -2); // remove trailing or
+        
         message.channel.send(cmdHelper.buildRichMsg({
             title: `Keyword Tally Created`, // todo add phrases
             fields: [{
@@ -73,6 +75,8 @@ export default async (message: Message) => {
                 }
             ]
         }));
+        
+        KeywordUtil.addServerToKeywordCache(message.guild.id);
         logger.info(`keyword tally  [${isGlobal ? 'G' : 'C'}] ${name} created.`);
     } catch (e) {
         if (e.toString().toLowerCase().indexOf('uniqueconstrainterror') != -1) e = 'tally already exists';

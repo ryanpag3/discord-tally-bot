@@ -6,13 +6,13 @@ import Config from './util/config';
 import ConfigPrivate from './util/config-private';
 import DB from './util/db';
 import CronAnnouncer from './util/cron-announcer';
-import keywordUtil from './util/keyword-util';
+import KeywordUtil from './util/keyword-util';
 import cmdHelper from './message/msg-helper';
 import CommandManager from './message/command-manager';
 import Counter from './util/counter';
-import logger from './util/logger';
+import logger from './util/logger'; 
 import DmManager from './message/dm-manager';
-import Env from './util/env';
+import Env from './util/env'; 
 import UserUtil from './util/user';
 import HealthCheckServer from './util/healthcheck-server';
 
@@ -32,6 +32,7 @@ class Bot {
 
     static async setup() {
         await Bot.db.init();
+        await KeywordUtil.loadKeywordServersToCache();
         await Bot.setupEvents();
     }
 
@@ -63,7 +64,7 @@ class Bot {
         
                 const startsWithPrefix = message.content.startsWith(Config.prefix);
                 if (!startsWithPrefix) {
-                    keywordUtil.bumpKeywordTallies(message);
+                    KeywordUtil.bumpKeywordTallies(message);
                     return;
                 }
                 const isBot = message.author.bot;
