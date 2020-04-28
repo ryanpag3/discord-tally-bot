@@ -5,7 +5,7 @@ Have fun! Don't forget to provide feedback using `!tb bug` or `!tb suggest` (see
 
 ## Tip Jar
 If you like Tally Bot and would like to see its continued support and development, feel free 
-to send some beer money this way -> https://paypal.me/ryanpage42
+to send some beer money [this way](https://paypal.me/ryanpage42)
 
 This will help offset the cost of running the bot. Thank you 👊
 
