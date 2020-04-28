@@ -8,7 +8,9 @@ export default class TestHelper {
         let message = {
             channel: {
                 id: '1',
-                send: sinon.fake()
+                send: sinon.fake(),
+                startTyping: () => {},
+                stopTyping: () => {}
             },
             guild: {
                 id: '1'
