@@ -1,0 +1,86 @@
+import { CronJob } from 'cron';
+import Queue from 'bull';
+import logger from './logger';
+import { Client } from 'discord.js';
+
+let cronCache = {};
+const eventQueue = new Queue('tallybot.cron.events', {
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT
+});
+
+export default class Cron {
+    static bot: Client;
+
+    static async setBot(bot: Client) {
+        Cron.bot = bot;
+    }
+
+    static async initializeJobs(jobsPayload: string) {
+        const parsed = JSON.parse(jobsPayload);
+        const keys = Object.keys(parsed);
+        const promises = [];
+        for (const key of keys) {
+            const {id, name, description, channelId, date} = parsed[key];
+            promises.push(Cron.createCronJob(id, name, description, channelId, date))
+        }
+        await Promise.all(promises);
+        logger.info(`initialized ${promises.length} jobs.`);
+    }
+
+    static async createCronJob(id, name, description, channelId, date) {
+        logger.info(`creating new cron job for ${name} on ${channelId} at ${date}`);
+        let repeating = true;
+        if (typeof date !== 'string') repeating = false;
+        try {
+            if (cronCache[id]) {
+                await cronCache[id].stop();
+                delete cronCache[id];
+            }
+            cronCache[id] = new CronJob(
+                date,
+                () => {
+                    Cron.announce(id, name, description, channelId);
+                    if (!repeating) Cron.destroyCronJob(id, name, channelId);
+                },
+                null,
+                true,
+                'America/Los_Angeles'
+            );
+        } catch (e) {
+            logger.error(e);
+            Cron.destroyCronJob(id, name, channelId);
+        }
+    }
+
+    static async destroyCronJob(id: string, name: string, channelId: string) {
+        Cron.sendDisableMessage(name, channelId);
+        if (!cronCache[id]) return;
+        cronCache[id].stop();
+        delete cronCache[id];
+    }
+
+    static async announce(id, name, description, channelId) {
+        try {
+            const channel: any = await this.bot.channels.find(x => x.id === channelId);
+            if (!channel) {
+                throw new Error(`Announcement channel was not found.`);
+            }
+            await channel.send(`Announcement!`);
+        } catch (e) {
+            Cron.destroyCronJob(id, name, channelId);
+            logger.error(`Could not announce.`, e);
+        }
+    }
+
+    static async sendDisableMessage(name: string, channelId: string) {
+        const msg = {
+            type: 'announcement.disable',
+            body: {
+                name,
+                channelId
+            }
+        };
+        await eventQueue.add(msg);
+    }
+}

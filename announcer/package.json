@@ -1,0 +1,23 @@
+{
+  "name": "announcer",
+  "version": "1.0.0",
+  "license": "APACHE",
+  "scripts": {
+    "start": "ts-node -T src/index.ts",
+    "watch": "tsnd --watch --notify=false src/index.ts"
+  },
+  "dependencies": {
+    "bull": "^3.13.0",
+    "cron": "^1.8.2",
+    "discord.js": "11.6.2",
+    "dotenv": "^8.2.0",
+    "log4js": "^6.2.1",
+    "redis": "^3.0.2",
+    "ts-node": "^8.9.1"
+  },
+  "devDependencies": {
+    "@types/node": "^13.13.4",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "typescript": "^3.8.3"
+  }
+}

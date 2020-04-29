@@ -5,7 +5,6 @@ dotenv.config();
 import Config from './util/config';
 import ConfigPrivate from './util/config-private';
 import DB from './util/db';
-import CronAnnouncer from './util/cron-announcer';
 import KeywordUtil from './util/keyword-util';
 import cmdHelper from './message/msg-helper';
 import CommandManager from './message/command-manager';
@@ -15,6 +14,7 @@ import DmManager from './message/dm-manager';
 import Env from './util/env'; 
 import UserUtil from './util/user';
 import HealthCheckServer from './util/healthcheck-server';
+import CronDeployer from './util/cron-deployer';
 
 class Bot {
     static client: Client = new Discord.Client();
@@ -42,13 +42,10 @@ class Bot {
                 logger.info(`Tally Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);
                 if (!Bot.initialReady) return;
                 setTimeout(() => Bot.startBroadcasting(), 5000);
-                CronAnnouncer.setBot({
-                    bot: Bot.client
-                });
                 // we have to wait to init once login is complete
                 await Bot.db.initServers(Bot.client.guilds);
                 await Bot.db.normalizeTallies(Bot.client.channels);
-                await CronAnnouncer.initCronJobs();
+                await CronDeployer.deployActiveAnnouncements();
                 Bot.initialReady = false;
             } catch (e) {
                 logger.error(`An error occured while running post-launch behavior.`, e);
