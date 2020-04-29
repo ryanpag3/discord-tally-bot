@@ -17,7 +17,10 @@ import HealthCheckServer from './util/healthcheck-server';
 import CronDeployer from './util/cron-deployer';
 
 class Bot {
-    static client: Client = new Discord.Client();
+    static client: Client = new Discord.Client({
+        shardId: Number.parseInt(process.env.SHARD_ID) || 0,
+        shardCount: Number.parseInt(process.env.SHARD_COUNT) || 1
+    });
     static healthcheck = new HealthCheckServer(Bot.client);
     static commandManager: CommandManager = new CommandManager(Bot.client);
     static topgg = Env.isProduction() ? new DBL(ConfigPrivate.dbots_token, Bot.client) : null;
@@ -40,6 +43,8 @@ class Bot {
         Bot.client.on('ready', async () => {
             try {
                 logger.info(`Tally Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);
+                logger.info(process.env.SHARD_ID );
+                logger.info(process.env.SHARD_COUNT );
                 if (!Bot.initialReady) return;
                 setTimeout(() => Bot.startBroadcasting(), 5000);
                 // we have to wait to init once login is complete
@@ -121,15 +126,18 @@ class Bot {
 
         const statusGenerators = [
             () => {
+                Bot.client.user.setActivity(`shard id: ${process.env.SHARD_ID}`);
+            },
+            () => {
                 let users = 0;
                 Bot.client.guilds.map(guild => (users += guild.members.size));
-                Bot.client.user.setActivity(`${Bot.client.guilds.size} servers.`);
+                Bot.client.user.setActivity(`shard servers: ${Bot.client.guilds.size}`);
                 if (Bot.topgg) Bot.topgg.postStats(Bot.client.guilds.size);
             },
             () => {
                 let users = 0;
                 Bot.client.guilds.map(guild => (users += guild.members.size));
-                Bot.client.user.setActivity(`${users} users.`);
+                Bot.client.user.setActivity(`shard users: ${users}`);
             },
             () => {
                 Bot.client.user.setActivity(`!tb help`);

@@ -21,7 +21,7 @@ export default class CronDeployer {
             deployPayload[announce.id] = CronDeployer.buildAnnouncePayload(announce);
         }
         await CronDeployer.setAnnouncements(deployPayload);
-        CronEventSubscriber.startListening();
+        await CronEventSubscriber.startListening();
     }
 
     static buildAnnouncePayload(announce) {

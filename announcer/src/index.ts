@@ -41,13 +41,17 @@ class AnnouncerBot {
     startAnnouncementQuery() {
         setInterval(async () => {
             this.announcements = await Redis.get('tallybot.announcements');
-        }, process.env.NODE_ENV === 'production' ? 45000 : 5000);
+        }, 1000);
     }
 
     startJobsBuilder() {
         setInterval(async () => {
-            await Cron.initializeJobs(this.announcements);
-        }, process.env.NODE_ENV === 'production' ? 60000: 15000)
+            try {
+                await Cron.initializeJobs(this.announcements);
+            } catch (e) {
+                logger.error(`Error while initializing cron jobs`, e);
+            }
+        }, 2300);
     }
 }
 

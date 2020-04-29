@@ -19,19 +19,33 @@ export default class Cron {
     static async initializeJobs(jobsPayload: string) {
         const parsed = JSON.parse(jobsPayload);
         const keys = Object.keys(parsed);
+        await Cron.clearCronCache();
         const promises = [];
         for (const key of keys) {
             const {id, name, description, channelId, date} = parsed[key];
             promises.push(Cron.createCronJob(id, name, description, channelId, date))
         }
         await Promise.all(promises);
-        logger.info(`initialized ${promises.length} jobs.`);
+    }
+
+    static async clearCronCache() {
+        const keys = Object.keys(cronCache);
+        for (const key of keys) {
+            await cronCache[key].stop();
+            delete cronCache[key];
+        }
     }
 
     static async createCronJob(id, name, description, channelId, date) {
-        logger.info(`creating new cron job for ${name} on ${channelId} at ${date}`);
+        
         let repeating = true;
-        if (typeof date !== 'string') repeating = false;
+
+        const timestamp = Date.parse(date);
+        if (isNaN(timestamp) === false) {
+            repeating = false;
+            date = new Date(date);
+        }
+
         try {
             if (cronCache[id]) {
                 await cronCache[id].stop();
@@ -46,7 +60,8 @@ export default class Cron {
                 null,
                 true,
                 'America/Los_Angeles'
-            );
+            )
+            logger.info(`created new cron job for ${name} on ${channelId} at ${date}`);
         } catch (e) {
             logger.error(e);
             Cron.destroyCronJob(id, name, channelId);
@@ -62,11 +77,13 @@ export default class Cron {
 
     static async announce(id, name, description, channelId) {
         try {
+            logger.info('announcing');
             const channel: any = await this.bot.channels.find(x => x.id === channelId);
             if (!channel) {
                 throw new Error(`Announcement channel was not found.`);
             }
             await channel.send(`Announcement!`);
+
         } catch (e) {
             Cron.destroyCronJob(id, name, channelId);
             logger.error(`Could not announce.`, e);

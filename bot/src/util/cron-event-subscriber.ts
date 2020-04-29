@@ -9,19 +9,21 @@ export default class CronEventSubscriber {
     static ANNOUNCEMENT_DISABLE = 'announcement.disable';
 
     static eventQueue = new Queue('tallybot.cron.events', {
-        host: process.env.REDIS_HOST,
-        port: process.env.REDIS_PORT
+        redis: {
+            host: process.env.REDIS_HOST,
+            port: process.env.REDIS_PORT,
+        },
     });
 
     static startListening() {
-        CronEventSubscriber.eventQueue.process(function(job) {
+        CronEventSubscriber.eventQueue.process(function (job) {
             return CronEventSubscriber.handleJob(job);
         });
     }
 
     static async handleJob(job: any) {
         const type = job.data.type;
-        switch(type) {
+        switch (type) {
             case CronEventSubscriber.ANNOUNCEMENT_DISABLE:
                 return await CronEventSubscriber.disableAnnouncement(job.data.body);
             default:

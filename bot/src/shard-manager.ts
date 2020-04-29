@@ -7,7 +7,8 @@ import PrivateConfig from './util/config-private';
 import logger from './util/logger';
 
 const manager = new ShardingManager(path.join(__dirname, './bot.ts'), { 
-    token: PrivateConfig.token
+    token: PrivateConfig.token,
+    totalShards: 3
 });
 
 manager.spawn();
