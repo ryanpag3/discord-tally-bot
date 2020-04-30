@@ -23,8 +23,10 @@ const healthCheckJob = async () => {
                 all: 1
             }
         });
-        const tallyBotContainers = getTallyBotContainer(res.data);
-        for (const container of tallyBotContainers) {
+        const announceContainer = getAnnouncerContainer(res.data);
+        const tallyBotContainers = getTallyBotContainers(res.data);
+        const all = [announceContainer, ...tallyBotContainers];
+        for (const container of all) {
             await alertIfInvalid(container);
         }
         logger.debug('health check done');
@@ -33,8 +35,13 @@ const healthCheckJob = async () => {
     }
 };
 
-const getTallyBotContainer = (containers: any[]) => {
+const getTallyBotContainers = (containers: any[]) => {
     const filtered = containers.filter((c) => c.Labels['com.docker.compose.service'] === 'tally-bot');
+    return filtered;
+};
+
+const getAnnouncerContainer = (containers: any[]) => {
+    const filtered = containers.filter((c) => c.Labels['com.docker.compose.service'] === 'announcer');
     return filtered;
 };
 
