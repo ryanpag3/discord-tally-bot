@@ -114,10 +114,6 @@ class Bot {
         Bot.client.on('resume', function() {
             logger.info('bot has successfully reconnected');
         });
-
-        Bot.client.on('debug', function(info) {
-            logger.debug(`Discord debug: ${info}`);
-        })
         
         Bot.client.on('disconnect', function(event) {
             logger.info(`The WebSocket has closed and will no longer attempt to reconnect`);
