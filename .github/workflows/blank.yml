@@ -55,6 +55,15 @@ jobs:
         cd bot/
         docker build . -t ryanpage/internal:tally-bot-${GITHUB_SHA::7}
         docker push ryanpage/internal:tally-bot-${GITHUB_SHA::7}
+    - name: Announcer - Docker Build
+      env:
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      run: |
+        docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
+        cd announcer/
+        docker build . -t ryanpage/internal:tally-bot-announcer-${GITHUB_SHA::7}
+        docker push ryanpage/internal:tally-bot-announcer-${GITHUB_SHA::7}
     - name: Health Check - Docker Build
       env:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -64,3 +73,4 @@ jobs:
         cd health-alert/
         docker build . -t ryanpage/internal:tally-bot-health-alert-${GITHUB_SHA::7}
         docker push ryanpage/internal:tally-bot-health-alert-${GITHUB_SHA::7}
+
