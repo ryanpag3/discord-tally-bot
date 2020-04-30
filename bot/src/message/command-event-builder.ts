@@ -126,6 +126,8 @@ export default class CommandEventBuilder {
             // export/import data
             emitter.on(Config.prefix + Commands.DATA, DataHandler.run);
 
+            emitter.on(Config.prefix + Commands.PING, CmdHandler.runPing);
+
             /**
              * The following commands are only exposed when bot is run without `production` flag
              */

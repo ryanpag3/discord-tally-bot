@@ -6,7 +6,7 @@
     "scripts": {
         "build": "tsc",
         "start": "ts-node src/bot.ts",
-        "start-prod": "ts-node -T src/bot.ts",
+        "start-prod": "node -r ts-node/register --max-old-space-size=3024 src/bot.ts",
         "shard-prod": "ts-node -T src/shard-manager.ts",
         "watch": "tsnd --watch --notify=false src/bot.ts",
         "test": "export TEST_ENV=\"1\" && ts-mocha -r dotenv/config --recursive --exit --timeout 5000 ./**/*.test.ts",

@@ -59,6 +59,9 @@ class Bot {
         
         Bot.client.on('message', async (message: Message) => {
             try {
+                const isBot = message.author.bot;
+                if (isBot) return;
+
                 if (message.channel.type == 'dm') {
                     await UserUtil.init(message.author.id, message.author.tag);
                     return DmManager.handle(message);
@@ -69,8 +72,7 @@ class Bot {
                     KeywordUtil.bumpKeywordTallies(message);
                     return;
                 }
-                const isBot = message.author.bot;
-                if (isBot) return;
+
                 logger.info(message.content);
                 await UserUtil.init(message.author.id, message.author.tag);
                 await Bot.db.initServer(message.guild.id);
