@@ -116,7 +116,7 @@ class Bot {
         });
 
         Bot.client.on('debug', function(info) {
-            logger.info(`Discord debug: ${info}`);
+            logger.debug(`Discord debug: ${info}`);
         })
         
         Bot.client.on('disconnect', function(event) {
