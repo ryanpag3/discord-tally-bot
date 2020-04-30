@@ -113,6 +113,10 @@ class Bot {
 
         Bot.client.on('resume', function() {
             logger.info('bot has successfully reconnected');
+        });
+
+        Bot.client.on('debug', function(info) {
+            logger.info(`Discord debug: ${info}`);
         })
         
         Bot.client.on('disconnect', function(event) {
