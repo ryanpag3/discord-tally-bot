@@ -1,0 +1,49 @@
+version: '3'
+services:
+  tally-bot1:
+    image: ryanpage/internal:tally-bot-dev
+    build: ./bot
+    restart: always
+    env_file:
+      - ./bot/.env
+    environment:
+      - SHARD_ID=0
+      - SHARD_COUNT=2
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: "10m"
+  tally-bot2:
+    image: ryanpage/internal:tally-bot-dev
+    build: ./bot
+    restart: always
+    env_file:
+      - ./bot/.env
+    environment:
+      - SHARD_ID=1
+      - SHARD_COUNT=2
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: "10m"
+  announcer:
+    image: ryanpage/internal:tallybot-announcer-dev
+    build: ./announcer
+    restart: always
+    env_file:
+        - ./announcer/.env
+  health-alert:
+    image: ryanpage/internal:tallybot-health-alert-dev
+    build: ./health-alert
+    restart: always
+    env_file:
+        - ./health-alert/.env
+    volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+        - 6379:6379

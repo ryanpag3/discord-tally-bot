@@ -25,7 +25,7 @@ const healthCheckJob = async () => {
         });
         const announceContainer = getAnnouncerContainer(res.data);
         const tallyBotContainers = getTallyBotContainers(res.data);
-        const all = [announceContainer, ...tallyBotContainers];
+        const all = [...announceContainer, ...tallyBotContainers];
         for (const container of all) {
             await alertIfInvalid(container);
         }
@@ -36,12 +36,18 @@ const healthCheckJob = async () => {
 };
 
 const getTallyBotContainers = (containers: any[]) => {
-    const filtered = containers.filter((c) => c.Labels['com.docker.compose.service'] === 'tally-bot');
+    const filtered = containers.filter((c) => {
+        const label = c.Labels['com.docker.compose.service']
+        return label && label.includes('tally-bot');
+    });
     return filtered;
 };
 
 const getAnnouncerContainer = (containers: any[]) => {
-    const filtered = containers.filter((c) => c.Labels['com.docker.compose.service'] === 'announcer');
+    const filtered = containers.filter((c) => {
+        const label = c.Labels['com.docker.compose.service']
+        return label && label.includes('announcer');
+    });
     return filtered;
 };
 
@@ -51,7 +57,7 @@ const alertIfInvalid = async (tallyBotContainer: any) => {
 
     if (tallyBotContainer.State !== 'running') {
         alertMsg += 'Tally Bot container is not running.';
-    } else if (!tallyBotContainer.Status.includes('healthy')) {
+    } else if (!tallyBotContainer.Status.includes('healthy') && tallyBotContainer.Labels['com.docker.compose.service'] !== 'announcer') {
         alertMsg += 'Tally Bot container is not healthy!';
     } else {
         logger.debug(`container is in valid running state.`);
@@ -59,6 +65,7 @@ const alertIfInvalid = async (tallyBotContainer: any) => {
     }
 
     if (alertMsg !== pretext)
+        logger.error(tallyBotContainer);
         logger.error(alertMsg);
 
     if (moment().isAfter(timeToRunAlert)) {
