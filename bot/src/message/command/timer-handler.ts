@@ -1,6 +1,6 @@
 import DB from "../../util/db";
 
-const MAX_TIMERS_REACHED = 1;
+const MAX_TIMERS_REACHED = 500;
 const db = new DB();
 
 export default class TimerHandler {

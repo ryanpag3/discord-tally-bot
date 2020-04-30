@@ -31,8 +31,7 @@ export default class Sqlize {
             logging: false,
             pool: {
                 max: 50,
-                min: 25,
-                acquire: 100000,
+                min: 5,
                 idle: 10000
             }
         });
