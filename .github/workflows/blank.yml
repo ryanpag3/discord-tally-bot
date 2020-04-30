@@ -13,7 +13,11 @@ jobs:
           MYSQL_ROOT_PASSWORD: adminadmin
         ports:
           - 3307:3306
-
+      redis:
+        image: redis:latest
+        ports:
+          - 6379:6379
+          
     steps:
     - uses: actions/checkout@v1
     - name: Setup environment
