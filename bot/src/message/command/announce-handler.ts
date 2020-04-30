@@ -4,9 +4,9 @@ import MsgHelper from '../msg-helper';
 import logger from '../../util/logger';
 import { getEmoji } from '../../static/MsgEmojis';
 import Commands from '../../static/Commands';
-import CronAnnouncer from '../../util/cron-announcer';
 import CronParser from 'cron-parser';
 import Env from '../../util/env';
+import CronDeployer from '../../util/cron-deployer';
 
 /**
  * !tb announce -create [name] [description]
@@ -230,8 +230,8 @@ export default class AnnounceHandler {
         const { command, datePattern, name } = AnnounceHandler.unmarshallDateGoalMessage(message);
         let date: Date;
         if (AnnounceHandler.isValidDate(datePattern)) date = new Date(datePattern);
-        await db.setAnnounceDate(message.channel.id, name, datePattern);
-        CronAnnouncer.createCronJob(name, message.channel.id, date || datePattern);
+        const a = await db.setAnnounceDate(message.channel.id, name, datePattern);
+        await CronDeployer.deployAnnouncement(a);
         const richEmbed = MsgHelper.getRichEmbed(message.author.username)
             .setTitle(`:trumpet: ${command}`)
             .setDescription(`The announcement **${name}** will run on **${getFormattedDateStr()}**`);
@@ -293,7 +293,7 @@ export default class AnnounceHandler {
             const a = await db.activateAnnouncement(message.channel.id, name);
             if (!a) throw new Error(`Could not find announcement to enable.`);
             if (a.datePattern)
-                CronAnnouncer.createCronJob(name, message.channel.id, a.datePattern);
+                CronDeployer.deployAnnouncement(a);
             const richEmbed = MsgHelper.getRichEmbed(message.author.username)
                 .setTitle(`:trumpet: :flashlight: ${command}`)
                 .setDescription(`Announcement **${name}** has been enabled.`);
@@ -309,7 +309,7 @@ export default class AnnounceHandler {
             const a = await db.deactivateAnnouncement(message.channel.id, name);
             if (!a) throw new Error(`Could not find announcement to disable.`);
             if (a.datePattern)
-                CronAnnouncer.destroyCronJob(name, message.channel.id);
+                CronDeployer.removeAnnouncement(a.id);
             const richEmbed = MsgHelper.getRichEmbed(message.author.username).setTitle(`:trumpet: :gun: ${command}`).setDescription(`Announcement **${name}** has been disabled.`);
             MsgHelper.sendMessage(message, richEmbed);
         } catch (e) {

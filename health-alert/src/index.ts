@@ -23,18 +23,32 @@ const healthCheckJob = async () => {
                 all: 1
             }
         });
-        const tallyBotContainer = getTallyBotContainer(res.data);
-        await alertIfInvalid(tallyBotContainer);
+        const announceContainer = getAnnouncerContainer(res.data);
+        const tallyBotContainers = getTallyBotContainers(res.data);
+        const all = [...announceContainer, ...tallyBotContainers];
+        for (const container of all) {
+            await alertIfInvalid(container);
+        }
         logger.debug('health check done');
     } catch (e) {
         logger.error(`An error occured while running health check job.`, e);
     }
 };
 
-const getTallyBotContainer = (containers: any[]) => {
-    const filtered = containers.filter((c) => c.Labels['com.docker.compose.service'] === 'tally-bot');
-    if (filtered.length > 1) throw new Error('Multiple tally bot services found.');
-    return filtered[0];
+const getTallyBotContainers = (containers: any[]) => {
+    const filtered = containers.filter((c) => {
+        const label = c.Labels['com.docker.compose.service']
+        return label && label.includes('tally-bot');
+    });
+    return filtered;
+};
+
+const getAnnouncerContainer = (containers: any[]) => {
+    const filtered = containers.filter((c) => {
+        const label = c.Labels['com.docker.compose.service']
+        return label && label.includes('announcer');
+    });
+    return filtered;
 };
 
 const alertIfInvalid = async (tallyBotContainer: any) => {
@@ -43,7 +57,7 @@ const alertIfInvalid = async (tallyBotContainer: any) => {
 
     if (tallyBotContainer.State !== 'running') {
         alertMsg += 'Tally Bot container is not running.';
-    } else if (!tallyBotContainer.Status.includes('healthy')) {
+    } else if (!tallyBotContainer.Status.includes('healthy') && tallyBotContainer.Labels['com.docker.compose.service'] !== 'announcer') {
         alertMsg += 'Tally Bot container is not healthy!';
     } else {
         logger.debug(`container is in valid running state.`);
@@ -51,6 +65,7 @@ const alertIfInvalid = async (tallyBotContainer: any) => {
     }
 
     if (alertMsg !== pretext)
+        logger.error(tallyBotContainer);
         logger.error(alertMsg);
 
     if (moment().isAfter(timeToRunAlert)) {

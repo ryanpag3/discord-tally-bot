@@ -2,8 +2,15 @@
   "name": "parent",
   "license": "APACHE",
   "private": true,
+  "scripts": {
+    "watch-bot": "yarn --cwd ./bot watch",
+    "watch-health-alert": "yarn --cwd ./health-alert watch",
+    "watch-announcer": "yarn --cwd ./announcer watch",
+    "watch": "concurrently -c yellow,magenta npm:watch-bot npm:watch-announcer"
+  },
   "dependencies": {},
   "devDependencies": {
-    "@types/node": "^13.13.2"
+    "@types/node": "^13.13.2",
+    "concurrently": "^5.2.0"
   }
 }

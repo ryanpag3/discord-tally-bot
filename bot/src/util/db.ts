@@ -689,7 +689,7 @@ export default class DB {
         announcement.datePattern = dateStr;
         announcement.tallyGoal = null;
         announcement.tallyName = null;
-        await announcement.save();
+        return await announcement.save();
     }
 
     async deleteAnnounce(channelId, name) {

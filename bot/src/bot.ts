@@ -5,7 +5,6 @@ dotenv.config();
 import Config from './util/config';
 import ConfigPrivate from './util/config-private';
 import DB from './util/db';
-import CronAnnouncer from './util/cron-announcer';
 import KeywordUtil from './util/keyword-util';
 import cmdHelper from './message/msg-helper';
 import CommandManager from './message/command-manager';
@@ -15,9 +14,13 @@ import DmManager from './message/dm-manager';
 import Env from './util/env';
 import UserUtil from './util/user';
 import HealthCheckServer from './util/healthcheck-server';
+import CronDeployer from './util/cron-deployer';
 
 class Bot {
-    static client: Client = new Discord.Client();
+    static client: Client = new Discord.Client({
+        shardId: Number.parseInt(process.env.SHARD_ID) || 0,
+        shardCount: Number.parseInt(process.env.SHARD_COUNT) || 1
+    });
     static healthcheck = new HealthCheckServer(Bot.client);
     static commandManager: CommandManager = new CommandManager(Bot.client);
     static topgg = Env.isProduction() ? new DBL(ConfigPrivate.dbots_token, Bot.client) : null;
@@ -50,15 +53,13 @@ class Bot {
         Bot.client.on('ready', async () => {
             try {
                 logger.info(`Tally Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);
+                logger.info(`shard ID [${process.env.SHARD_ID}] total shards [${process.env.SHARD_COUNT}]`);
                 if (!Bot.initialReady) return;
                 setTimeout(() => Bot.startBroadcasting(), 5000);
-                CronAnnouncer.setBot({
-                    bot: Bot.client,
-                });
                 // we have to wait to init once login is complete
                 await Bot.db.initServers(Bot.client.guilds);
                 await Bot.db.normalizeTallies(Bot.client.channels);
-                await CronAnnouncer.initCronJobs();
+                await CronDeployer.deployActiveAnnouncements();
                 Bot.initialReady = false;
             } catch (e) {
                 logger.error(`An error occured while running post-launch behavior.`, e);
@@ -136,15 +137,18 @@ class Bot {
 
         const statusGenerators = [
             () => {
+                Bot.client.user.setActivity(`shard id: ${process.env.SHARD_ID}`);
+            },
+            () => {
                 let users = 0;
-                Bot.client.guilds.map((guild) => (users += guild.members.size));
-                Bot.client.user.setActivity(`${Bot.client.guilds.size} servers.`);
+                Bot.client.guilds.map(guild => (users += guild.members.size));
+                Bot.client.user.setActivity(`shard servers: ${Bot.client.guilds.size}`);
                 if (Bot.topgg) Bot.topgg.postStats(Bot.client.guilds.size);
             },
             () => {
                 let users = 0;
-                Bot.client.guilds.map((guild) => (users += guild.members.size));
-                Bot.client.user.setActivity(`${users} users.`);
+                Bot.client.guilds.map(guild => (users += guild.members.size));
+                Bot.client.user.setActivity(`shard users: ${users}`);
             },
             () => {
                 Bot.client.user.setActivity(`!tb help`);
