@@ -1,5 +1,6 @@
 import { Message, Client, Permissions } from "discord.js";
 import CmdHelper from '../msg-helper';
+import logger from "../../util/logger";
 
 export default class CmdHandler {
     static async runInvite(params: any) {
@@ -14,6 +15,17 @@ export default class CmdHandler {
             .setTitle(`:email: invite`)
             .setDescription(`[Click to invite bot](${link})`);
         message.channel.send(richEmbed);
+        CmdHelper.finalize(message);
+    }
+
+    static async runPing(message: Message) {
+        const createdAt = new Date(message.createdAt).getTime();
+        const nowMillis = Date.now();
+        const diff = nowMillis - createdAt;
+        const richEmbed = CmdHelper.getRichEmbed(message.author.username)
+            .setTitle(`:black_circle: Pong!`)
+            .setDescription(`Response time: ${diff}`);
+        await message.channel.send(richEmbed);
         CmdHelper.finalize(message);
     }
 }

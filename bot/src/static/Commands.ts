@@ -30,6 +30,7 @@ const Commands = {
     INVITE: 'invite',
     PATCHNOTES: 'patchnotes',
     PERMISSIONS: 'permissions',
+    PING: 'ping',
     ROLE: '-role', // reserved
     REPORT: 'report',
     RESET: 'reset',
