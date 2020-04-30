@@ -27,8 +27,14 @@ class Bot {
     static async start() {
         try {
             await Bot.setup();
+            setTimeout(() => {
+                logger.info('triggering ready manually');
+                const c: any = Bot.client;
+                c.ws.connection.triggerReady()
+            }, 30000);
             await Bot.client.login(ConfigPrivate.token);
             Bot.healthcheck.start();
+
         } catch (e) {
             logger.error(`Bot errored while starting up.`, e);
         }
