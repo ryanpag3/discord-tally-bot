@@ -16,20 +16,20 @@ services:
       options:
         max-file: "5"
         max-size: "10m"
-  # tally-bot2:
-  #   image: ryanpage/internal:tally-bot-dev
-  #   build: .
-  #   restart: always
-  #   env_file:
-  #     - ./.env
-  #   environment:
-  #     - SHARD_ID=1
-  #     - SHARD_COUNT=2
-  #   logging:
-  #     driver: "json-file"
-  #     options:
-  #       max-file: "5"
-  #       max-size: "10m"
+  tally-bot2:
+    image: ryanpage/internal:tally-bot-dev
+    build: .
+    restart: always
+    env_file:
+      - ./.env
+    environment:
+      - SHARD_ID=1
+      - SHARD_COUNT=2
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: "10m"
   # tally-bot3:
   #   image: ryanpage/internal:tally-bot-dev
   #   build: .

@@ -1,5 +1,6 @@
 import { CronJob } from 'cron';
 import Queue from 'bull';
+import moment from 'moment';
 import logger from './logger';
 import { Client } from 'discord.js';
 
@@ -17,6 +18,7 @@ export default class Cron {
     }
 
     static async initializeJobs(jobsPayload: string) {
+        if (!jobsPayload) return;
         const parsed = JSON.parse(jobsPayload);
         const keys = Object.keys(parsed);
         await Cron.clearCronCache();
@@ -42,8 +44,11 @@ export default class Cron {
 
         const timestamp = Date.parse(date);
         if (isNaN(timestamp) === false) {
+            logger.info(date);
+            // logger.info(new Date().toLocaleString());
             repeating = false;
-            date = new Date(date);
+            date = new Date(timestamp);
+            logger.info(date);
         }
 
         try {
