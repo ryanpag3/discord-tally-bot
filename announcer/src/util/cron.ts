@@ -6,8 +6,10 @@ import { Client } from 'discord.js';
 
 let cronCache = {};
 const eventQueue = new Queue('tallybot.cron.events', {
-    host: process.env.REDIS_HOST,
-    port: process.env.REDIS_PORT
+    redis: {
+        host: process.env.REDIS_HOST,
+        port: process.env.REDIS_PORT,
+    },
 });
 
 export default class Cron {
@@ -24,8 +26,8 @@ export default class Cron {
         await Cron.clearCronCache();
         const promises = [];
         for (const key of keys) {
-            const {id, name, description, channelId, date} = parsed[key];
-            promises.push(Cron.createCronJob(id, name, description, channelId, date))
+            const { id, name, description, channelId, date } = parsed[key];
+            promises.push(Cron.createCronJob(id, name, description, channelId, date));
         }
         await Promise.all(promises);
     }
@@ -39,7 +41,6 @@ export default class Cron {
     }
 
     static async createCronJob(id, name, description, channelId, date) {
-        
         let repeating = true;
 
         const timestamp = Date.parse(date);
@@ -65,7 +66,7 @@ export default class Cron {
                 null,
                 true,
                 'America/Los_Angeles'
-            )
+            );
             logger.info(`created new cron job for ${name} on ${channelId} at ${date}`);
         } catch (e) {
             logger.error(e);
@@ -83,12 +84,11 @@ export default class Cron {
     static async announce(id, name, description, channelId) {
         try {
             logger.info('announcing');
-            const channel: any = await this.bot.channels.find(x => x.id === channelId);
+            const channel: any = await this.bot.channels.find((x) => x.id === channelId);
             if (!channel) {
                 throw new Error(`Announcement channel was not found.`);
             }
             await channel.send(`Announcement!`);
-
         } catch (e) {
             Cron.destroyCronJob(id, name, channelId);
             logger.error(`Could not announce.`, e);
@@ -100,8 +100,8 @@ export default class Cron {
             type: 'announcement.disable',
             body: {
                 name,
-                channelId
-            }
+                channelId,
+            },
         };
         await eventQueue.add(msg);
     }
