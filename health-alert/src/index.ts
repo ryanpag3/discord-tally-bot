@@ -23,8 +23,10 @@ const healthCheckJob = async () => {
                 all: 1
             }
         });
-        const tallyBotContainer = getTallyBotContainer(res.data);
-        await alertIfInvalid(tallyBotContainer);
+        const tallyBotContainers = getTallyBotContainer(res.data);
+        for (const container of tallyBotContainers) {
+            await alertIfInvalid(container);
+        }
         logger.debug('health check done');
     } catch (e) {
         logger.error(`An error occured while running health check job.`, e);
@@ -33,8 +35,7 @@ const healthCheckJob = async () => {
 
 const getTallyBotContainer = (containers: any[]) => {
     const filtered = containers.filter((c) => c.Labels['com.docker.compose.service'] === 'tally-bot');
-    if (filtered.length > 1) throw new Error('Multiple tally bot services found.');
-    return filtered[0];
+    return filtered;
 };
 
 const alertIfInvalid = async (tallyBotContainer: any) => {
