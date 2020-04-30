@@ -53,8 +53,7 @@ class Bot {
         Bot.client.on('ready', async () => {
             try {
                 logger.info(`Tally Bot has been started successfully in ${process.env.NODE_ENV || 'development'} mode.`);
-                logger.info(process.env.SHARD_ID );
-                logger.info(process.env.SHARD_COUNT );
+                logger.info(`shard ID [${process.env.SHARD_ID}] total shards [${process.env.SHARD_COUNT}]`);
                 if (!Bot.initialReady) return;
                 setTimeout(() => Bot.startBroadcasting(), 5000);
                 // we have to wait to init once login is complete
