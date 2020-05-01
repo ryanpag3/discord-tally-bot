@@ -1,4 +1,5 @@
 import { CronJob } from 'cron';
+import Discord from 'discord.js';
 import Queue from 'bull';
 import moment from 'moment';
 import logger from './logger';
@@ -88,11 +89,25 @@ export default class Cron {
             if (!channel) {
                 throw new Error(`Announcement channel was not found.`);
             }
-            await channel.send(`Announcement!`);
+            const richEmbed = Cron.getRichEmbed()
+                .setTitle(`Announcement!`)
+                .addField(`Title`, name)
+                .addField(`Description`, description || 'none.');
+            await channel.send(richEmbed);
         } catch (e) {
             Cron.destroyCronJob(id, name, channelId);
             logger.error(`Could not announce.`, e);
         }
+    }
+
+    static getRichEmbed(username?: string) {
+        const richEmbed = new Discord.RichEmbed()
+            .setTimestamp()
+            .setColor('#cf5967');
+            // .setColor('#5fcca4');
+        if (username)
+            richEmbed.setFooter(`${username}`);
+        return richEmbed;
     }
 
     static async sendDisableMessage(name: string, channelId: string) {
