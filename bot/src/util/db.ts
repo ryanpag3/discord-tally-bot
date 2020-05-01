@@ -260,6 +260,7 @@ export default class DB {
             isGlobal,
             name
         };
+        if (!serverId) delete where.serverId;
         if (isGlobal === true) delete where.channelId;
         const tally = await this.Tally.findOne({
             where
@@ -689,6 +690,21 @@ export default class DB {
         announcement.datePattern = dateStr;
         announcement.tallyGoal = null;
         announcement.tallyName = null;
+        return await announcement.save();
+    }
+
+    async setAnnounceTallyAlert(channelId: string, name: string, tallyName: string, dateStr: string) {
+        const announcement = await this.Announcement.findOne({
+            where: {
+                channelId,
+                name
+            }
+        });
+        if (!announcement) throw new Error('No announcement found to set alert for.');
+        announcement.datePattern = dateStr;
+        announcement.tallyGoal = null;
+        announcement.tallyName = tallyName;
+        announcement.isAlert = true;
         return await announcement.save();
     }
 

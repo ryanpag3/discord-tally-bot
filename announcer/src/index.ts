@@ -31,6 +31,7 @@ class AnnouncerBot {
         this.client.on('ready', async () => {
             try {
                 Cron.setBot(this.client);
+                Cron.startListeningForEvents();
                 logger.info(`Announcer bot started.`);
             } catch (e) {
                 logger.error(`Could not start announcer bot.`, e);
