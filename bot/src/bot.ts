@@ -1,4 +1,4 @@
-import Discord, { Message, Guild, Client, Shard } from 'discord.js';
+import Discord, { Message, Guild, Client } from 'discord.js';
 import DBL from 'dblapi.js';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -8,7 +8,6 @@ import DB from './util/db';
 import KeywordUtil from './util/keyword-util';
 import cmdHelper from './message/msg-helper';
 import CommandManager from './message/command-manager';
-import Counter from './util/counter';
 import logger from './util/logger';
 import DmManager from './message/dm-manager';
 import Env from './util/env';
