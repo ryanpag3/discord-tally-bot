@@ -25,7 +25,7 @@ export default class ShardUtil {
             let total = 0;
             
             for (const count of existingCounts) {
-                total += count;
+                total += count || 0;
             }
 
             return total;
@@ -40,7 +40,7 @@ export default class ShardUtil {
             let total = 0;
             
             for (const count of existingCounts) {
-                total += count;
+                total += count || 0;
             }
 
             return total;
