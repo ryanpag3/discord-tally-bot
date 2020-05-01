@@ -19,7 +19,9 @@ import CronDeployer from './util/cron-deployer';
 class Bot {
     static client: Client = new Discord.Client({
         shardId: Number.parseInt(process.env.SHARD_ID) || 0,
-        shardCount: Number.parseInt(process.env.SHARD_COUNT) || 1
+        shardCount: Number.parseInt(process.env.SHARD_COUNT) || 1,
+        messageCacheLifetime: 60,
+        messageSweepInterval: 5 * 60
     });
     static healthcheck = new HealthCheckServer(Bot.client);
     static commandManager: CommandManager = new CommandManager(Bot.client);
