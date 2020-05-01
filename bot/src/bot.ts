@@ -166,21 +166,16 @@ class Bot {
 
         const statusGenerators = [
             async () => {
-                await ShardUtil.storeShardServerCount(Bot.shardId, Bot.client.guilds.size, Bot.shardCount);
-                const total = await ShardUtil.getTotalServers();
-                Bot.client.user.setActivity(`servers: ${total}`);
-                if (Bot.topgg) Bot.topgg.postStats(total);
-            },
-            async () => {
                 let users = 0;
                 Bot.client.guilds.map(guild => (users += guild.members.size));
                 await ShardUtil.storeShardUserCount(Bot.shardId, users, Bot.shardCount);
-                const total = await ShardUtil.getTotalUsers();
-                Bot.client.user.setActivity(`users: ${total}`);
-            },
-            () => {
-                Bot.client.user.setActivity(`!tb help`);
-            },
+                const totalUsers = await ShardUtil.getTotalUsers();
+                await ShardUtil.storeShardServerCount(Bot.shardId, Bot.client.guilds.size, Bot.shardCount);
+                const totalServers = await ShardUtil.getTotalServers();
+                Bot.client.user.setActivity(`!tb help | servers: ${totalServers} | users: ${totalUsers}`);
+                if (Bot.topgg) Bot.topgg.postStats(totalServers);
+
+            }
         ];
 
         let i = 0;
