@@ -30,8 +30,8 @@ export default class Sqlize {
             operatorsAliases: false,
             logging: false,
             pool: {
-                max: 15,
-                min: 5,
+                max: 5,
+                min: 1,
                 idle: 10000
             }
         });
