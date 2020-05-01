@@ -36,7 +36,7 @@ export default class ShardUtil {
 
     static async getTotalUsers() {
         try {
-            const existingCounts = JSON.parse(await Redis.get(SHARD_SERVER_COUNT));
+            const existingCounts = JSON.parse(await Redis.get(SHARD_USER_COUNT));
             let total = 0;
             
             for (const count of existingCounts) {
