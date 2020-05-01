@@ -21,7 +21,9 @@ class Bot {
     static shardCount = Number.parseInt(process.env.SHARD_COUNT) || 1;
     static client: Client = new Discord.Client({
         shardId: Bot.shardId,
-        shardCount: Bot.shardCount
+        shardCount: Bot.shardCount,
+        messageCacheLifetime: 60,
+        messageSweepInterval: 5 * 60
     });
     static healthcheck = new HealthCheckServer(Bot.client);
     static commandManager: CommandManager = new CommandManager(Bot.client);
