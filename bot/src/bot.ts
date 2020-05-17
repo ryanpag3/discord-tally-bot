@@ -20,10 +20,35 @@ class Bot {
     static shardId = Number.parseInt(process.env.SHARD_ID) || 0;
     static shardCount = Number.parseInt(process.env.SHARD_COUNT) || 1;
     static client: Client = new Discord.Client({
+        messageCacheLifetime: 60,
+        messageSweepInterval: 5 * 60,
         shardId: Bot.shardId,
         shardCount: Bot.shardCount,
-        messageCacheLifetime: 60,
-        messageSweepInterval: 5 * 60
+        disabledEvents: [
+            'GUILD_SYNC',
+            'GUILD_UPDATE',
+            'GUILD_MEMBER_ADD',
+            'GUILD_MEMBER_REMOVE',
+            'GUILD_MEMBER_UPDATE',
+            'GUILD_INTEGRATIONS_UPDATE',
+            'GUILD_ROLE_CREATE',
+            'GUILD_ROLE_DELETE',
+            'GUILD_ROLE_UPDATE',
+            'MESSAGE_DELETE_BULK',
+            'MESSAGE_REACTION_ADD',
+            'MESSAGE_REACTION_REMOVE',
+            'MESSAGE_REACTION_REMOVE_ALL',
+            'USER_UPDATE',
+            'USER_NOTE_UPDATE',
+            'USER_SETTINGS_UPDATE',
+            'PRESENCE_UPDATE',
+            'VOICE_STATE_UPDATE',
+            'TYPING_START',
+            'VOICE_SERVER_UPDATE',
+            'RELATIONSHIP_ADD',
+            'RELATIONSHIP_REMOVE',
+            'WEBHOOKS_UPDATE'
+        ]
     });
     static healthcheck = new HealthCheckServer(Bot.client);
     static commandManager: CommandManager = new CommandManager(Bot.client);
@@ -141,21 +166,16 @@ class Bot {
 
         const statusGenerators = [
             async () => {
-                await ShardUtil.storeShardServerCount(Bot.shardId, Bot.client.guilds.size, Bot.shardCount);
-                const total = await ShardUtil.getTotalServers();
-                Bot.client.user.setActivity(`servers: ${total}`);
-                if (Bot.topgg) Bot.topgg.postStats(total);
-            },
-            async () => {
                 let users = 0;
                 Bot.client.guilds.map(guild => (users += guild.members.size));
                 await ShardUtil.storeShardUserCount(Bot.shardId, users, Bot.shardCount);
-                const total = await ShardUtil.getTotalUsers();
-                Bot.client.user.setActivity(`users: ${total}`);
-            },
-            () => {
-                Bot.client.user.setActivity(`!tb help`);
-            },
+                const totalUsers = await ShardUtil.getTotalUsers();
+                await ShardUtil.storeShardServerCount(Bot.shardId, Bot.client.guilds.size, Bot.shardCount);
+                const totalServers = await ShardUtil.getTotalServers();
+                Bot.client.user.setActivity(`!tb help | servers: ${totalServers} | users: ${totalUsers}`);
+                if (Bot.topgg) Bot.topgg.postStats(totalServers);
+
+            }
         ];
 
         let i = 0;
