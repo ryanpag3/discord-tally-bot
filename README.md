@@ -43,6 +43,7 @@ This will help offset the cost of running the bot. Thank you 👊
   - [Enable/Disable Tally Reactions](#toggle-tally-reactions)
 - [Announcements](#announcements)
   - [Create Announcement](#create-an-announcement)
+  - [Create Tally Alert Announcement](#create-a-tally-alert-announcement)
   - [Get Announcement Details](#get-an-announcement)
   - [Set Announcement Tally Goal](#set-announcement-tally-goal)
   - [Set Announcement Date Goal](#set-an-announcement-date)
@@ -460,6 +461,14 @@ Create an announcement with a _name_ and _description_. This command can also be
 
     ---- Server Examples ----
     !tb announce -create new-years In the future!
+
+### **Create a Tally Alert Announcement**
+Create an announcement that will alert the specified channel with the current count for one or more tallies on a regular schedule.
+
+    !tb announce -alert [name] [tally_name_or_names] [date_pattern]
+
+    ---- Server Examples ----
+    !tb announce -alert my-tally-announcement test-tally 19 16 * * *
 
 ### **Get an Announcement**
 Get details on a specified announcement.
