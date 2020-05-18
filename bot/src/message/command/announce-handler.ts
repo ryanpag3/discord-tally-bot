@@ -9,6 +9,7 @@ import Env from '../../util/env';
 import CronDeployer from '../../util/cron-deployer';
 
 /**
+ * !tb announce -alert [comma,separated,tally,names] [cron_expression]
  * !tb announce -create [name] [description]
  * !tb announce -delete [name]
  * !tb announce -goal [name] -[date] [date-pattern]
@@ -26,6 +27,8 @@ enum AnnounceTypes {
 }
 
 enum SubCommands {
+    ALERT = '-alert',
+    A = '-a',
     CREATE = '-create',
     C = '-c',
     DELETE = '-delete',
@@ -44,6 +47,9 @@ export default class AnnounceHandler {
         try {
             const subcommand = AnnounceHandler.getSubcommand(message);
             switch (subcommand) {
+                case SubCommands.A:
+                case SubCommands.ALERT:
+                    return await AnnounceHandler.runCreateAlertAnnouncement(message);
                 case SubCommands.C:
                 case SubCommands.CREATE:
                     return await AnnounceHandler.runCreateAnnouncement(message);
@@ -130,7 +136,9 @@ export default class AnnounceHandler {
     static async runDeleteAnnouncement(message: Message) {
         try {
             const { name, command } = AnnounceHandler.unmarshallDeleteMessage(message);
-            const resultCode = await db.deleteAnnounce(message.channel.id, name);
+            const announcement = await db.getAnnouncement(message.channel.id, name);
+            CronDeployer.removeAnnouncement(announcement.id);
+            const resultCode = await db.deleteAnnounce(message.channel.id, name); 
             if (resultCode === 0) throw new Error(`No announcement found with name [${name}] to delete.`);
             const richEmbed = MsgHelper.getRichEmbed(message.author.username).setTitle(`:x: ${command}`).setDescription(`Announcement with name **${name}** has been deleted.`);
             logger.info(`Deleted announcement with name [${name}] and author id [${message.author.id}]`);
@@ -404,6 +412,60 @@ export default class AnnounceHandler {
         const randomstring = require('randomstring');
         for (let i = 0; i < count; i++) {
             await db.createAnnouncement(message.channel.id, randomstring.generate(16), randomstring.generate(255));
+        }
+    }
+
+    /**
+     * !tb announce -alert [announce_name] [comma,separated,tally,names] [cron_expression]
+     */
+    static async runCreateAlertAnnouncement(message: Message) {
+        try {
+            const { command, tallyNames, datePattern, name } = this.unmarshallCreateAlertMessage(message);
+            await db.createAnnouncement(message.channel.id, name, null);
+            const a = await db.setAnnounceTallyAlert(message.channel.id, name, tallyNames.join(','), datePattern);
+            await CronDeployer.deployAnnouncement(a);
+            const richEmbed = MsgHelper.getRichEmbed(message.author.username);
+            richEmbed.setTitle(`:trumpet: ${command}`)
+            richEmbed.setDescription(`This announcement will display the specified tally's count on a regular schedule.`);
+            richEmbed.addField(`Announcement Name`, name);
+            richEmbed.addField(`Tally Name(s)`, tallyNames.join(', '))
+            richEmbed.addField(`Schedule`, datePattern);
+            MsgHelper.sendMessage(message, richEmbed);
+        } catch (e) {
+            if (e.message.toLowerCase().includes('validation error')) {
+                e = new Error(`Announcement with specified name already exists.`);
+            }
+            MsgHelper.handleError(`An error occured while creating tally alert announcement.`, e, message);
+        } 
+    }
+
+    static unmarshallCreateAlertMessage(message: Message): {
+        command: string,
+        name: string,
+        tallyNames: string[],
+        datePattern: string
+    } {
+        const split = message.content.split(' ');
+        const command = [split[0], split[1], split[2]].join(' ');
+        const name = split[3];
+        if (!name) throw new Error(`Please provide a name for this announcement.`);
+        const tallyNames = split[4] ? split[4].split(',') : [];
+        if (tallyNames.length < 1) throw new Error(`At least one tally name must be provided to alert.`);
+
+        const datePattern = split.slice(5, split.length).join(' ');
+        return {
+            command,
+            name,
+            tallyNames,
+            datePattern
+        }
+
+    }
+
+    static async validateTallies(tallyNames: string[], channelId: string, serverId: string) {
+        for (const name of tallyNames) {
+            const tally = await db.getCmdTally(channelId, serverId, false, name);
+            if (!tally) throw new Error(`Could not find tally by name ${name} for current channel.`);
         }
     }
 }

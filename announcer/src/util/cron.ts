@@ -13,11 +13,24 @@ const eventQueue = new Queue('tallybot.cron.events', {
     },
 });
 
+const myEventQueue = new Queue('tallybot.announcer.events', {
+    redis: {
+        host: process.env.REDIS_HOST,
+        port: process.env.REDIS_PORT  
+    }
+});
+
+
+
 export default class Cron {
     static bot: Client;
 
     static async setBot(bot: Client) {
         Cron.bot = bot;
+    }
+
+    static startListeningForEvents() {
+        myEventQueue.process((job) => Cron.handleAnnounceAlertEvent(job));
     }
 
     static async initializeJobs(jobsPayload: string) {
@@ -27,8 +40,8 @@ export default class Cron {
         await Cron.clearCronCache();
         const promises = [];
         for (const key of keys) {
-            const { id, name, description, channelId, date } = parsed[key];
-            promises.push(Cron.createCronJob(id, name, description, channelId, date));
+            const { id, name, description, channelId, date, isAlert } = parsed[key];
+            promises.push(Cron.createCronJob(id, name, description, channelId, date, isAlert));
         }
         await Promise.all(promises);
     }
@@ -41,16 +54,13 @@ export default class Cron {
         }
     }
 
-    static async createCronJob(id, name, description, channelId, date) {
+    static async createCronJob(id, name, description, channelId, date, isAlert) {
         let repeating = true;
 
         const timestamp = Date.parse(date);
         if (isNaN(timestamp) === false) {
-            logger.info(date);
-            // logger.info(new Date().toLocaleString());
             repeating = false;
             date = new Date(timestamp);
-            logger.info(date);
         }
 
         try {
@@ -61,6 +71,7 @@ export default class Cron {
             cronCache[id] = new CronJob(
                 date,
                 () => {
+                    if (isAlert) return Cron.announceAlert(id);
                     Cron.announce(id, name, description, channelId);
                     if (!repeating) Cron.destroyCronJob(id, name, channelId);
                 },
@@ -68,7 +79,7 @@ export default class Cron {
                 true,
                 'America/Los_Angeles'
             );
-            logger.info(`created new cron job for ${name} on ${channelId} at ${date}`);
+            logger.debug(`created new cron job for ${name} on ${channelId} at ${date}`);
         } catch (e) {
             logger.error(e);
             Cron.destroyCronJob(id, name, channelId);
@@ -84,7 +95,6 @@ export default class Cron {
 
     static async announce(id, name, description, channelId) {
         try {
-            logger.info('announcing');
             const channel: any = await this.bot.channels.find((x) => x.id === channelId);
             if (!channel) {
                 throw new Error(`Announcement channel was not found.`);
@@ -98,6 +108,34 @@ export default class Cron {
             Cron.destroyCronJob(id, name, channelId);
             logger.error(`Could not announce.`, e);
         }
+    }
+
+    static async announceAlert(id: string) {
+        const msg = {
+            type: 'announcement.alert',
+            body: {
+                id
+            }
+        };
+        eventQueue.add(msg);
+    }
+
+    static async handleAnnounceAlertEvent(job: any) {
+        try {
+            const { announcement, tallies } = job.data;
+            const { channelId } = tallies[0];
+            const channel: any = await this.bot.channels.find((x) => x.id === channelId);
+            const richEmbed = Cron.getRichEmbed();
+            richEmbed.setTitle(`Tally Alert Announcement`);
+            richEmbed.setDescription(`Announcement - **${announcement.name}**\nSchedule - **${announcement.datePattern}**`);
+            for (const t of tallies) {
+                richEmbed.addField(`name: ${t.name}`,`count: ${t.count}`);
+            }
+            channel.send(richEmbed);
+        } catch (e) {
+            logger.error(`Could not run tally alert announcement.`, e);
+        }
+
     }
 
     static getRichEmbed(username?: string) {

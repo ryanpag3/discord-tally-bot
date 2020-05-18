@@ -32,7 +32,8 @@ export default class CronDeployer {
             name: announce.name,
             description: announce.description,
             channelId: announce.channelId,
-            date: date || announce.datePattern
+            date: date || announce.datePattern,
+            isAlert: announce.isAlert
         }
 
         function isValidDate(d) {

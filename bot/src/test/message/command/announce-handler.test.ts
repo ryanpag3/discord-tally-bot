@@ -79,7 +79,7 @@ describe('announce command', function() {
         await db.createAnnouncement(msg.getChannelId(), ANNOUNCE_NAME, '');
         await AnnounceHandler.runDisableAnnouncement(msg as any);
         expect(msg.getLastChannelCall()).contains('has been disabled');
-    })
+    });
 
     it('should activate an announcement', async function() {
         const command = `!tb announce -enable ${ANNOUNCE_NAME} `;
@@ -89,5 +89,25 @@ describe('announce command', function() {
         await ann.reload();
         expect(msg.getLastChannelCall()).contains('has been enabled');
         expect(ann.active).to.be.true;
-    })
+    });
+
+    it('should create a tally alert announcement', async function() {
+        const datePattern = `* * * * *`;
+        const tallyName = 'test';
+        const command = `!tb announce -alert ${ANNOUNCE_NAME} ${tallyName} ${datePattern}`;
+        const msg = TestHelper.getFakeMessage(command);
+        await AnnounceHandler.runCreateAlertAnnouncement(msg as any);
+        const announcement = await db.getAnnouncement(msg.getChannelId(), ANNOUNCE_NAME);
+        expect(announcement).to.exist;
+    });
+
+    it ('should alert when an announcement already exists', async function() {
+        const datePattern = `* * * * *`;
+        const tallyName = 'test';
+        const command = `!tb announce -alert ${ANNOUNCE_NAME} ${tallyName} ${datePattern}`;
+        const msg = TestHelper.getFakeMessage(command);
+        const ann = await db.createAnnouncement(msg.getChannelId(), ANNOUNCE_NAME, '');
+        await AnnounceHandler.runCreateAlertAnnouncement(msg as any);
+        expect(msg.getLastChannelCall().toLowerCase()).to.include('already exists'); 
+    });
 });

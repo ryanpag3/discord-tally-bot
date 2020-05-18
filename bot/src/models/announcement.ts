@@ -13,7 +13,8 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
         tallyName: { type: DataTypes.STRING, defaultValue: null },
         tallyGoal: { type: DataTypes.INTEGER, defaultValue: null },
         tallyGoalReached: { type: DataTypes.BOOLEAN, defaultValue: false },
-        active: {type: DataTypes.BOOLEAN, defaultValue: true }
+        active: {type: DataTypes.BOOLEAN, defaultValue: true },
+        isAlert: { type: DataTypes.BOOLEAN, defaultValue: false }
     }, {
         timestamps: false,
         indexes: [{
