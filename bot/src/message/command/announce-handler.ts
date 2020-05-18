@@ -417,11 +417,24 @@ export default class AnnounceHandler {
      * !tb announce -alert [announce_name] [comma,separated,tally,names] [cron_expression]
      */
     static async runCreateAlertAnnouncement(message: Message) {
-        const { command, tallyNames, datePattern, name } = this.unmarshallCreateAlertMessage(message);
-        await db.createAnnouncement(message.channel.id, name, null);
-        const a = await db.setAnnounceTallyAlert(message.channel.id, name, tallyNames.join(','), datePattern);
-        await CronDeployer.deployAnnouncement(a)
-        message.channel.send('job done');
+        try {
+            const { command, tallyNames, datePattern, name } = this.unmarshallCreateAlertMessage(message);
+            await db.createAnnouncement(message.channel.id, name, null);
+            const a = await db.setAnnounceTallyAlert(message.channel.id, name, tallyNames.join(','), datePattern);
+            await CronDeployer.deployAnnouncement(a);
+            const richEmbed = MsgHelper.getRichEmbed(message.author.username);
+            richEmbed.setTitle(`:trumpet: ${command}`)
+            richEmbed.setDescription(`This announcement will display the specified tally's count on a regular schedule.`);
+            richEmbed.addField(`Announcement Name`, name);
+            richEmbed.addField(`Tally Name(s)`, tallyNames.join(', '))
+            richEmbed.addField(`Schedule`, datePattern);
+            MsgHelper.sendMessage(message, richEmbed);
+        } catch (e) {
+            if (e.message.toLowerCase().includes('validation error')) {
+                e = new Error(`Announcement with specified name already exists.`);
+            }
+            MsgHelper.handleError(`An error occured while creating tally alert announcement.`, e, message);
+        } 
     }
 
     static unmarshallCreateAlertMessage(message: Message): {

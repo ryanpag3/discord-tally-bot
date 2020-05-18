@@ -48,13 +48,10 @@ export default class CronEventSubscriber {
     }
 
     static async createAlertMessage(jobData: any) {
-        logger.info(`creating alert message`);
-        logger.info(jobData);
         const announcement = await db.Announcement.findByPk(jobData.id);
         const tallies = announcement.tallyName.split(',');
         const promises = tallies.map(async(t) => db.getCmdTally(announcement.channelId, undefined, false, t));
         const resolved = await Promise.all(promises);
-        logger.info(resolved);
         CronEventSubscriber.announcerEventQueue.add(resolved);
     }
 }

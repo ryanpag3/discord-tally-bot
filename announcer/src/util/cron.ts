@@ -122,11 +122,19 @@ export default class Cron {
     }
 
     static async handleAnnounceAlertEvent(job: any) {
-        logger.info('asdasd');
-        logger.info(job.data);
-        const { channelId } = job.data[0];
-        const channel: any = await this.bot.channels.find((x) => x.id === channelId);
-        channel.send(JSON.stringify(job.data));
+        try {
+            const { channelId } = job.data[0];
+            const channel: any = await this.bot.channels.find((x) => x.id === channelId);
+            const richEmbed = Cron.getRichEmbed();
+            richEmbed.setTitle(`Tally Alert Announcement`);
+            for (const t of job.data) {
+                richEmbed.addField(`${t.name}`,`count: ${t.count}\ncreated on: ${new Date(t.createdOn).toLocaleString()}`);
+            }
+            channel.send(richEmbed);
+        } catch (e) {
+            logger.error(`Could not run tally alert announcement.`, e);
+        }
+
     }
 
     static getRichEmbed(username?: string) {
