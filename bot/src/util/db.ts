@@ -676,6 +676,7 @@ export default class DB {
         announcement.tallyGoal = tallyGoal;
         announcement.tallyName = tallyName;
         announcement.tallyGoalReached = false;
+        announcement.isAlert = false;
         await announcement.save();
     }
 

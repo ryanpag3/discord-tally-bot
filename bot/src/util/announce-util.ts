@@ -8,6 +8,7 @@ const db = new DB();
 
 export default class AnnounceUtil {
     static async announceTallyGoalIfExists(message: Message, tallyName: string) {
+        logger.debug({ channelId: message.channel.id, tallyName, tallyGoalReached: false, isAlert: false });
         const announcements = await db.getAnnouncements({ channelId: message.channel.id, tallyName, tallyGoalReached: false, isAlert: false });
         logger.debug(`found ${announcements.length} announcements for tally`);
         await AnnounceUtil.announceTallyGoals(message, announcements);
