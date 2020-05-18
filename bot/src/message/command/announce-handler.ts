@@ -136,7 +136,9 @@ export default class AnnounceHandler {
     static async runDeleteAnnouncement(message: Message) {
         try {
             const { name, command } = AnnounceHandler.unmarshallDeleteMessage(message);
-            const resultCode = await db.deleteAnnounce(message.channel.id, name);
+            const announcement = await db.getAnnouncement(message.channel.id, name);
+            CronDeployer.removeAnnouncement(announcement.id);
+            const resultCode = await db.deleteAnnounce(message.channel.id, name); 
             if (resultCode === 0) throw new Error(`No announcement found with name [${name}] to delete.`);
             const richEmbed = MsgHelper.getRichEmbed(message.author.username).setTitle(`:x: ${command}`).setDescription(`Announcement with name **${name}** has been deleted.`);
             logger.info(`Deleted announcement with name [${name}] and author id [${message.author.id}]`);

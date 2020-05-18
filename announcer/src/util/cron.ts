@@ -95,7 +95,6 @@ export default class Cron {
 
     static async announce(id, name, description, channelId) {
         try {
-            logger.info('announcing');
             const channel: any = await this.bot.channels.find((x) => x.id === channelId);
             if (!channel) {
                 throw new Error(`Announcement channel was not found.`);
@@ -123,12 +122,14 @@ export default class Cron {
 
     static async handleAnnounceAlertEvent(job: any) {
         try {
-            const { channelId } = job.data[0];
+            const { announcement, tallies } = job.data;
+            const { channelId } = tallies[0];
             const channel: any = await this.bot.channels.find((x) => x.id === channelId);
             const richEmbed = Cron.getRichEmbed();
             richEmbed.setTitle(`Tally Alert Announcement`);
-            for (const t of job.data) {
-                richEmbed.addField(`${t.name}`,`count: ${t.count}\ncreated on: ${new Date(t.createdOn).toLocaleString()}`);
+            richEmbed.setDescription(`Announcement - **${announcement.name}**\nSchedule - **${announcement.datePattern}**`);
+            for (const t of tallies) {
+                richEmbed.addField(`name: ${t.name}`,`count: ${t.count}`);
             }
             channel.send(richEmbed);
         } catch (e) {

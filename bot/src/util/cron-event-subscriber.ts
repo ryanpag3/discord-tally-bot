@@ -52,6 +52,6 @@ export default class CronEventSubscriber {
         const tallies = announcement.tallyName.split(',');
         const promises = tallies.map(async(t) => db.getCmdTally(announcement.channelId, undefined, false, t));
         const resolved = await Promise.all(promises);
-        CronEventSubscriber.announcerEventQueue.add(resolved);
+        CronEventSubscriber.announcerEventQueue.add({ announcement, tallies: resolved });
     }
 }
