@@ -23,25 +23,7 @@ class Bot {
         messageCacheLifetime: 60,
         messageSweepInterval: 5 * 60,
         shardId: Bot.shardId,
-        shardCount: Bot.shardCount,
-        disabledEvents: [
-            'GUILD_SYNC',
-            'GUILD_UPDATE',
-            'GUILD_MEMBER_ADD',
-            'GUILD_MEMBER_REMOVE',
-            'GUILD_INTEGRATIONS_UPDATE',
-            'MESSAGE_DELETE_BULK',
-            'MESSAGE_REACTION_ADD',
-            'MESSAGE_REACTION_REMOVE',
-            'MESSAGE_REACTION_REMOVE_ALL',
-            'PRESENCE_UPDATE',
-            'VOICE_STATE_UPDATE',
-            'TYPING_START',
-            'VOICE_SERVER_UPDATE',
-            'RELATIONSHIP_ADD',
-            'RELATIONSHIP_REMOVE',
-            'WEBHOOKS_UPDATE'
-        ]
+        shardCount: Bot.shardCount
     });
     static healthcheck = new HealthCheckServer(Bot.client);
     static commandManager: CommandManager = new CommandManager(Bot.client);
@@ -59,7 +41,6 @@ class Bot {
             }, 30000);
             await Bot.client.login(ConfigPrivate.token);
             Bot.healthcheck.start();
-
         } catch (e) {
             logger.error(`Bot errored while starting up.`, e);
         }
