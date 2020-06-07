@@ -27,7 +27,6 @@ const MsgHelper = {
             .setTitle(`:x: ` + msg)
             .setDescription(e.message);
         await message.channel.send(richEmbed);
-        MsgHelper.finalize(message);
     },
 
     /**

@@ -127,6 +127,12 @@ export default class CommandEventBuilder {
             // create a tally group
             emitter.on(Config.prefix + Commands.TALLY_GROUP_ADD, TallyGroupHandler.create);
 
+            // delete a tally group
+            emitter.on(Config.prefix + Commands.TALLY_GROUP_RM, TallyGroupHandler.remove);
+
+            // det a tally group
+            emitter.on(Config.prefix + Commands.TALLY_GROUP_GET, TallyGroupHandler.get);
+
             // export/import data
             emitter.on(Config.prefix + Commands.DATA, DataHandler.run);
 
