@@ -23,6 +23,7 @@ import CmdHandler from './command/cmd-handler';
 import logger from '../util/logger';
 import AnnounceHandler from './command/announce-handler';
 import DataHandler from './command/data-handler';
+import TallyGroupHandler from './command/tally-group';
 
 export default class CommandEventBuilder {
     static build(emitter: EventEmitter) {
@@ -122,6 +123,9 @@ export default class CommandEventBuilder {
 
             // set tally reaction setting
             emitter.on(Config.prefix + Commands.TALLY_REACTIONS, TallyHandler.runSetTallyReactionsEnabled);
+
+            // create a tally group
+            emitter.on(Config.prefix + Commands.TALLY_GROUP_ADD, TallyGroupHandler.create);
 
             // export/import data
             emitter.on(Config.prefix + Commands.DATA, DataHandler.run);

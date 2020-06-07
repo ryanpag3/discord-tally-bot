@@ -3,6 +3,16 @@ import DB from './db';
 import Commands from '../static/Commands';
 
 export default class Permissions {
+    static commandValues = Permissions.getCommandValues();
+    
+    static getCommandValues (): string[] {
+        const keys = Object.keys(Commands);
+        const values = [];
+        for (const key of keys) {
+            values.push(Commands[key]);
+        }
+        return values;
+    }
 
     static isPermissionCommand(commandArr): boolean {
         return (commandArr[2] && commandArr[2] == '-role');
@@ -117,10 +127,6 @@ export default class Permissions {
         }
     }
 
-    static getPermissionRole(channelId, permissionId) {
-        // TODO
-    }
-
     static async getServerPermissions(serverId) {
         const db = new DB();
         return await db.Permission.findAll({
@@ -135,8 +141,8 @@ export default class Permissions {
     }
 
     static isValidCommand(command) {
-        
-        return Commands[command.toUpperCase().replace('-', '_')] != undefined || command == '-role';
+        return Permissions.commandValues.includes(command);
+        // return Commands[command.toUpperCase().replace('-', '_')] != undefined || command == '-role';
     }
 
     static getRoleId(roles, targetRoleName) {

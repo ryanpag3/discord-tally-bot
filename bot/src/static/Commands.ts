@@ -46,6 +46,13 @@ const Commands = {
     TEST: 'test',
     TIMER: 'timer',
     TIMERS: 'timers',
+    TALLY_GROUP_ADD: 'tg-add',
+    TALLY_GROUP_RM: 'tg-rm',
+    TALLY_GROUP_GET: 'tg-get',
+    TALLY_GROUP_EDIT: 'tg-edit',
+    TALLY_GROUP_SHOW: 'tg-show',
+    TALLY_GROUP_BUMP: 'tg-bump',
+    TALLY_GROUP_DUMP: 'tg-dump',
     UPDATE: 'update'
 }
 
