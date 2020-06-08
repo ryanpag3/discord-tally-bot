@@ -94,6 +94,7 @@ const remove = async (message: Message) => {
 const get = async (message: Message) => {
     try {
         const msg = unmarshall(message);
+        if (!msg.name) throw new Error(`Cannot get tally group without group name.`);
         const group = await TallyGroup.findOne({
             where: {
                 name: msg.name,
