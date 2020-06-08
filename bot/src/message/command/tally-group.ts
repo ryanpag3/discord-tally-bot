@@ -111,7 +111,6 @@ const get = async (message: Message) => {
         richEmbed.addField(`Description`, msg.description || 'No description.');
         richEmbed.addField(`Tallies`, tallies.map((t) => `name: **${t.name}** count: **${t.count}**`).join(`\n`));
         MsgHelper.sendMessage(message, richEmbed);
-
     } catch (e) {
         MsgHelper.handleError(`Error occured while getting tally group.`, e, message);
     }
@@ -240,7 +239,7 @@ const unmarshall = (message: Message): {
         command: split[offset + 1],
         name: split[offset + 2],
         tallies: split[offset + 3] ? split[offset + 3].split(',') : [],
-        description: split[offset + 4],
+        description: split.slice(offset + 4, split.length - 1).join(' '),
         count: Number.parseInt(split[offset + 3] || '1'),
         pageNumber: Number.parseInt(split[offset + 2] || '0')
     }
