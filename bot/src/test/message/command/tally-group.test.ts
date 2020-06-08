@@ -68,6 +68,70 @@ describe('tally group commands', function () {
         expect(fakeMsg.getLastChannelCall().toLowerCase()).to.include('could not find tally group');
     });
 
+    it('should bump all tallies in tally group', async function() {
+        let fakeMsg = TestHelper.getFakeMessage();
+        const name = 'test';
+        const tallyNames = ['a', 'b', 'c', 'd'];
+        await generateTallies(fakeMsg, tallyNames);
+        fakeMsg.content = `!tb tg-add ${name} ${tallyNames.join(',')}`;
+        await TallyGroupHandler.create(fakeMsg as any);
+        fakeMsg = TestHelper.getFakeMessage();
+        fakeMsg.content = `!tb tg-bump ${name}`;
+        await TallyGroupHandler.bump(fakeMsg as any);
+        for (const name of tallyNames) {
+            const t = await db.getCmdTally(fakeMsg.channel.id, fakeMsg.guild.id, false, name);
+            expect(t.count).to.equal(1);
+        }
+    });
+
+    it('should bump all tallies in tally group', async function() {
+        let fakeMsg = TestHelper.getFakeMessage();
+        const name = 'test';
+        const tallyNames = ['a', 'b', 'c', 'd'];
+        await generateTallies(fakeMsg, tallyNames);
+        fakeMsg.content = `!tb tg-add ${name} ${tallyNames.join(',')}`;
+        await TallyGroupHandler.create(fakeMsg as any);
+        fakeMsg = TestHelper.getFakeMessage();
+        fakeMsg.content = `!tb tg-bump ${name} 25`;
+        await TallyGroupHandler.bump(fakeMsg as any);
+        for (const name of tallyNames) {
+            const t = await db.getCmdTally(fakeMsg.channel.id, fakeMsg.guild.id, false, name);
+            expect(t.count).to.equal(25);
+        }
+    });
+
+    it('should dump all tallies in tally group', async function() {
+        let fakeMsg = TestHelper.getFakeMessage();
+        const name = 'test';
+        const tallyNames = ['a', 'b', 'c', 'd'];
+        await generateTallies(fakeMsg, tallyNames);
+        fakeMsg.content = `!tb tg-add ${name} ${tallyNames.join(',')}`;
+        await TallyGroupHandler.create(fakeMsg as any);
+        fakeMsg = TestHelper.getFakeMessage();
+        fakeMsg.content = `!tb tg-dump ${name}`;
+        await TallyGroupHandler.dump(fakeMsg as any);
+        for (const name of tallyNames) {
+            const t = await db.getCmdTally(fakeMsg.channel.id, fakeMsg.guild.id, false, name);
+            expect(t.count).to.equal(-1);
+        }
+    });
+
+    it('should dump all tallies in tally group', async function() {
+        let fakeMsg = TestHelper.getFakeMessage();
+        const name = 'test';
+        const tallyNames = ['a', 'b', 'c', 'd'];
+        await generateTallies(fakeMsg, tallyNames);
+        fakeMsg.content = `!tb tg-add ${name} ${tallyNames.join(',')}`;
+        await TallyGroupHandler.create(fakeMsg as any);
+        fakeMsg = TestHelper.getFakeMessage();
+        fakeMsg.content = `!tb tg-dump ${name} 25`;
+        await TallyGroupHandler.dump(fakeMsg as any);
+        for (const name of tallyNames) {
+            const t = await db.getCmdTally(fakeMsg.channel.id, fakeMsg.guild.id, false, name);
+            expect(t.count).to.equal(-25);
+        }
+    });
+
     async function generateTallies(fakeMessage: any, tallyNames: string[]) {
         for (const name of tallyNames) {
             await Tally.create({
@@ -75,6 +139,7 @@ describe('tally group commands', function () {
                 serverId: fakeMessage.guild.id,
                 channelId: fakeMessage.channel.id,
                 name,
+                count: 0
             });
         }
     }

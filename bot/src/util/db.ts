@@ -184,6 +184,7 @@ export default class DB {
 
     async truncateTables() {
         await this.Tally.truncate();
+        await this.TallyGroup.truncate();
         await this.Timer.truncate();
         await this.Announcement.truncate();
         await this.Channel.truncate();
@@ -272,7 +273,7 @@ export default class DB {
             where
         });
         if (!tally) return null;
-        tally.description = Buffer.from(tally.description, 'base64').toString();
+        tally.description = Buffer.from(tally.description || '', 'base64').toString();
         return tally;
     }
 

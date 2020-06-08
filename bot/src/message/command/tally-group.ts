@@ -3,12 +3,12 @@ import logger from '../../util/logger';
 import MsgHelper from '../msg-helper';
 import DB from '../../util/db';
 import { Op } from 'sequelize';
+import TallyHandler from './tally-handler';
 
 /**
  * !tb tg-add [group_name] [tallies] [description]
  * !tb tg-rm [group_name]
  * !tb tg-get [group_name]
- * !tb tg-edit [group_name]
  * !tb tg-show [page_number]
  * !tb tg-bump [group_name] [count]
  * !tb tg-dump [group_name] [count]
@@ -130,20 +130,96 @@ const getTallies = async (serverId: string, channelId: string, tallyNames: strin
     return tallies;
 }
 
-const edit = async (message: Message) => {
-
-}
-
-const show = async (message: Message) => {
-
-}
-
 const bump = async (message: Message) => {
+    try {
+        const msg = unmarshall(message);
+        const group = await TallyGroup.findOne({
+            where: {
+                serverId: message.guild.id,
+                channelId: message.channel.id,
+                name: msg.name
+            }
+        });
+        if (!group) throw new Error(`Could not find tally group by name ${msg.name}`);
+        const tallyNames = group.tallyNames.split(',');
+        const promises = tallyNames.map(async (t) => {
+            const tally = await db.getCmdTally(message.channel.id, message.guild.id, msg.isGlobal, t);
+            const previousCount = tally.count;
+            await TallyHandler.updateCmdTallyByAmount(true, message.channel.id, message.guild.id, msg.isGlobal, tally.name, tally.count, msg.count);
+            await tally.reload();
+            tally.previousCount = previousCount;
+            return tally;
+        });
+        const tallies: any[] = await Promise.all(promises);
+        const richEmbed = MsgHelper.getRichEmbed(message.author.username)
+            .setTitle(`:arrow_double_up: ${msg.command}`)
+            .setDescription(`Tallies have been bumped!`);
+        for (const tally of tallies) {
+            richEmbed.addField(`Tally`, `**name:** ${tally.name} | **count:** ${tally.previousCount} -> ${tally.count}`);
+        }
+        MsgHelper.sendMessage(message, richEmbed);
+    } catch (e) {
+        MsgHelper.handleError(`Error occured while bumping tally group.`, e, message);
+    }
 
 }
 
 const dump = async (message: Message) => {
+    try {
+        const msg = unmarshall(message);
+        if (!msg.name) throw new Error
+        const group = await TallyGroup.findOne({
+            where: {
+                serverId: message.guild.id,
+                channelId: message.channel.id,
+                name: msg.name
+            }
+        });
+        if (!group) throw new Error(`Could not find tally group by name ${msg.name}`);
+        const tallyNames = group.tallyNames.split(',');
+        const promises = tallyNames.map(async (t) => {
+            const tally = await db.getCmdTally(message.channel.id, message.guild.id, msg.isGlobal, t);
+            const previousCount = tally.count;
+            await TallyHandler.updateCmdTallyByAmount(false, message.channel.id, message.guild.id, msg.isGlobal, tally.name, tally.count, msg.count);
+            await tally.reload();
+            tally.previousCount = previousCount;
+            return tally;
+        });
+        const tallies: any[] = await Promise.all(promises);
+        const richEmbed = MsgHelper.getRichEmbed(message.author.username)
+            .setTitle(`:arrow_double_down: ${msg.command}`)
+            .setDescription(`Tallies have been dumped!`);
+        for (const tally of tallies) {
+            richEmbed.addField(`Tally`, `**name:** ${tally.name} | **count:** ${tally.previousCount} -> ${tally.count}`);
+        }
+        MsgHelper.sendMessage(message, richEmbed);
+    } catch (e) {
+        MsgHelper.handleError(`Error occured while dumping tally group.`, e, message);
+    }
+}
 
+const show = async (message: Message) => {
+    try {
+        const msg = unmarshall(message);
+        const itemsPerPage = 10;
+        let page: number = msg.pageNumber || 0;
+        if (page > 0) --page;
+        const groups = await TallyGroup.findAll({
+            where: {},
+            offset: itemsPerPage * page,
+            limit: itemsPerPage
+        });
+        const richEmbed = MsgHelper.getRichEmbed(message.author.username);
+        richEmbed.setTitle(`:stars: ${msg.command}`);
+        let description = `Showing page ${page + 1}\n\n`;
+        for (const group of groups) {
+            description = description.concat(`**name:** ${group.name} | **description:** ${(group.description && MsgHelper.truncate(group.description, 24)) || 'none'}\n`);
+        }
+        richEmbed.setDescription(description);
+        MsgHelper.sendMessage(message, richEmbed);
+    } catch(e) {
+        MsgHelper.handleError(`Error while showing tally groups.`, e, message);
+    }
 }
 
 const unmarshall = (message: Message): {
@@ -152,8 +228,8 @@ const unmarshall = (message: Message): {
     name: string;
     tallies?: string[];
     description?: string;
-    count?: Number;
-    pageNumber?: Number;
+    count?: number;
+    pageNumber?: number;
 } => {
     const split = message.content.split(' ');
     const isGlobal = split[2] === '-g';
@@ -173,10 +249,9 @@ const TallyGroupHandler = {
     create,
     remove,
     get,
-    edit,
-    show,
     bump,
-    dump
+    dump,
+    show
 };
 
 export default TallyGroupHandler;
