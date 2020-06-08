@@ -41,6 +41,13 @@ This will help offset the cost of running the bot. Thank you 👊
   - [Reset Tally](#reset-tally-to-0)
   - [Reset All Tallies](#reset-all-tallies-to-0)
   - [Enable/Disable Tally Reactions](#toggle-tally-reactions)
+- [Tally Groups](#tally-groups)
+  - [Create a Tally Group](#create-tally-group)
+  - [Delete a Tally Group](#delete-tally-group)
+  - [Get Tally Group Details](#get-tally-group-details)
+  - [Bump Tally Group](#bump-tally-group)
+  - [DumpTally Group](#dump-tally-group)
+  - [Show Tally Groups](#show-tally-groups)
 - [Announcements](#announcements)
   - [Create Announcement](#create-an-announcement)
   - [Create Tally Alert Announcement](#create-a-tally-alert-announcement)
@@ -445,6 +452,85 @@ This setting is disabled by default. It allows you to have Tally Bot react with 
 
     !tb tally-reactions false
 
+## Tally Groups
+Tally groups allow you to bump or dump multiple tallies at the same time.
+
+### **Create Tally Group**
+Create a tally group and assign valid tallies to it. 
+
+**Parameters**
+- group_name: a unique name that will be used to bump or dump the tallies
+- tally_names: a comma-separated string of valid global or channel tallies
+- group_description: an optional description of this tally group
+
+```
+!tb tg-add group_name tally_names [group_description]
+
+---- Server Examples ----
+
+!tb tg-add test tally1,tally2 A description.
+```
+
+### **Delete Tally Group**
+Delete the tally group. This is not reversable.
+
+```
+!tb tg-rm group_name
+
+---- Server Examples ----
+
+!tb tg-rm test
+```
+
+### **Get Tally Group Details**
+Get tally group and subsequent tally counts for that group.
+
+```
+!tb tg-get group_name
+
+---- Server Examples ----
+
+!tb tg-get test
+```
+
+### **Bump Tally Group**
+Bump all of the tallies in a tally group.
+
+```
+!tb tg-bump group_name [count]
+
+---- Server Examples ----
+
+!tb tg-bump test
+
+!tb tg-bump test 25
+```
+
+### **Dump Tally Group**
+Dump all of the tallies in a tally group.
+
+```
+!tb tg-dump group_name [count]
+
+---- Server Examples ----
+
+!tb tg-dump test
+
+!tb tg-dump test 25
+```
+
+### **Show Tally Groups**
+List out all the tally groups for the server.
+
+```
+!tb tg-show [page_number]
+
+---- Server Examples ----
+
+!tb tg-show
+
+!tb tg-show 2
+```
 
 ## Announcements
 All announcement schedules are run in `America/Los_Angeles` timezone. I have plans to do channel specific timezones but it is low priority. Please schedule accordingly!

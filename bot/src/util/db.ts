@@ -19,6 +19,7 @@ export default class DB {
 
     // tables
     Tally;
+    TallyGroup;
     Timer;
     Announcement;
     Channel;
@@ -137,6 +138,7 @@ export default class DB {
      */
     initModels() {
         this.Tally = this.sequelize.import('../models/tally');
+        this.TallyGroup = this.sequelize.import('../models/tally-group');
         this.Timer = this.sequelize.import('../models/timer');
         this.Announcement = this.sequelize.import('../models/announcement');
         this.Channel = this.sequelize.import('../models/channel');
@@ -148,6 +150,10 @@ export default class DB {
     async upsertTables() {
         logger.debug('creating and/or altering Tally table');
         await this.Tally.sync({
+            alter: true
+        });
+        logger.debug('creating and/or altering TallyGroup table');
+        await this.TallyGroup.sync({
             alter: true
         });
         logger.debug('creating and/or altering Timer table');
@@ -178,6 +184,7 @@ export default class DB {
 
     async truncateTables() {
         await this.Tally.truncate();
+        await this.TallyGroup.truncate();
         await this.Timer.truncate();
         await this.Announcement.truncate();
         await this.Channel.truncate();
@@ -266,7 +273,7 @@ export default class DB {
             where
         });
         if (!tally) return null;
-        tally.description = Buffer.from(tally.description, 'base64').toString();
+        tally.description = Buffer.from(tally.description || '', 'base64').toString();
         return tally;
     }
 

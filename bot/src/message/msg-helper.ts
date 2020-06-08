@@ -22,11 +22,11 @@ const MsgHelper = {
 
     async handleError(msg: string, e: Error, message: Message) {
         logger.error(msg, e);
+        if (e.message.toLowerCase().includes('validation error')) e = new Error(`Record already exists.`);
         const richEmbed = MsgHelper.getRichEmbed(message.author.username)
             .setTitle(`:x: ` + msg)
             .setDescription(e.message);
         await message.channel.send(richEmbed);
-        MsgHelper.finalize(message);
     },
 
     /**
