@@ -25,7 +25,7 @@ const create = async (message: Message) => {
         if (cmd.tallies.length > 25) throw new Error(`Maximum 25 tallies can be assigned to a tally group.`);
         logger.debug(`Creating tally group ${cmd.name} for ${message.guild.id} ${message.channel.id}`);
         await checkIfValidGroupTallies(cmd.isGlobal, message.guild.id, message.channel.id, cmd.tallies);
-        const group = await TallyGroup.create({
+        await TallyGroup.create({
             serverId: message.guild.id,
             channelId: message.channel.id,
             name: cmd.name,

@@ -42,7 +42,12 @@ This will help offset the cost of running the bot. Thank you 👊
   - [Reset All Tallies](#reset-all-tallies-to-0)
   - [Enable/Disable Tally Reactions](#toggle-tally-reactions)
 - [Tally Groups](#tally-groups)
- 
+  - [Create a Tally Group](#create-tally-group)
+  - [Delete a Tally Group](#delete-tally-group)
+  - [Get Tally Group Details](#get-tally-group-details)
+  - [Bump Tally Group](#bump-tally-group)
+  - [DumpTally Group](#dump-tally-group)
+  - [Show Tally Groups](#show-tally-groups)
 - [Announcements](#announcements)
   - [Create Announcement](#create-an-announcement)
   - [Create Tally Alert Announcement](#create-a-tally-alert-announcement)
