@@ -108,7 +108,7 @@ const get = async (message: Message) => {
         const richEmbed = MsgHelper.getRichEmbed(message.author.username);
         richEmbed.setTitle(`:family_man_girl_boy: ${msg.command}`);
         richEmbed.addField(`Name`, msg.name);
-        richEmbed.addField(`Description`, msg.description || 'No description.');
+        richEmbed.addField(`Description`, group.description || 'No description.');
         richEmbed.addField(`Tallies`, tallies.map((t) => `name: **${t.name}** count: **${t.count}**`).join(`\n`));
         MsgHelper.sendMessage(message, richEmbed);
     } catch (e) {
