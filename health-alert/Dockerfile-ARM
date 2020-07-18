@@ -1,0 +1,9 @@
+FROM arm32v7/node
+
+COPY . /
+
+RUN rm -f .env
+
+RUN yarn install
+
+ENTRYPOINT ["yarn", "prod"]

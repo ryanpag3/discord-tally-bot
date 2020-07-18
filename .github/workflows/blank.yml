@@ -50,7 +50,7 @@ jobs:
         TEST_SUGGEST_CHANNEL: ${{ secrets.TEST_SUGGEST_CHANNEL }}
         BUGS_CHANNEL: ${{ secrets.BUGS_CHANNEL }}
         TEST_BUGS_CHANNEL: ${{ secrets.TEST_BUGS_CHANNEL }}
-    - name: Tally Bot - Docker Build
+    - name: Tally Bot - Docker Build x86
       env:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
@@ -59,6 +59,15 @@ jobs:
         cd bot/
         docker build . -t ryanpage/internal:tally-bot-${GITHUB_SHA::7}
         docker push ryanpage/internal:tally-bot-${GITHUB_SHA::7}
+    - name: Tally Bot - Docker Build ARM
+      env:
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      run: |
+        docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
+        cd bot/
+        docker build -f Dockerfile-ARM -t ryanpage/internal:tally-bot-${GITHUB_SHA::7}-ARM
+        docker push ryanpage/internal:tally-bot-${GITHUB_SHA::7}-ARM
     - name: Announcer - Docker Build
       env:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
