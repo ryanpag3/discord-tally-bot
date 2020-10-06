@@ -53,7 +53,8 @@ const Commands = {
     TALLY_GROUP_SHOW: 'tg-show',
     TALLY_GROUP_BUMP: 'tg-bump',
     TALLY_GROUP_DUMP: 'tg-dump',
-    UPDATE: 'update'
+    UPDATE: 'update',
+    MIGRATE: 'migrate'
 }
 
 export default Commands;

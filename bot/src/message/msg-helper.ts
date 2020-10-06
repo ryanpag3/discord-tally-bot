@@ -1,7 +1,9 @@
 import Discord, { Message } from 'discord.js';
+import moment from 'moment'
 import config from '../util/config';
 import logger from '../util/logger';
 import Env from '../util/env';
+import { deflateSync } from 'zlib';
 
 const MsgHelper = {
     removePrefixCommand: (messageContent: string, commandLength) => {
@@ -54,7 +56,7 @@ const MsgHelper = {
             .setColor('#cf5967');
             // .setColor('#5fcca4');
         if (username)
-            richEmbed.setFooter(`${username}`);
+            richEmbed.setFooter(`I am shutting down in ${moment('01-01-2021').diff(moment(), 'days')} days. Run "!tb migrate" for more details.`);
         return richEmbed;
     },
 

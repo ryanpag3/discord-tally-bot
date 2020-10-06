@@ -147,6 +147,8 @@ export default class CommandEventBuilder {
 
             emitter.on(Config.prefix + Commands.PING, CmdHandler.runPing);
 
+            emitter.on(Config.prefix + Commands.MIGRATE, CmdHandler.runMigrate);
+
             /**
              * The following commands are only exposed when bot is run without `production` flag
              */
