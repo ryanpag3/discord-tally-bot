@@ -22,6 +22,7 @@ jobs:
     - uses: actions/checkout@v1
     - name: Setup environment
       run: |
+        for apt_file in `grep -lr microsoft /etc/apt/sources.list.d/`; do sudo rm $apt_file; done
         curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
         sudo apt-get install -y nodejs make build-essential libkrb5-dev gcc
         mkdir ~/.npm-global
