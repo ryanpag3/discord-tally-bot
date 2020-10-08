@@ -125,6 +125,7 @@ export default class DataHandler {
                 count: t.count,
                 keyword: t.keyword,
                 bumpOnKeyword: t.bumpOnKeyword,
+                originChannelId: message.channel.id
             };
         });
         return tallies;
